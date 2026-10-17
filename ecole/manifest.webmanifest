@@ -1,0 +1,15 @@
+{
+  "name": "Mon école — CS Pobè",
+  "short_name": "Mon école",
+  "description": "Gestion des écoles de la Circonscription Scolaire de Pobè.",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f0f2f5",
+  "theme_color": "#006633",
+  "lang": "fr",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
