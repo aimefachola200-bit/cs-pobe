@@ -47,10 +47,10 @@
       + corps + '</svg>';
   }
 
-  /** Le cachet suit la forme choisie (rectangulaire par défaut, ou rond) */
+  /** Le cachet suit la forme choisie (rond par défaut, comme dans SCOLARIS, GESCOL et l'Application CP ; ou rectangulaire) */
   function cachet(porteur, options) {
     options = options || {}; porteur = porteur || {};
-    return String(options.forme || porteur.cachet_forme || 'RECT').toUpperCase() === 'ROND' ? cachetRond(porteur, options) : cachetRect(porteur, options);
+    return String(options.forme || porteur.cachet_forme || 'ROND').toUpperCase() === 'RECT' ? cachetRect(porteur, options) : cachetRond(porteur, options);
   }
 
   /**
@@ -119,7 +119,9 @@
       + ' text-anchor="middle" font-family="Helvetica, Arial, sans-serif"'
       + ' letter-spacing="0.4">'
       + '<textPath href="#' + idArc + '" startOffset="50%" textLength="'
-      + etirer(rayon).toFixed(1) + '" lengthAdjust="spacingAndGlyphs">'
+      + etirer(rayon).toFixed(1) + '" lengthAdjust="'
+      /* texte court : on écarte les lettres sans les déformer ; texte long : on le resserre */
+      + (texte.length * tailleTexte * 0.66 < etirer(rayon) ? 'spacing' : 'spacingAndGlyphs') + '">'
       + echapper(texte) + '</textPath></text>';
 
     return '<svg class="cachet" width="' + taille + '" height="' + taille + '"'

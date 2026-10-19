@@ -12,6 +12,15 @@
     'presencesApprenants', 'presencesPersonnel', 'joursFeries', 'bilans', 'themesDone'];
 
   let data = charger();
+  /* Cachets ronds partout (demande du 19/10/2026) : une seule fois, les cachets réglés en rectangulaire passent en rond ;
+     chacun peut ensuite revenir au rectangulaire dans « Régler le cachet ». */
+  (function cachetsRonds() {
+    const cle = 'cachetsRonds:' + CLE_STOCKAGE;
+    try { if (localStorage.getItem(cle)) return; } catch (e) { return; }
+    let n = 0;
+    ['ecoles', 'identite'].forEach(c => (data[c] || []).forEach(x => { if ((x.cachet_forme || 'RECT') !== 'ROND') { x.cachet_forme = 'ROND'; n++; } }));
+    try { if (n) localStorage.setItem(CLE_STOCKAGE, JSON.stringify(data)); localStorage.setItem(cle, '1'); } catch (e) { /* mémoire pleine : réessai au prochain démarrage */ }
+  })();
 
   function charger() {
     let brut = null;
@@ -1323,7 +1332,7 @@
       cachet_centre: e.cachet_centre || 'LE DIRECTEUR',
       cachet_bas: e.cachet_bas || e.nom,
       cachet_couleur: e.cachet_couleur || 'BLEU',
-      cachet_forme: e.cachet_forme || 'RECT', cachet_nom: e.cachet_nom || e.directeur || '',
+      cachet_forme: e.cachet_forme || 'ROND', cachet_nom: e.cachet_nom || e.directeur || '',
       signature_image: e.signature_image
     };
   }
@@ -1353,7 +1362,7 @@
           + '<input name="responsable" value="' + echapper(e.responsable || '') + '"></div>'
         : '')
       + '<div class="form-group"><label>Forme du cachet</label><select name="cachet_forme" onchange="majApercuCachet()">'
-      + [['RECT', 'Rectangulaire (armoiries)'], ['ROND', 'Rond']].map(f => '<option value="' + f[0] + '"' + ((p.cachet_forme || 'RECT') === f[0] ? ' selected' : '') + '>' + f[1] + '</option>').join('')
+      + [['ROND', 'Rond'], ['RECT', 'Rectangulaire (armoiries)']].map(f => '<option value="' + f[0] + '"' + ((p.cachet_forme || 'ROND') === f[0] ? ' selected' : '') + '>' + f[1] + '</option>').join('')
       + '</select></div>'
       + '<div class="form-group"><label>Nom du titulaire (sur le cachet)</label><input name="cachet_nom" value="' + echapper(p.cachet_nom || '') + '" oninput="majApercuCachet()"></div>'
       + '<div class="form-group"><label>Encre</label><select name="cachet_couleur" '
@@ -1376,7 +1385,7 @@
     zone.innerHTML = global.Pieces.cachet({
       cachet_haut: lire('cachet_haut'), cachet_centre: lire('cachet_centre'),
       cachet_bas: lire('cachet_bas'), cachet_couleur: lire('cachet_couleur'),
-      cachet_forme: lire('cachet_forme') || 'RECT', cachet_nom: lire('cachet_nom')
+      cachet_forme: lire('cachet_forme') || 'ROND', cachet_nom: lire('cachet_nom')
     });
   }
 
