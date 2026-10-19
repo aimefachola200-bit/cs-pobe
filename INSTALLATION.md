@@ -70,3 +70,17 @@ données du navigateur efface tout. Exportez régulièrement.
 établissements : à la première ouverture, le directeur inscrit le nom de son
 école, et les écrans de la circonscription n'y figurent pas. La circonscription
 garde `cs-pobe`.
+
+## Hébergement sur GitHub Pages (recommandé pour tablettes et Android)
+
+1. Créez un dépôt GitHub et déposez-y tout le contenu du dossier (branche `main`).
+2. *Settings → Pages → Source : GitHub Actions*. Le fichier
+   `.github/workflows/pages.yml` publie l'application et régénère la liste des
+   fichiers du cache hors ligne.
+3. Ouvrez `https://<utilisateur>.github.io/<dépôt>/` sur chaque appareil, puis
+   *Installer* (PC) ou *Ajouter à l'écran d'accueil* (Android, tablette).
+
+L'adresse https est indispensable pour la caméra du module Bilans en dehors de
+`localhost`.
+
+Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33.

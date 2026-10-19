@@ -214,3 +214,104 @@ tr:hover { background: #f8fafc; }
   color: #94a3b8; font-size: 11px; flex-shrink: 0; }
 .cadre-photo img { width: 100%; height: 100%; object-fit: cover; }
 .cadre-ddemp { border: 1px solid #64748b; padding: 10px 14px; margin-top: 18px; }
+
+/* ===== Modules ajoutés : bilans, documents de référence, appareil photo =====
+   Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33 */
+.credit-concepteur { margin: 18px 14px 6px; padding: 10px; border-top: 1px solid #475569; font-size: 11px; color: #94a3b8; text-align: center; line-height: 1.5; }
+.credit-concepteur b { color: #FCD116; }
+#bandeauImpression { display: none; }
+#bandeauImpression img { max-height: 30mm; max-width: 100%; width: auto; height: auto; display: block; margin: 0 auto; }
+
+.xcard { background: #fff; border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+.xcard h3 { color: #1e293b; margin-bottom: 10px; font-size: 16px; }
+.xnote { color: #64748b; font-size: 12.5px; margin: 6px 0 10px; }
+.xbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; align-items: center; }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn:not([class*="btn-"]) { background: #e2e8f0; color: #1e293b; }
+.table-container tr.sel td { background: #fff7cc; }
+.table-container tbody tr { cursor: pointer; }
+.xwide { grid-column: 1 / -1; }
+.xone { grid-template-columns: 1fr; }
+.xsearch { width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 6px; margin-bottom: 10px; font-size: 14px; }
+.xres { background: #fff; border-left: 4px solid #006633; border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+.xres:hover { background: #f0fdf4; }
+.xpre { white-space: pre-wrap; font: 13px/1.5 'Segoe UI', sans-serif; max-height: 60vh; overflow: auto; }
+.xreg { max-width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; }
+.axes { margin: 6px 0 0 18px; font-size: 12.5px; color: #475569; }
+.tabs .tab { user-select: none; }
+
+.gridwrap { overflow-x: auto; }
+table.g { border-collapse: collapse; font-size: 12px; min-width: 100%; }
+table.g th, table.g td { border: 1px solid #cbd5e1; padding: 3px 4px; text-align: center; }
+table.g th { background: #e8f2ec; color: #1e293b; font-weight: 600; position: static; }
+table.g td.lab { text-align: left; font-weight: 600; background: #f1f5f9; white-space: nowrap; }
+table.g td.calc { background: #f3f4f6; font-weight: 600; min-width: 44px; }
+table.g tr.tot td { background: #fff3c4; font-weight: 700; }
+table.g input, table.g textarea { width: 100%; min-width: 52px; border: 1px solid #e2e8f0; border-radius: 4px; padding: 4px; text-align: center; font-size: 12px; }
+table.g textarea { resize: vertical; }
+
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 10px; }
+.photo { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px; margin: 0; }
+.photo img { width: 100%; border-radius: 6px; }
+.photo input { padding: 5px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; }
+.photo figcaption { font-size: 11px; color: #64748b; }
+
+.cam-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 10px; }
+.cam-box { background: #fff; border-radius: 10px; width: min(760px, 100%); max-height: 100%; overflow: auto; padding: 14px; }
+.cam-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
+.cam-stage { background: #000; border-radius: 8px; overflow: hidden; }
+.cam-video { width: 100%; max-height: 55vh; display: block; object-fit: contain; }
+.cam-video.mirror { transform: scaleX(-1); }
+.cam-info { font-size: 13px; color: #475569; margin: 8px 0; }
+.cam-bar { display: flex; flex-wrap: wrap; gap: 8px; }
+.cam-snap { font-size: 16px; padding: 12px 22px; }
+.cam-shots { display: flex; gap: 6px; overflow-x: auto; margin-top: 10px; }
+.cam-shots img { height: 64px; border-radius: 4px; border: 1px solid #cbd5e1; }
+
+.xtoast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 30px); background: #1e293b; color: #fff; padding: 10px 16px; border-radius: 8px; z-index: 4000; opacity: 0; transition: .3s; max-width: 90vw; font-size: 13px; }
+.xtoast.on { opacity: 1; transform: translate(-50%, 0); }
+
+/* Documents imprimés (bilans) */
+.bilan-doc { -webkit-print-color-adjust: exact; print-color-adjust: exact; font-family: 'Segoe UI', Arial, sans-serif; color: #111; }
+.bilan-ban { max-height: 30mm; max-width: 100%; width: auto; height: auto; display: block; margin: 0 auto 6px; }
+.bilan-doc .bc { text-align: center; font-size: 12px; margin: 4px 0; }
+.bilan-doc .bh { text-align: center; font-size: 15px; border: 2px solid #006633; padding: 8px; margin: 10px 0; }
+.bilan-doc .bh small { font-size: 12px; font-weight: 600; }
+.bilan-doc .bs { background: #006633; color: #fff; padding: 4px 8px; font-size: 13px; margin: 14px 0 6px; }
+.bilan-doc .bt { font-weight: 700; font-size: 12px; margin: 8px 0 3px; }
+.bilan-doc .bn, .bilan-doc .bp { font-size: 11px; margin: 3px 0 6px; line-height: 1.45; }
+.bilan-t { border-collapse: collapse; width: 100%; font-size: 9.5px; margin-bottom: 6px; page-break-inside: avoid; }
+.bilan-t th, .bilan-t td { border: 1px solid #555; padding: 2px 3px; text-align: center; }
+.bilan-t th { background: #e8f2ec; color: #111; }
+.bilan-t td.lab { text-align: left; font-weight: 600; }
+.bilan-t td.calc { background: #f3f3f3; }
+.bilan-t tr.tot td { background: #fff3c4; font-weight: 700; }
+.bilan-t tr { page-break-inside: avoid; }
+.bphotos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.bphotos figure { margin: 0; border: 1px solid #999; padding: 4px; page-break-inside: avoid; }
+.bphotos img { width: 100%; max-height: 300px; object-fit: contain; }
+.bphotos figcaption { font-size: 9px; }
+.bcred { text-align: center; font-size: 10px; color: #444; margin-top: 14px; }
+.bilan-annexe { page-break-before: always; }
+
+@media print {
+  #bandeauImpression { display: block; margin-bottom: 6px; }
+  body.bilan-print #bandeauImpression { display: none; }   /* le bilan porte déjà son bandeau */
+  body::after { content: "Conçu par Maître Aimé FACHE · Tél. 01 96 51 03 33"; display: block; text-align: center; font-size: 9px; color: #444; margin-top: 10px; }
+  body.bilan-print::after { display: none; }
+  .xbar, .cam-overlay, .xtoast, .credit-concepteur { display: none !important; }
+  body.bilan-print .modal-header { display: none; }
+  body.bilan-print .modal-content { padding: 0; }
+}
+/* À l'impression d'un document ouvert dans la fenêtre, seule celle-ci sort : plus de page parasite dessous. */
+@media print {
+  body:has(.modal.active) .container { display: none !important; }
+  .modal:not(.active) { display: none !important; }
+  .modal.active { display: block !important; position: static; }
+}
+@page { margin: 10mm; }
+
+@media (max-width: 768px) {
+  .xbar .btn { flex: 1 1 auto; justify-content: center; }
+  .cam-box { padding: 10px; }
+}

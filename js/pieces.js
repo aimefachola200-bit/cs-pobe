@@ -15,6 +15,45 @@
   /* ---------------- Cachet ---------------- */
 
   /**
+   * Cachet rectangulaire à double filet, à l'image de l'application memp-cp : armoiries en haut à gauche,
+   * « RÉPUBLIQUE DU BÉNIN » et le ministère à droite, puis le service, la fonction et le nom du titulaire.
+   */
+  function cachetRect(porteur, options) {
+    options = options || {}; porteur = porteur || {};
+    const encre = COULEURS[options.couleur || porteur.cachet_couleur || 'BLEU'] || COULEURS.BLEU;
+    const haut = String(options.haut || porteur.cachet_haut || 'RÉPUBLIQUE DU BÉNIN').toUpperCase();
+    const bas = String(options.bas || porteur.cachet_bas || porteur.nom || 'ÉCOLE').toUpperCase();
+    const centre = String(options.centre || porteur.cachet_centre || 'LE DIRECTEUR');
+    const nom = String(options.nom || porteur.cachet_nom || porteur.responsable || '').trim();
+    const taille = options.taille || 118, LARG = 320, HAUT = 160;
+    const arm = (global.Embleme && global.Embleme.ARMOIRIES) || '';
+    const ff = ' font-family="Helvetica, Arial, sans-serif" fill="' + encre + '" text-anchor="middle"';
+    const fit = (txt, size, max) => (txt.length * size * 0.6 > max ? ' textLength="' + max + '" lengthAdjust="spacingAndGlyphs"' : '');
+    const ligne = (txt, x, y, size, poids, italique, max) => '<text x="' + x + '" y="' + y + '" font-size="' + size + '" font-weight="' + poids + '"'
+      + (italique ? ' font-style="italic"' : '') + ff + fit(txt, size, max) + '>' + echapper(txt) + '</text>';
+    let y = 36, corps = '';
+    corps += ligne(haut, 196, y, 15, 800, false, 218); y += 15;
+    corps += ligne('MINISTÈRE DES ENSEIGNEMENTS', 196, y, 8.6, 700, false, 218); y += 10.5;
+    corps += ligne('MATERNEL ET PRIMAIRE', 196, y, 8.6, 700, false, 218); y += 9;
+    corps += '<line x1="22" y1="' + (y + 2) + '" x2="298" y2="' + (y + 2) + '" stroke="' + encre + '" stroke-width="1.2"/>'; y += 17;
+    const lb = decouper(bas, 276, 11 * 0.62).slice(0, 2);
+    lb.forEach(l => { corps += ligne(l, 160, y, lb.length > 1 ? 10.5 : 12, 800, false, 276); y += lb.length > 1 ? 12.5 : 15; });
+    y += 3; corps += ligne(centre, 160, y, 11.5, 600, true, 276); y += 17;
+    if (nom) corps += ligne(nom.toUpperCase(), 160, y, 11, 800, false, 276);
+    return '<svg class="cachet cachet-rect" width="' + (taille * 2) + '" height="' + taille + '" viewBox="0 0 ' + LARG + ' ' + HAUT + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cachet — ' + echapper(centre) + '">'
+      + '<rect x="4" y="4" width="' + (LARG - 8) + '" height="' + (HAUT - 8) + '" rx="7" fill="none" stroke="' + encre + '" stroke-width="4"/>'
+      + '<rect x="11" y="11" width="' + (LARG - 22) + '" height="' + (HAUT - 22) + '" rx="3" fill="none" stroke="' + encre + '" stroke-width="1.5"/>'
+      + (arm ? '<image href="' + arm + '" x="20" y="17" width="52" height="52" preserveAspectRatio="xMidYMid meet" opacity="0.9"/>' : '')
+      + corps + '</svg>';
+  }
+
+  /** Le cachet suit la forme choisie (rectangulaire par défaut, ou rond) */
+  function cachet(porteur, options) {
+    options = options || {}; porteur = porteur || {};
+    return String(options.forme || porteur.cachet_forme || 'RECT').toUpperCase() === 'ROND' ? cachetRond(porteur, options) : cachetRect(porteur, options);
+  }
+
+  /**
    * Cachet rond : un arc en haut, un arc en bas, le texte central, et deux
    * étoiles à la césure. Chaque école règle ses trois lignes et son encre.
    */
@@ -42,7 +81,7 @@
    * plusieurs lignes, et deux étoiles à la césure. Tout tient à l'intérieur du
    * cercle extérieur ; le texte central reste dans le cercle intérieur.
    */
-  function cachet(porteur, options) {
+  function cachetRond(porteur, options) {
     options = options || {};
     porteur = porteur || {};
     const encre = COULEURS[options.couleur || porteur.cachet_couleur || 'BLEU'] || COULEURS.BLEU;

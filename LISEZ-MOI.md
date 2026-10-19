@@ -671,3 +671,55 @@ fichier téléchargé depuis le bouton *Télécharger* de la page Analyses.
 Les données vivent dans ce navigateur, sur cet ordinateur. Vider le cache, ou
 changer de machine, et tout est perdu. Exportez régulièrement depuis
 *Sauvegarde* : le fichier JSON produit est votre seule copie.
+
+## Mise à jour — bilans, documents de référence, installation
+
+**Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33.** Le bandeau du ministère
+figure en tête de chaque document imprimé et la mention de conception en pied de
+page.
+
+### Bilans trimestriels et annuel — *Menu → Bilans trimestriels / annuel*
+
+Canevas du bilan trimestriel des activités pédagogiques (niveau CS), pour le
+**niveau zone** (conseiller pédagogique) et le **niveau circonscription**
+(chef de circonscription), en **T1, T2, T3 et annuel**.
+
+- Tableaux 1 à 5 : réseau d'animation, visites et inspections, visites d'écoles,
+  suivis de directeurs, séances d'UP, formations, concertations, taux de
+  couverture, évaluations d'étape. Les cellules grisées se calculent seules
+  (totaux, pourcentages), avec contrôles de cohérence.
+- Analyses (6) pré-rédigées à partir des chiffres, à relire et ajuster ; difficultés
+  (7) classées par ampleur ; commentaires et perspectives.
+- **Σ Consolider** : le bilan annuel cumule les trois trimestres ; le bilan CS
+  reprend les bilans de zone.
+- **Charger** (JSON), **PDF / Imprimer** (paysage, avec bandeau et annexe photos),
+  **Excel** (.xls), **JSON**, **Réinitialiser**, **Supprimer**, **Finaliser**.
+- **Appareil photo** : caméra **avant ou arrière** (bouton de bascule), photo native
+  du téléphone ou galerie. Les photos sont rangées avec le bilan (IndexedDB),
+  légendables, et sorties en annexe du PDF.
+- Échange CP → CCS : le CP exporte son bilan en JSON (photos comprises) ; le CCS le
+  charge puis consolide.
+- Ce menu est réservé à la circonscription ; il n'apparaît pas dans l'application d'école.
+
+### Documents de référence — *Menu → Documents de référence*
+
+Fiches de recensement (maternelle inclusive, primaire avec guide) en PDF, thèmes
+2026-2027 (UP, conférences, formations groupées, avec suivi « réalisé »),
+planification CI → CM2 (recherche plein texte) et règlement intérieur numérisé.
+Tout fonctionne hors ligne.
+
+### Installation et hébergement
+
+Voir `INSTALLATION.md`. Publié sur GitHub Pages (https), l'application s'installe
+sur PC, tablette et Android avec son propre cache hors ligne ; la caméra exige
+https ou localhost. Après toute modification d'un fichier : `node tools/gen-assets.mjs`.
+
+
+## Mise à jour — effectifs par âge, synoptique, espaces des divisions, cachets
+
+- **Effectifs par âge, zone et CS** (menu Administration) : effectifs par âge, par sexe et par cours (CI → CM2), avec le total qui est la somme des écoles et des classes de la zone ou de la circonscription ; synthèse par cours ; **courbes d'âge** (garçons / filles, puis une courbe par cours) ; impression / PDF, Excel, export CSV réimportable et import Excel ou CSV.
+- **Tableau synoptique** : écoles, classes, salles, enseignants et élèves par secteur (public / privé) et par cycle (EM / EP), pour la circonscription, une zone, une unité pédagogique ou une école ; répartitions par zone, unité pédagogique et arrondissement ; impression et Excel.
+- **Espaces des divisions de la CS de Pobè** : Chef de la CS, Secrétariat, C/DOSP et un espace par zone pédagogique (CP) — titulaire, documents officiels (fiches de recensement, rapports de rentrée et de fin d'année, bilan trimestriel, thèmes d'UP 2026-2027, règlement intérieur), documents propres à la division (stockés sur l'appareil), notes et accès rapides.
+- **Cachets** : forme rectangulaire à double filet avec armoiries, comme dans l'application memp-cp ; la forme ronde reste disponible (Cachets et signatures → Régler le cachet → Forme du cachet).
+
+Conçu par Maître Aimé FACHE — Tél. 01 96 51 03 33

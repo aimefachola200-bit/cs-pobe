@@ -3,16 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gestion de mon école — CS Pobè</title>
+<title>CS Pobè — Gestion des Écoles</title>
 <link rel="stylesheet" href="css/style.css">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#006633">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" href="icone.svg" type="image/svg+xml">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="CS Pobè">
 </head>
 <body>
+
+<!-- Bandeau officiel : n'apparaît qu'à l'impression, en tête de chaque document -->
+<div id="bandeauImpression"><img alt="Ministère des Enseignements Maternel et Primaire — République du Bénin"></div>
 
 <div class="header">
     <div>
@@ -64,6 +68,11 @@
         <div class="menu-item" data-page="fiches"><span class="icon">🗂️</span> Fiches officielles</div>
         <div class="menu-item" data-page="certificats"><span class="icon">📜</span> Certificats</div>
         <div class="menu-item" data-page="rapports"><span class="icon">📄</span> Rapports de rentrée</div>
+        <div class="menu-item" data-page="bilans"><span class="icon">📊</span> Bilans trimestriels / annuel</div>
+        <div class="menu-item" data-page="docsref"><span class="icon">📚</span> Documents de référence</div>
+        <div class="menu-item" data-page="espaces"><span class="icon">🏢</span> Espaces des divisions</div>
+        <div class="menu-item" data-page="synoptique"><span class="icon">🗂️</span> Tableau synoptique</div>
+        <div class="menu-item" data-page="effectifsZone"><span class="icon">📈</span> Effectifs par âge, zone et CS</div>
         <div class="menu-item" data-page="courriers"><span class="icon">📬</span> Archive courriers</div>
         <div class="menu-item" data-page="analyses"><span class="icon">📈</span> Analyses et écarts</div>
         <div class="menu-item" data-page="identite"><span class="icon">🔏</span> Cachets et signatures</div>
@@ -71,6 +80,7 @@
         <div class="menu-item" data-page="joursFeries"><span class="icon">📆</span> Jours fériés</div>
         <div class="menu-item" data-page="importation"><span class="icon">📥</span> Import Excel</div>
         <div class="menu-item" data-page="backup"><span class="icon">💾</span> Sauvegarde</div>
+        <div class="credit-concepteur">Conçu par<br><b>Maître Aimé FACHE</b><br>Tél. 01 96 51 03 33</div>
     </div>
 
     <div class="main">
@@ -843,6 +853,13 @@
             </table></div></div>
         </div>
 
+        <!-- BILANS ET DOCUMENTS DE RÉFÉRENCE (modules ajoutés) -->
+        <div id="bilans" class="page hidden"></div>
+        <div id="docsref" class="page hidden"></div>
+        <div id="espaces" class="page hidden"></div>
+        <div id="synoptique" class="page hidden"></div>
+        <div id="effectifsZone" class="page hidden"></div>
+
         <!-- COURRIERS -->
         <div id="courriers" class="page hidden">
             <div class="page-title">
@@ -1189,6 +1206,19 @@
 <script src="js/certificats.js"></script>
 <script src="js/tableur.js"></script>
 <script src="js/import.js"></script>
+<script src="data/ref.js"></script>
+<script src="js/bilan-schema.js"></script>
 <script src="js/app.js"></script>
+<script src="js/extra.js"></script>
+<script src="js/effectifs-zone.js"></script>
+<script src="js/synoptique.js"></script>
+<script src="js/espaces.js"></script>
+<script>
+(function () {
+  var img = document.querySelector("#bandeauImpression img");
+  if (img && window.Embleme) img.src = window.Embleme.BANDEAU;
+  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register("sw.js").catch(function () {});
+})();
+</script>
 </body>
 </html>

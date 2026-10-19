@@ -4,17 +4,20 @@
 (function (global) {
   'use strict';
 
-  const CLE_STOCKAGE = 'csPobeData';
+  // circonscription et école peuvent être ouvertes sur le même appareil (même domaine) : données séparées
+  const CLE_STOCKAGE = (global.Config && global.Config.estEcole && global.Config.estEcole()) ? 'ecolePobeData' : 'csPobeData';
   const COLLECTIONS = ['ecoles', 'personnel', 'effectifs', 'infrastructures', 'mobilier',
     'evaluations', 'cep', 'cni', 'rapports', 'courriersArr', 'courriersDep', 'annees',
     'cepSession', 'identite', 'centres', 'compositions', 'apprenants', 'notes', 'fiches', 'certificats', 'visites', 'attributions', 'collegiale', 'unites', 'comite',
-    'presencesApprenants', 'presencesPersonnel', 'joursFeries'];
+    'presencesApprenants', 'presencesPersonnel', 'joursFeries', 'bilans', 'themesDone'];
 
   let data = charger();
 
   function charger() {
     let brut = null;
     try { brut = JSON.parse(localStorage.getItem(CLE_STOCKAGE)); } catch (e) { brut = null; }
+    // école : reprise des données enregistrées par une version précédente sous l'ancienne clé commune
+    if (!brut && CLE_STOCKAGE === 'ecolePobeData') { try { brut = JSON.parse(localStorage.getItem('csPobeData')); } catch (e) { brut = null; } }
     const base = {};
     COLLECTIONS.forEach(c => { base[c] = (brut && Array.isArray(brut[c])) ? brut[c] : []; });
     return base;
@@ -108,6 +111,7 @@
       importation: preparerImport, backup: majEtatStockage
     };
     if (rendus[id]) rendus[id]();
+    else if (global.Extra && global.Extra.pages[id]) global.Extra.pages[id]();
   }
 
   function switchTab(tab) {
@@ -1319,6 +1323,7 @@
       cachet_centre: e.cachet_centre || 'LE DIRECTEUR',
       cachet_bas: e.cachet_bas || e.nom,
       cachet_couleur: e.cachet_couleur || 'BLEU',
+      cachet_forme: e.cachet_forme || 'RECT', cachet_nom: e.cachet_nom || e.directeur || '',
       signature_image: e.signature_image
     };
   }
@@ -1337,16 +1342,20 @@
     openModal('Régler le cachet — ' + (e.nom || ''),
       '<div id="apercuCachet" class="text-center mb-15">' + global.Pieces.cachet(p) + '</div>'
       + '<form onsubmit="saveCachet(event, \'' + cible + '\')"><div class="form-grid">'
-      + '<div class="form-group"><label>Arc du haut</label><input name="cachet_haut" value="'
+      + '<div class="form-group"><label>Texte du haut</label><input name="cachet_haut" value="'
       + echapper(p.cachet_haut) + '" oninput="majApercuCachet()"></div>'
       + '<div class="form-group"><label>Texte central</label><input name="cachet_centre" value="'
       + echapper(p.cachet_centre) + '" oninput="majApercuCachet()"></div>'
-      + '<div class="form-group"><label>Arc du bas</label><input name="cachet_bas" value="'
+      + '<div class="form-group"><label>Texte du bas</label><input name="cachet_bas" value="'
       + echapper(p.cachet_bas) + '" oninput="majApercuCachet()"></div>'
       + (cible === 'CS' || (e.code && !e.type)
         ? '<div class="form-group"><label>Nom et prénoms du responsable</label>'
           + '<input name="responsable" value="' + echapper(e.responsable || '') + '"></div>'
         : '')
+      + '<div class="form-group"><label>Forme du cachet</label><select name="cachet_forme" onchange="majApercuCachet()">'
+      + [['RECT', 'Rectangulaire (armoiries)'], ['ROND', 'Rond']].map(f => '<option value="' + f[0] + '"' + ((p.cachet_forme || 'RECT') === f[0] ? ' selected' : '') + '>' + f[1] + '</option>').join('')
+      + '</select></div>'
+      + '<div class="form-group"><label>Nom du titulaire (sur le cachet)</label><input name="cachet_nom" value="' + echapper(p.cachet_nom || '') + '" oninput="majApercuCachet()"></div>'
       + '<div class="form-group"><label>Encre</label><select name="cachet_couleur" '
       + 'onchange="majApercuCachet()">'
       + ['BLEU', 'ROUGE', 'NOIR'].map(c => '<option value="' + c + '"'
@@ -1366,7 +1375,8 @@
     const lire = n => (form.querySelector('[name=' + n + ']') || {}).value || '';
     zone.innerHTML = global.Pieces.cachet({
       cachet_haut: lire('cachet_haut'), cachet_centre: lire('cachet_centre'),
-      cachet_bas: lire('cachet_bas'), cachet_couleur: lire('cachet_couleur')
+      cachet_bas: lire('cachet_bas'), cachet_couleur: lire('cachet_couleur'),
+      cachet_forme: lire('cachet_forme') || 'RECT', cachet_nom: lire('cachet_nom')
     });
   }
 
@@ -6828,6 +6838,11 @@
     }
     renderDashboard();
   }
+
+  /* Passerelle pour les modules ajoutés (bilans, documents de référence). */
+  global.AppBridge = {
+    get data() { return data; }, saveData, echapper, openModal, closeModal, anneeActive, formatDate, uid
+  };
 
   /* Ce que le HTML appelle directement. */
   Object.assign(global, {

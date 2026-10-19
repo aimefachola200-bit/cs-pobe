@@ -17,7 +17,7 @@
     'examen',            // l'examen blanc et ses centres
     'visites',           // les visites et inspections
     'courriers',         // l'archive du courrier de la circonscription
-    'repertoires',       // les répertoires de la circonscription
+    'repertoires', 'bilans',       // les répertoires de la circonscription
     'maFiche'            // le choix de son école parmi toutes celles de la circonscription ;
                           // en mode ÉCOLE, le bouton du bandeau suffit, l'école étant déjà unique
   ];
