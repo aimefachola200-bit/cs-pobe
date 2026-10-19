@@ -2680,6 +2680,22 @@
   const AGES = ['Moins de 5 ans', '5 ans', '6 ans', '7 ans', '8 ans', '9 ans', '10 ans',
     '11 ans', '12 ans', '13 ans', '14 ans', '15 ans', '16 ans et plus'];
   const CLASSES = ['CI', 'CP', 'CE1', 'CE2', 'CM1', 'CM2'];
+  /* Écoles maternelles : sections (petits, grands), tableau 3 de la fiche de recensement, rentrée et fin d'année. */
+  const SECTIONS_M = [['sp', 'Section des petits (SP)'], ['sg', 'Section des grands (SG)']];
+  const AGES_M = [['m25', 'Moins de 2 ans ½'], ['a25', '2 ans ½ à 3 ans'], ['a3', '3 ans'], ['a4', '4 ans'], ['a5', '5 ans'], ['p5', 'Plus de 5 ans']];
+  const RENTREE_M = [['debut', 'Effectif au début de l’année'], ['besoin', 'Dont enfants à besoin spécifique']];
+  const FIN_M = [['debut', 'Effectif au début de l’année'], ['fin', 'Effectif en fin d’année'], ['besoin', 'Dont enfants à besoin spécifique'], ['aband', 'Abandons']];
+  const estMaternelle = (ecoleId) => { const ec = data.ecoles.find(x => x.id == ecoleId); return !!ec && String(ec.type).indexOf('EM') === 0; };
+  /** Tableau de saisie G / F par section (SP, SG) : lignes [[code, libellé]], noms « prefixe_code_sp_G ». */
+  function grilleSections(prefixe, lignes, valeurs) {
+    return '<div style="overflow-x:auto;"><table style="width:100%;font-size:12px;"><thead><tr><th></th>'
+      + SECTIONS_M.map(([, l]) => '<th colspan="2">' + l + '</th>').join('') + '</tr><tr><th></th>'
+      + SECTIONS_M.map(() => '<th>G</th><th>F</th>').join('') + '</tr></thead><tbody>'
+      + lignes.map(([k, l]) => '<tr><td><b>' + l + '</b></td>' + SECTIONS_M.map(([sc]) => ['G', 'F'].map(sx => {
+        const n = prefixe + '_' + k + '_' + sc + '_' + sx;
+        return '<td><input type="number" min="0" style="width:56px;" name="' + n + '" value="' + (valeurs[n] || 0) + '" oninput="calcTotalEff()"></td>';
+      }).join('')).join('') + '</tr>').join('') + '</tbody></table></div>';
+  }
 
   function renderEffectifs() {
     const ecoleF = document.getElementById('filterEcoleEff').value;
@@ -2721,7 +2737,15 @@
       + champ('Redoublants', 'redoublants', e.redoublants || 0, 'number')
       + champ('Sans acte de naissance', 'sansActe', e.sansActe || 0, 'number')
       + '</div>'
-      + '<div class="form-section mt-15"><h4>Effectif par cours</h4>'
+      + '<div id="blocMat" class="form-section mt-15"><h4>École maternelle : effectifs par section (SP, SG)</h4>'
+      + '<p style="font-size:12px;color:#64748b;" class="mb-15">Fiche de recensement (tableau 3), rapport de rentrée et fiche de fin d’année '
+      + '(« Répartition des enfants par section »). Renseigné, l’effectif par section commande les totaux par sexe.</p>'
+      + '<h5>Effectif par section (recensement)</h5>' + grilleSections('s', [['eff', 'Effectif']], e)
+      + '<h5 class="mt-15">Répartition par âge et par section (tableau 3 de la fiche de recensement)</h5>'
+      + grilleSections('agem', AGES_M, Object.fromEntries(Object.entries(e.agesM || {}).map(([k, v]) => ['agem_' + k, v])))
+      + '<h5 class="mt-15">Rapport de rentrée</h5>' + grilleSections('rent', RENTREE_M, e)
+      + '<h5 class="mt-15">Fiche de fin d’année</h5>' + grilleSections('fin', FIN_M, e) + '</div>'
+      + '<div class="form-section mt-15 blocPrim"><h4>Effectif par cours</h4>'
       + '<p style="font-size:12px;color:#64748b;" class="mb-15">Renseigné, ce tableau '
       + 'commande les totaux par sexe.</p>'
       + '<div style="overflow-x:auto;"><table style="width:100%;font-size:12px;">'
@@ -2733,7 +2757,7 @@
           + (e['c_' + c.toLowerCase() + '_' + sx] || 0) + '" oninput="calcTotalEff()"></td>').join('')
         + '<td id="tc' + sx + '"></td></tr>').join('')
       + '</tbody></table></div></div>'
-      + '<div class="form-section mt-15"><h4>Répartition par âge et par classe (G / F)</h4>'
+      + '<div class="form-section mt-15 blocPrim"><h4>Répartition par âge et par classe (G / F)</h4>'
       + '<p class="mb-15" style="font-size:12px;color:#64748b;">'
       + 'Le total général se met à jour automatiquement : il suit les totaux par sexe, '
       + 'ou la somme du tableau si vous le remplissez.</p>'
@@ -2744,7 +2768,15 @@
       + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
-    calcTotalEff();
+    const selEc = document.querySelector('#modalBody form [name="ecoleId"]');
+    const basculer = () => {
+      const mat = estMaternelle(selEc.value);
+      document.getElementById('blocMat').style.display = mat ? '' : 'none';
+      document.querySelectorAll('#modalBody .blocPrim').forEach(b => { b.style.display = mat ? 'none' : ''; });
+      calcTotalEff();
+    };
+    if (selEc) selEc.addEventListener('change', basculer);
+    basculer();
   }
 
   /* Le tableau par âge fait foi dès qu'il est renseigné ; sinon on additionne
@@ -2775,6 +2807,14 @@
       if (inp.name.endsWith('_G')) sommeG += v; else sommeF += v;
     });
     if (detaille) { sommeG = coursG; sommeF = coursF; }
+    const selEc = form.querySelector('[name="ecoleId"]');
+    if (selEc && estMaternelle(selEc.value)) {
+      /* maternelle : l'effectif par section l'emporte, puis le tableau 3 (âges), puis les totaux saisis */
+      const lire = (sel) => [...form.querySelectorAll(sel)].reduce((a, i) => a + (parseInt(i.value, 10) || 0), 0);
+      const secG = lire('input[name^="s_eff_"][name$="_G"]'), secF = lire('input[name^="s_eff_"][name$="_F"]');
+      const agG = lire('input[name^="agem_"][name$="_G"]'), agF = lire('input[name^="agem_"][name$="_F"]');
+      if (secG + secF > 0) { sommeG = secG; sommeF = secF; } else { sommeG = agG; sommeF = agF; }
+    }
     const tG = document.getElementById('tG');
     const tF = document.getElementById('tF');
     const tT = document.getElementById('tT');
@@ -2788,6 +2828,7 @@
     const obj = { ages: {} };
     new FormData(ev.target).forEach((v, k) => {
       if (k.indexOf('age_') === 0) obj.ages[k.substring(4)] = v;
+      else if (k.indexOf('agem_') === 0) { obj.agesM = obj.agesM || {}; obj.agesM[k.substring(5)] = v; }
       else obj[k] = v;
     });
     enregistrer('effectifs', obj, id, renderEffectifs);

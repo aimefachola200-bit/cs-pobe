@@ -107,6 +107,73 @@
     return s + '</svg>';
   }
 
+
+  /* ---------------- Écoles maternelles par section (SP, SG) ---------------- */
+  const SECS = [['sp', 'SP'], ['sg', 'SG']];
+  const AGES_M = [['m25', 'Moins de 2 ans ½', 2], ['a25', '2 ans ½ à 3 ans', 2.75], ['a3', '3 ans', 3], ['a4', '4 ans', 4], ['a5', '5 ans', 5], ['p5', 'Plus de 5 ans', 6]];
+  const RENTREE_M = [['debut', 'Effectif au début de l’année'], ['besoin', 'Dont enfants à besoin spécifique']];
+  const FIN_M = [['debut', 'Effectif au début de l’année'], ['fin', 'Effectif en fin d’année'], ['besoin', 'Dont enfants à besoin spécifique'], ['aband', 'Abandons']];
+  const estMat = (e) => e && String(e.type).indexOf('EM') === 0;
+  const vg = (o, s) => (s === 'T' ? o.G + o.F : o[s]);
+  function videMat() {
+    const z = () => Object.fromEntries(SECS.map(([k]) => [k, { G: 0, F: 0 }]));
+    return { nb: 0, nRent: 0, nFin: 0, sec: z(), age: Object.fromEntries(AGES_M.map(([k]) => [k, z()])),
+      rent: Object.fromEntries(RENTREE_M.map(([k]) => [k, z()])), fin: Object.fromEntries(FIN_M.map(([k]) => [k, z()])) };
+  }
+  function ajouterMat(m, r) {
+    m.nb++;
+    let rent = 0, fin = 0;
+    for (const [sc] of SECS) for (const sx of SX) {
+      let ag = 0;
+      for (const [k] of AGES_M) { const v = n0((r.agesM || {})[k + '_' + sc + '_' + sx]); m.age[k][sc][sx] += v; ag += v; }
+      const se = n0(r['s_eff_' + sc + '_' + sx]);
+      m.sec[sc][sx] += se || ag;
+      for (const [k] of RENTREE_M) { const v = n0(r['rent_' + k + '_' + sc + '_' + sx]); m.rent[k][sc][sx] += v; rent += v; }
+      for (const [k] of FIN_M) { const v = n0(r['fin_' + k + '_' + sc + '_' + sx]); m.fin[k][sc][sx] += v; fin += v; }
+    }
+    if (rent) m.nRent++;
+    if (fin) m.nFin++;
+  }
+  /** Âge moyen et écart type (population) d'une section ('ENS' = les deux) et d'un sexe. */
+  function statsMat(m, sc, sx) {
+    const n_ = (k) => (sc === 'ENS' ? SECS.reduce((a, [c]) => a + vg(m.age[k][c], sx), 0) : vg(m.age[k][sc], sx));
+    let n = 0, sm = 0; AGES_M.forEach(([k, , a]) => { const v = n_(k); n += v; sm += v * a; });
+    if (!n) return { n: 0, moy: null, et: null };
+    const moy = sm / n; let q = 0; AGES_M.forEach(([k, , a]) => { q += n_(k) * (a - moy) ** 2; });
+    return { n, moy, et: Math.sqrt(q / n) };
+  }
+  const cellsSec = (o) => { let tg = 0, tf = 0; return SECS.map(([c]) => { tg += o[c].G; tf += o[c].F; return `<td>${o[c].G}</td><td>${o[c].F}</td><td class="c"><b>${o[c].G + o[c].F}</b></td>`; }).join('') + `<td class="c">${tg}</td><td class="c">${tf}</td><td class="c"><b>${tg + tf}</b></td>`; };
+  const teteSec = (premiere) => `<thead><tr><th rowspan="2" class="eff-l">${esc(premiere)}</th><th colspan="3">Section des petits (SP)</th><th colspan="3">Section des grands (SG)</th><th colspan="3">TOTAL</th></tr><tr>${'<th>G</th><th>F</th><th>T</th>'.repeat(3)}</tr></thead>`;
+  function tableAgesMat(m) {
+    const COLS = ['sp', 'sg', 'ENS'], SXT = ['G', 'F', 'T'];
+    const n_ = (k, c, x) => (c === 'ENS' ? SECS.reduce((a, [sc]) => a + vg(m.age[k][sc], x), 0) : vg(m.age[k][c], x));
+    const tot = {}; for (const c of COLS) for (const x of SXT) tot[c + x] = AGES_M.reduce((a, [k]) => a + n_(k, c, x), 0);
+    if (!tot.ENST) return '<p class="xnote">Aucune répartition par âge (tableau 3) saisie pour ces écoles.</p>';
+    let s = '<table class="eff-t"><thead><tr><th rowspan="2" class="eff-l">Âge</th><th colspan="3">Section des petits (SP)</th><th colspan="3">Section des grands (SG)</th><th colspan="3">ENSEMBLE</th></tr><tr>'
+      + '<th>G</th><th>F</th><th>T</th>'.repeat(3) + '</tr></thead><tbody>';
+    for (const [k, l] of AGES_M) s += `<tr><td class="eff-l">${esc(l)}</td>` + COLS.map(c => SXT.map(x => { const v = n_(k, c, x); return `<td${x === 'T' || c === 'ENS' ? ' class="c"' : ''}>${v || ''}${pc(v, tot[c + x])}</td>`; }).join('')).join('') + '</tr>';
+    s += '<tr class="tot"><td class="eff-l">Total</td>' + COLS.map(c => SXT.map(x => `<td>${tot[c + x]}${tot[c + x] ? '<br><small class="eff-pc">100 %</small>' : ''}</td>`).join('')).join('') + '</tr>';
+    s += '<tr class="stat"><td class="eff-l">Âge moyen (ans)</td>' + COLS.map(c => SXT.map(x => `<td>${f2(statsMat(m, c, x).moy)}</td>`).join('')).join('') + '</tr>';
+    s += '<tr class="stat"><td class="eff-l">Écart type (ans)</td>' + COLS.map(c => SXT.map(x => `<td>${f2(statsMat(m, c, x).et)}</td>`).join('')).join('') + '</tr>';
+    return s + '</tbody></table><p class="xnote">Pourcentage : part de la catégorie d\'âge dans l\'effectif de la section et du sexe. Âge moyen et écart type : « moins de 2 ans ½ » compté 2 ans, « 2 ans ½ à 3 ans » 2,75 ans, « plus de 5 ans » 6 ans.</p>';
+  }
+  /** Bloc HTML complet d'un secteur (public ou privé) : par section, âges, rentrée, fin d'année, détail par école. */
+  function htmlMat(m, parEcole, detail) {
+    let s = '<h4 class="eff-h">Effectif par section (fiche de recensement)</h4><table class="eff-t">' + teteSec('') + `<tbody><tr class="tot"><td class="eff-l">Total (${m.nb} relevé(s))</td>${cellsSec(m.sec)}</tr></tbody></table>`;
+    s += '<h4 class="eff-h">Catégories d\'âge par section et par sexe (tableau 3)</h4>' + tableAgesMat(m);
+    s += `<h4 class="eff-h">Rapport de rentrée — répartition des enfants par section (${m.nRent} école(s))</h4><table class="eff-t">` + teteSec('Rubrique') + '<tbody>'
+      + RENTREE_M.map(([k, l]) => `<tr${k === 'debut' ? ' class="tot"' : ''}><td class="eff-l">${esc(l)}</td>${cellsSec(m.rent[k])}</tr>`).join('') + '</tbody></table>';
+    s += `<h4 class="eff-h">Fiche de fin d’année — répartition des enfants par section (${m.nFin} école(s))</h4><table class="eff-t">` + teteSec('Rubrique') + '<tbody>'
+      + FIN_M.map(([k, l]) => `<tr${k === 'fin' ? ' class="tot"' : ''}><td class="eff-l">${esc(l)}</td>${cellsSec(m.fin[k])}</tr>`).join('') + '</tbody></table>';
+    if (detail && parEcole.length) {
+      s += '<h4 class="eff-h">Détail par école (recensement · rentrée · fin d’année)</h4><table class="eff-t"><thead><tr><th rowspan="2" class="eff-l">École</th><th colspan="3">Recensement</th><th colspan="3">Rentrée (début)</th><th colspan="3">Fin d’année</th><th rowspan="2">Âge moyen</th></tr><tr>'
+        + '<th>SP</th><th>SG</th><th>T</th>'.repeat(3) + '</tr></thead><tbody>'
+        + parEcole.map(({ e, m: x }) => { const t3 = (o) => `<td>${vg(o.sp, 'T')}</td><td>${vg(o.sg, 'T')}</td><td class="c"><b>${vg(o.sp, 'T') + vg(o.sg, 'T')}</b></td>`;
+          return `<tr><td class="eff-l">${esc(e.nom)}</td>${x.nb ? t3(x.sec) + t3(x.rent.debut) + t3(x.fin.fin) : '<td colspan="9">— relevé absent</td>'}<td>${f2(statsMat(x, 'ENS', 'T').moy)}</td></tr>`; }).join('') + '</tbody></table>';
+    }
+    return s;
+  }
+
   /* ---------------- Tableaux HTML ---------------- */
   /* Âge retenu pour la moyenne et l'écart type : 4 ans pour « moins de 5 ans », 16 pour « 16 ans et plus ». */
   const AGE_NUM = AGES.map((_, i) => i + 4);
@@ -183,7 +250,14 @@
     const matIds = new Set(mat.map(e => String(e.id)));
     const matRecs = App().data.effectifs.filter(r => matIds.has(String(r.ecoleId)) && (r.annee || '') === etat.annee);
     const matT = matRecs.reduce((a, r) => ({ G: a.G + n0(r.totalG), F: a.F + n0(r.totalF) }), { G: 0, F: 0 });
-    return { list, recs, agg, parEcole, matT, nbMat: mat.length };
+    const mats = { pub: { m: videMat(), ecoles: [] }, prv: { m: videMat(), ecoles: [] } };
+    for (const e of mat.sort((a, b) => (a.nom || '').localeCompare(b.nom || '', 'fr'))) {
+      const cible = String(e.type).indexOf('PRIV') > 0 ? mats.prv : mats.pub, x = videMat();
+      const r = matRecs.find(y => String(y.ecoleId) === String(e.id));
+      if (r) { ajouterMat(x, r); ajouterMat(cible.m, r); }
+      cible.ecoles.push({ e, m: x });
+    }
+    return { list, recs, agg, parEcole, matT, nbMat: mat.length, mats };
   }
 
   function rendu() {
@@ -223,7 +297,7 @@
       h('div', null, 'CIRCONSCRIPTION SCOLAIRE DE POBÈ'), h('h3', { style: { margin: '6px 0 0' } }, 'EFFECTIFS DES APPRENANTS PAR ÂGE, CLASSE ET SEXE'), h('div', null, titre + ' — Année scolaire ' + etat.annee));
 
     const blocs = [entete, cartes];
-    if (c.matT.G + c.matT.F > 0) blocs.push(h('p', { class: 'xnote' }, `Écoles maternelles (${c.nbMat}) : ${c.matT.G} garçons, ${c.matT.F} filles — ${c.matT.G + c.matT.F} enfants, non compris dans le tableau ci-dessous (cours CI → CM2).`));
+    if (c.matT.G + c.matT.F > 0) blocs.push(h('p', { class: 'xnote' }, `Écoles maternelles (${c.nbMat}) : ${c.matT.G} garçons, ${c.matT.F} filles — ${c.matT.G + c.matT.F} enfants, non compris dans le tableau par cours (CI → CM2) : voir plus bas « Écoles maternelles par section ».`));
     if (c.agg.horsClasse.G + c.agg.horsClasse.F > 0) blocs.push(h('p', { class: 'xnote' }, `${c.agg.horsClasse.G + c.agg.horsClasse.F} élève(s) figurent dans des relevés sans détail par classe : ils sont comptés dans les totaux mais pas dans le tableau.`));
     blocs.push(h('h3', { class: 'eff-h' }, 'Effectifs par âge, par sexe et par cours (total = somme des écoles et des classes)'), h('div', { class: 'eff-scroll', html: '' }));
     const matrice = h('div', { class: 'eff-scroll' }); matrice.innerHTML = tableMatrice(c.agg);
@@ -250,6 +324,13 @@
         + `<tr class="tot"><td class="eff-l">TOTAL</td><td></td><td>${T.G}</td><td>${T.F}</td><td>${T.T}</td>${['G', 'F', 'T'].map(x => `<td>${f2(statsAge(c.agg, 'ENS', x).moy)}</td>`).join('')}<td>${f2(statsAge(c.agg, 'ENS', 'T').et)}</td><td>${c.agg.nb}/${lignes.length}</td></tr></tbody></table>`;
       blocs.push(h('h3', { class: 'eff-h' }, etat.niveau === 'zone' ? 'Détail par école de la zone' : 'Détail par école'), det);
     }
+    /* écoles maternelles par section, public puis privé à part */
+    for (const [cle, lib, coul] of [['pub', 'publiques', '#006633'], ['prv', 'privées (à part)', '#8e44ad']]) {
+      const o = c.mats[cle]; if (!o.ecoles.length) continue;
+      const bloc = h('div', { class: 'eff-scroll', style: { padding: '6px 10px', borderTop: '4px solid ' + coul } });
+      bloc.innerHTML = htmlMat(o.m, o.ecoles, !estEc && etat.niveau !== 'ecole');
+      blocs.push(h('h3', { class: 'eff-h', style: { color: coul } }, `Écoles maternelles ${lib} : effectifs par section (SP, SG) — ${o.ecoles.length} école(s)`), bloc);
+    }
     if (c.agg.ecarts.length) blocs.push(h('div', { class: 'xnote' }, h('b', null, '⚠ Contrôles de cohérence : '), h('ul', null, c.agg.ecarts.slice(0, 15).map(x => h('li', null, x)))));
     blocs.push(h('p', { class: 'xnote' }, CREDIT));
     page.replaceChildren(h('div', { class: 'page-title' }, '📈 Effectifs par âge, classe et sexe'), barre, actions, ...blocs);
@@ -266,7 +347,9 @@
     const html = `<h3>RÉPUBLIQUE DU BÉNIN — MEMP — Circonscription Scolaire de POBÈ</h3><h3>Effectifs par âge, classe et sexe — ${esc(titre)} — ${esc(etat.annee)}</h3>`
       + `<p>Total : ${T.T} élèves (${T.G} garçons, ${T.F} filles)</p>` + tableMatrice(c.agg) + '<br>' + tableSynthese(c.agg)
       + '<br><table><thead><tr><th class="eff-l">Courbe d\'âge</th>' + AGES.map(a => `<th>${esc(a)}</th>`).join('') + '</tr></thead><tbody>'
-      + ['G', 'F', 'T'].map(s => `<tr><td class="eff-l">${{ G: 'Garçons', F: 'Filles', T: 'Ensemble' }[s]}</td>` + serieAge(c.agg, '')[s].map(v => `<td>${v}</td>`).join('') + '</tr>').join('') + `</tbody></table><p>${CREDIT}</p>`;
+      + ['G', 'F', 'T'].map(s => `<tr><td class="eff-l">${{ G: 'Garçons', F: 'Filles', T: 'Ensemble' }[s]}</td>` + serieAge(c.agg, '')[s].map(v => `<td>${v}</td>`).join('') + '</tr>').join('') + '</tbody></table>'
+      + [['pub', 'publiques'], ['prv', 'privées']].filter(([k]) => c.mats[k].ecoles.length).map(([k, l]) => `<h3>Écoles maternelles ${l} : effectifs par section (SP, SG)</h3>` + htmlMat(c.mats[k].m, c.mats[k].ecoles, etat.niveau !== 'ecole')).join('<br>')
+      + `<p>${CREDIT}</p>`;
     saveFile(new Blob(['﻿<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><style>' + CSS_XLS + '</style></head><body>' + html + '</body></html>'], { type: 'application/vnd.ms-excel' }),
       clean('Effectifs_age_classe_' + titre + '_' + etat.annee) + '.xls');
   }
