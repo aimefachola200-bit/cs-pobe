@@ -225,20 +225,30 @@
   }
 
   /** Le code QR mène à la page de vérification, ou porte le texte tel quel. */
-  function qr(contenu, taille) {
+  function qr(contenu, taille, niveau) {
     if (!global.EG || !global.EG.QR) return '';
     try {
-      return global.EG.QR.svg(contenu, { taille: taille || 96, marge: 2 });
+      return global.EG.QR.svg(contenu, { taille: taille || 96, marge: 2, niveau: niveau || 'M' });
     } catch (e) {
       return '';
     }
   }
 
   /** Bloc complet : code QR, numéro et empreinte, à poser au pied d'une pièce. */
+  /* Page publique de vérification : le code QR y mène, avec le numéro du document, un court résumé et une
+     empreinte calculée sur les deux. La page recalcule l'empreinte : un résumé ou un numéro modifié est détecté. */
+  const PAGE_VERIFICATION = 'https://aimefachola200-bit.github.io/cs-pobe/v.html';
+  function lienVerification(numero, resume) {
+    const r = String(resume || '').replace(/\s+/g, ' ').trim().slice(0, 70);
+    const e = empreinte('CS-POBE|' + numero + '|' + r).slice(0, 8);
+    return PAGE_VERIFICATION + '#n=' + encodeURIComponent(numero) + '&e=' + e
+      + (r ? '&r=' + encodeURIComponent(r).replace(/%20/g, '+') : '');
+  }
+
   function blocVerification(type, cle, contenu) {
     const numero = numeroDocument(type, cle);
     const emp = empreinte(contenu || String(cle));
-    const image = qr('CS-POBE|' + numero + '|' + emp, 92);
+    const image = qr(lienVerification(numero, String(contenu || '').split('|')[0]), 92);
     return '<div class="bloc-verification">'
       + (image ? '<div class="qr">' + image + '</div>' : '')
       + '<div class="petit muet">Document n° <b>' + echapper(numero) + '</b><br>'
@@ -321,6 +331,6 @@
     };
   }
 
-  global.Pieces = { cachet, drapeau, enteteOfficiel, qr, empreinte, numeroDocument, blocVerification,
+  global.Pieces = { cachet, drapeau, enteteOfficiel, qr, empreinte, numeroDocument, blocVerification, lienVerification,
     blocSignature, capturerSignature, COULEURS };
 })(window);

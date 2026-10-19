@@ -39,6 +39,8 @@
     <div class="sidebar">
         <h3>Menu principal</h3>
         <div class="menu-item active" data-page="dashboard"><span class="icon">📊</span> Tableau de bord</div>
+        <div class="menu-item" data-page="alertes"><span class="icon">🚨</span> Alertes</div>
+        <div class="menu-item" data-page="echanges"><span class="icon">🔄</span> Échanges école ↔ CS</div>
         <div class="menu-item" data-page="maFiche"><span class="icon">🧑‍💼</span> Ma fiche école</div>
         <div class="menu-item" data-page="ecoles"><span class="icon">🏫</span> Écoles</div>
         <div class="menu-item" data-page="personnel"><span class="icon">👥</span> Personnel enseignant</div>
@@ -687,7 +689,7 @@
             <div class="page-title">
                 📋 Inscription au CEP
                 <span>
-                    <button class="btn btn-info" data-import="cep">📥 Importer</button>
+                    <button class="btn btn-info" data-import="cep">📥 Liste EDUCMaster / Excel</button>
                     <button class="btn btn-warning" data-export="cep">📤 Télécharger</button>
                     <button class="btn btn-success" onclick="plancheCartes('cep')">🪪 Cartes des candidats</button>
                     <button class="btn btn-primary" onclick="openCepModal()">➕ Inscrire un candidat</button>
@@ -789,6 +791,7 @@
             <div class="page-title">
                 🪪 Fiches de carte d'identité
                 <span>
+                    <button class="btn btn-info" data-import="cni">📥 Liste EDUCMaster</button>
                     <button class="btn btn-success" onclick="plancheCartes('cni')">🪪 Planche des cartes</button>
                     <button class="btn btn-primary" onclick="openCniModal()">➕ Nouvelle fiche</button>
                 </span>
@@ -864,6 +867,8 @@
         <div id="espaces" class="page hidden"></div>
         <div id="synoptique" class="page hidden"></div>
         <div id="whatsapp" class="page hidden"></div>
+        <div id="alertes" class="page hidden"></div>
+        <div id="echanges" class="page hidden"></div>
         <div id="effectifsZone" class="page hidden"></div>
 
         <!-- COURRIERS -->
@@ -1158,6 +1163,10 @@
                     <label>Que voulez-vous importer ?</label>
                     <select id="choixImport"></select>
                 </div>
+                <div class="form-group mb-15">
+                    <label>École des élèves (pour une liste EDUCMaster sans colonne « École »)</label>
+                    <select id="ecoleImportDefaut"></select>
+                </div>
                 <div class="zone-depot" id="zoneDepot">
                     <div style="font-size:36px;">📄</div>
                     <b>Déposez ici votre fichier .xlsx ou .csv</b><br>
@@ -1200,27 +1209,8 @@
 
 <script src="js/config.js"></script>
 <script src="js/embleme.js"></script>
-<script src="js/donnees.js"></script>
-<script src="js/carriere.js"></script>
-<script src="js/calendrier.js"></script>
-<script src="js/presences.js"></script>
-<script src="js/qr.js"></script>
-<script src="js/pieces.js"></script>
-<script src="js/documents-scolaires.js"></script>
-<script src="js/examen.js"></script>
-<script src="js/evaluations.js"></script>
-<script src="js/rapports.js"></script>
-<script src="js/certificats.js"></script>
-<script src="js/tableur.js"></script>
-<script src="js/import.js"></script>
-<script src="data/ref.js"></script>
-<script src="js/bilan-schema.js"></script>
-<script src="js/app.js"></script>
-<script src="js/extra.js"></script>
-<script src="js/effectifs-zone.js"></script>
-<script src="js/synoptique.js"></script>
-<script src="js/espaces.js"></script>
-<script src="js/whatsapp.js"></script>
+<script src="js/stockage.js"></script>
+<script>chargerScripts(["js/donnees.js", "js/carriere.js", "js/calendrier.js", "js/presences.js", "js/qr.js", "js/pieces.js", "js/documents-scolaires.js", "js/examen.js", "js/evaluations.js", "js/rapports.js", "js/certificats.js", "js/tableur.js", "js/import.js", "data/ref.js", "js/bilan-schema.js", "js/app.js", "js/extra.js", "js/effectifs-zone.js", "js/synoptique.js", "js/espaces.js", "js/whatsapp.js", "js/ameliorations.js"]);</script>
 <script>
 (function () {
   var img = document.querySelector("#bandeauImpression img");

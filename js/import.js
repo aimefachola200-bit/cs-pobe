@@ -188,20 +188,53 @@
       ]
     },
     cep: {
-      titre: 'Candidats au CEP',
-      cle: ['nom', 'dateNaiss'],
+      titre: 'Candidats au CEP (liste EDUCMaster ou Excel)',
+      cle: ['nom', 'prenoms', 'dateNaiss'],
       ecole: true,
       champs: [
-        { n: 'nom', l: 'Nom et prénoms', alias: ['nom', 'nom et prenoms', 'nom & prenoms', 'candidat'] },
-        { n: 'sexe', l: 'Sexe', alias: ['sexe'], valeurs: { 'masculin': 'M', 'feminin': 'F', 'féminin': 'F' } },
-        { n: 'dateNaiss', l: 'Date de naissance', alias: ['date de naissance', 'naissance', 'ne le', 'né(e) le'], type: 'date' },
-        { n: 'lieuNaiss', l: 'Lieu de naissance', alias: ['lieu de naissance', 'lieu'] },
-        { n: 'numActe', l: "N° d'acte", alias: ["n° acte", 'numero acte', "numéro d'acte", 'acte'] },
+        { n: 'matricule', l: 'Matricule / N° EDUCMaster', alias: ['matricule', 'matricule educmaster', 'numero educmaster', 'n educmaster', 'educmaster', 'identifiant', 'id eleve', 'matricule eleve'] },
+        { n: 'npi', l: 'NPI', alias: ['npi', 'n p i', 'numero personnel d identification', 'nip'] },
+        { n: 'numTable', l: 'N° de table', alias: ['n de table', 'numero de table', 'n table', 'table'] },
+        { n: 'nom', l: 'Nom (ou nom et prénoms)', alias: ['nom', 'noms', 'nom et prenoms', 'nom & prenoms', 'nom prenoms', 'candidat', 'nom de l eleve', 'nom eleve'] },
+        { n: 'prenoms', l: 'Prénoms', alias: ['prenoms', 'prénoms', 'prenom', 'prénom', 'prenoms de l eleve'] },
+        { n: 'sexe', l: 'Sexe', alias: ['sexe', 'genre', 's'], valeurs: { 'masculin': 'M', 'm': 'M', 'g': 'M', 'garcon': 'M', 'garçon': 'M', 'feminin': 'F', 'féminin': 'F', 'f': 'F', 'fille': 'F' } },
+        { n: 'dateNaiss', l: 'Date de naissance', alias: ['date de naissance', 'naissance', 'ne le', 'né(e) le', 'date naissance', 'date nais'], type: 'date' },
+        { n: 'lieuNaiss', l: 'Lieu de naissance', alias: ['lieu de naissance', 'lieu', 'lieu naissance', 'ne a'] },
+        { n: 'numActe', l: "N° d'acte", alias: ["n° acte", 'numero acte', "numéro d'acte", 'acte', 'n acte de naissance'] },
         { n: 'pere', l: 'Nom du père', alias: ['pere', 'père', 'nom du pere'] },
         { n: 'mere', l: 'Nom de la mère', alias: ['mere', 'mère', 'nom de la mere'] },
-        { n: 'ecoleNom', l: 'École', alias: ['ecole', 'école', 'etablissement'] },
+        { n: 'parent_signataire', l: 'Parent / tuteur', alias: ['parent', 'tuteur', 'nom du parent', 'parent tuteur', 'nom du tuteur'] },
+        { n: 'telParent', l: 'Téléphone du parent', alias: ['telephone du parent', 'contact parent', 'telephone', 'contact', 'tel parent', 'tel'] },
+        { n: 'residence', l: 'Résidence des parents', alias: ['residence', 'residence des parents', 'adresse', 'domicile'] },
+        { n: 'ecoleNom', l: 'École', alias: ['ecole', 'école', 'etablissement', 'ecole de provenance'] },
+        { n: 'option', l: 'Option', alias: ['option'] },
+        { n: 'choix1', l: '1er établissement choisi', alias: ['choix 1', 'choix1', 'etablissement 1', '1er choix'] },
+        { n: 'choix2', l: '2e établissement choisi', alias: ['choix 2', 'choix2', 'etablissement 2', '2e choix'] },
+        { n: 'choix3', l: '3e établissement choisi', alias: ['choix 3', 'choix3', 'etablissement 3', '3e choix'] },
         { n: 'session', l: 'Session', alias: ['session', 'annee', 'année'] },
-        { n: 'centre', l: "Centre d'examen", alias: ['centre', "centre d'examen"] }
+        { n: 'centre', l: "Centre d'examen", alias: ['centre', "centre d'examen", 'centre de composition'] }
+      ]
+    },
+    cni: {
+      titre: "Cartes d'identité scolaires (liste EDUCMaster ou Excel)",
+      cle: ['nom', 'prenoms', 'dateNaiss'],
+      ecole: true,
+      champs: [
+        { n: 'matricule', l: 'Matricule / N° EDUCMaster', alias: ['matricule', 'matricule educmaster', 'numero educmaster', 'educmaster', 'identifiant', 'npi', 'nip'] },
+        { n: 'nom', l: 'Nom (ou nom et prénoms)', alias: ['nom', 'noms', 'nom et prenoms', 'nom & prenoms', 'eleve', 'nom de l eleve'] },
+        { n: 'prenoms', l: 'Prénoms', alias: ['prenoms', 'prénoms', 'prenom', 'prénom'] },
+        { n: 'sexe', l: 'Sexe', alias: ['sexe', 'genre', 's'], valeurs: { 'masculin': 'M', 'm': 'M', 'g': 'M', 'garcon': 'M', 'garçon': 'M', 'feminin': 'F', 'féminin': 'F', 'f': 'F', 'fille': 'F' } },
+        { n: 'dateNaiss', l: 'Date de naissance', alias: ['date de naissance', 'naissance', 'ne le', 'né(e) le', 'date naissance'], type: 'date' },
+        { n: 'lieuNaiss', l: 'Lieu de naissance', alias: ['lieu de naissance', 'lieu', 'lieu naissance'] },
+        { n: 'numActe', l: "N° d'acte", alias: ["n° acte", 'numero acte', 'acte', 'n acte de naissance'] },
+        { n: 'classe', l: 'Classe', alias: ['classe', 'cours', 'niveau'] },
+        { n: 'pere', l: 'Nom du père', alias: ['pere', 'père', 'nom du pere'] },
+        { n: 'mere', l: 'Nom de la mère', alias: ['mere', 'mère', 'nom de la mere'] },
+        { n: 'parent', l: 'Parent à prévenir', alias: ['parent', 'tuteur', 'nom du parent'] },
+        { n: 'telephone', l: 'Téléphone', alias: ['telephone', 'téléphone', 'contact', 'tel', 'telephone du parent'] },
+        { n: 'domicile', l: 'Domicile', alias: ['domicile', 'adresse', 'residence'] },
+        { n: 'nationalite', l: 'Nationalité', alias: ['nationalite', 'nationalité'] },
+        { n: 'ecoleNom', l: 'École', alias: ['ecole', 'école', 'etablissement'] }
       ]
     }
   };
@@ -223,12 +256,13 @@
       modele.champs.forEach(champ => {
         const candidats = [champ.l].concat(champ.alias || []).map(normaliser);
         if (candidats.indexOf(t) >= 0) exact = champ.n;
-        else if (!partiel && candidats.some(c => c && (t.indexOf(c) === 0 || c.indexOf(t) === 0))) {
+        /* rapprochement partiel seulement pour un intitulé d'au moins 3 lettres (« N° » n'est pas « NPI ») */
+        else if (!partiel && t.length >= 3 && candidats.some(c => c && c.length >= 3 && (t.indexOf(c) === 0 || c.indexOf(t) === 0))) {
           partiel = champ.n;
         }
       });
-      return exact || partiel;
-    });
+      return { exact, partiel };
+    }).map((r, i, tous) => r && (r.exact || (r.partiel && !tous.some(x => x && x.exact === r.partiel) ? r.partiel : null)));
   }
 
   function convertir(valeur, champ) {

@@ -19,12 +19,15 @@
     try { if (localStorage.getItem(cle)) return; } catch (e) { return; }
     let n = 0;
     ['ecoles', 'identite'].forEach(c => (data[c] || []).forEach(x => { if ((x.cachet_forme || 'RECT') !== 'ROND') { x.cachet_forme = 'ROND'; n++; } }));
-    try { if (n) localStorage.setItem(CLE_STOCKAGE, JSON.stringify(data)); localStorage.setItem(cle, '1'); } catch (e) { /* mémoire pleine : réessai au prochain démarrage */ }
+    if (n) saveData();
+    try { localStorage.setItem(cle, '1'); } catch (e) { /* réessai au prochain démarrage */ }
   })();
 
   function charger() {
     let brut = null;
-    try { brut = JSON.parse(localStorage.getItem(CLE_STOCKAGE)); } catch (e) { brut = null; }
+    /* IndexedDB (ou, à défaut, localStorage) : lu par stockage.js avant le chargement de ce script */
+    const lu = global.Stockage ? global.Stockage.initial : localStorage.getItem(CLE_STOCKAGE);
+    try { brut = JSON.parse(lu); } catch (e) { brut = null; }
     // école : reprise des données enregistrées par une version précédente sous l'ancienne clé commune
     if (!brut && CLE_STOCKAGE === 'ecolePobeData') { try { brut = JSON.parse(localStorage.getItem('csPobeData')); } catch (e) { brut = null; } }
     const base = {};
@@ -34,7 +37,9 @@
 
   function saveData() {
     try {
-      localStorage.setItem(CLE_STOCKAGE, JSON.stringify(data));
+      const json = JSON.stringify(data);
+      if (global.Stockage) { if (!global.Stockage.ecrire(json)) throw new Error('plein'); }
+      else localStorage.setItem(CLE_STOCKAGE, json);
       return true;
     } catch (e) {
       alert("Enregistrement impossible : la mémoire du navigateur est pleine.\n"
@@ -4838,9 +4843,10 @@
   const titreDir = e => /^(mme|madame|mlle)\b/i.test(String(e.directeur || '').trim()) ? 'LA DIRECTRICE' : 'LE DIRECTEUR';
   const telDirecteur = e => e.contact_directeur || e.telephone || '';
   const dateFr = iso => iso ? formatDate(iso) : '';
-  function qrDoc(type, cle, contenu) {
+  /** Numéro du document et code QR menant à la page publique de vérification (résumé court sur les cartes). */
+  function qrDoc(type, cle, resume, petit) {
     const numero = global.Pieces.numeroDocument(type, cle);
-    return { numero, qr: global.Pieces.qr('CS-POBE|' + numero + '|' + global.Pieces.empreinte(contenu || String(cle)), 96) };
+    return { numero, qr: global.Pieces.qr(global.Pieces.lienVerification(numero, resume), 96, petit ? 'L' : 'M') };
   }
   const cachetDe = e => e && e.id ? (taille => global.Pieces.cachet(porteurEcole(e), { taille })) : null;
 
@@ -4848,7 +4854,7 @@
   function donneesFicheCEP(c) {
     const e = data.ecoles.find(x => x.id == c.ecoleId) || {};
     const naiss = [dateFr(c.dateNaiss), c.lieuNaiss ? 'à ' + c.lieuNaiss : ''].filter(Boolean).join(' ');
-    const v = qrDoc('CEP', c.id, [e.nom, c.nom, c.prenoms, c.dateNaiss].join('|'));
+    const v = qrDoc('CEP', c.id, 'Fiche CEP · ' + nomComplet(c) + ' · ' + (e.nom || ''));
     return {
       emblemes: emblemesDoc(), ddemp: 'PLATEAU', session: c.session || ('JUIN ' + sessionCEP()), centre: c.centre || '',
       option: c.option, commune: /^pob[eè]$/i.test(e.commune || '') || !e.commune ? 'POBÈ' : e.commune, cs: 'POBÈ', ecole: e.nom || '', statut: e.statut || '',
@@ -4899,7 +4905,7 @@
 
   /** Données d'une carte (recto + verso), communes à la carte du candidat et à la carte d'identité scolaire. */
   function donneesCarte(eleve, e, options) {
-    const v = qrDoc(options.type, eleve.id, [e.nom, eleve.nom, eleve.prenoms, eleve.dateNaiss].join('|'));
+    const v = qrDoc(options.type, eleve.id, nomComplet(eleve).slice(0, 26), true);
     const commune = e.commune && String(e.commune).toUpperCase() !== 'POBE' ? e.commune : 'Pobè';
     return {
       emblemes: emblemesDoc(), titre: options.titre, annee: anneeActive(), photo: eleve.photo,
@@ -4917,7 +4923,7 @@
   function carteDuCandidat(c) {
     const e = data.ecoles.find(x => x.id == c.ecoleId) || {};
     return donneesCarte(c, e, {
-      type: 'CARTE-CEP', titre: 'CARTE SCOLAIRE DU CANDIDAT(E)', classe: 'CM2', sig: c.sig_candidat,
+      type: 'CC', titre: 'CARTE SCOLAIRE DU CANDIDAT(E)', classe: 'CM2', sig: c.sig_candidat,
       champs: [['N° DE TABLE', c.numTable], ['MATRICULE', c.matricule], ['NIP', c.npi], ['NOM', String(c.nom || '').toUpperCase()],
         ['PRÉNOM(S)', c.prenoms], ['SEXE', c.sexe], ['DATE DE NAISSANCE', dateFr(c.dateNaiss)], ['LIEU DE NAISSANCE', c.lieuNaiss],
         ["CENTRE D'EXAMEN", c.centre], ['CLASSE', 'CM2']],
@@ -4976,7 +4982,7 @@
 
   function renderCni() {
     document.getElementById('cniTable').innerHTML = data.cni.map(c =>
-      '<tr><td><b>' + echapper(c.nom) + '</b></td><td>' + echapper(c.sexe || '—') + '</td>'
+      '<tr><td><b>' + echapper([c.nom, c.prenoms].filter(Boolean).join(' ')) + '</b>' + (c.classe ? '<br><span class="petit muet">' + echapper(c.classe) + '</span>' : '') + '</td><td>' + echapper(c.sexe || '—') + '</td>'
       + '<td>' + formatDate(c.dateNaiss) + '</td><td>' + echapper(c.lieuNaiss || '—') + '</td>'
       + '<td>' + echapper(c.pere || '—') + '</td><td>' + echapper(c.mere || '—') + '</td>'
       + '<td>' + echapper(nomEcole(c.ecoleId)) + '</td>'
@@ -5038,7 +5044,7 @@
     const mots = String(c.prenoms ? c.nom : (c.nom || '')).trim().split(/\s+/);
     const nom = c.prenoms ? c.nom : mots[0], prenoms = c.prenoms || mots.slice(1).join(' ');
     return donneesCarte(c, e, {
-      type: 'CNI', titre: 'CARTE D’IDENTITÉ SCOLAIRE', classe: c.classe, sig: c.sig_eleve,
+      type: 'CI', titre: 'CARTE D’IDENTITÉ SCOLAIRE', classe: c.classe, sig: c.sig_eleve,
       champs: [['MATRICULE', c.matricule], ['NOM', String(nom || '').toUpperCase()], ['PRÉNOM(S)', prenoms], ['SEXE', c.sexe],
         ['DATE DE NAISSANCE', dateFr(c.dateNaiss)], ['LIEU DE NAISSANCE', c.lieuNaiss], ['N° ACTE NAISS.', c.numActe],
         ['NATIONALITÉ', c.nationalite || 'Béninoise'], ['DOMICILE', c.domicile], ['CLASSE', c.classe]],
@@ -5962,6 +5968,13 @@
     choix.innerHTML = cles
       .map(k => '<option value="' + k + '">' + global.Import.MODELES[k].titre + '</option>').join('');
     if (modele) choix.value = modele;
+    /* École à laquelle rattacher les lignes d'un fichier sans colonne « École » (listes EDUCMaster d'une école) */
+    const defaut = document.getElementById('ecoleImportDefaut');
+    if (defaut) {
+      const poste = ecoleDuPoste();
+      defaut.innerHTML = poste ? '<option value="' + poste.id + '">' + echapper(poste.nom) + '</option>'
+        : '<option value="">— Prise dans la colonne « École » du fichier —</option>' + optionsEcoles();
+    }
     document.getElementById('resultatImport').innerHTML = '';
     importEnCours = null;
   }
@@ -6115,7 +6128,9 @@
 
       /* Rattachement à une école, quand le modèle l'exige. */
       if (modele.ecole) {
-        const ecole = trouverEcole(obj.ecoleNom);
+        const idDefaut = (document.getElementById('ecoleImportDefaut') || {}).value;
+        const ecole = trouverEcole(obj.ecoleNom) || (!obj.ecoleNom || modeleCle === 'cep' || modeleCle === 'cni'
+          ? (data.ecoles.find(x => x.id == idDefaut) || ecoleDuPoste()) : null);
         if (ecole) {
           obj.ecoleId = ecole.id;
           delete obj.ecoleNom;
@@ -6155,6 +6170,10 @@
         const a = global.Import.normaliser(x[cleObjet]);
         const b = global.Import.normaliser(obj[cleObjet]);
         if (modeleCle === 'ecoles' && k === 'code' && (!a || !b)) return true;
+        if (k === 'prenoms' && !a && !b) return true; // listes sans colonne Prénoms
+        if (k === 'nom' && (modeleCle === 'cep' || modeleCle === 'cni') && x.matricule && obj.matricule) {
+          return global.Import.normaliser(x.matricule) === global.Import.normaliser(obj.matricule);
+        }
         return a && b && a === b;
       }));
 
@@ -6607,17 +6626,22 @@
   function majEtatStockage() {
     const total = COLLECTIONS.reduce((s, c) => s + data[c].length, 0);
     let taille = 0;
-    try { taille = (localStorage.getItem(CLE_STOCKAGE) || '').length; } catch (e) { taille = 0; }
-    document.getElementById('etatStockage').textContent =
-      total + ' enregistrement(s) au total, soit environ '
-      + Math.round(taille / 1024) + ' Ko dans ce navigateur.';
+    taille = global.Stockage ? global.Stockage.taille : 0;
+    const zone = document.getElementById('etatStockage');
+    zone.textContent = total + ' enregistrement(s) au total, soit environ '
+      + Math.round(taille / 1024) + ' Ko' + (global.Stockage ? ' (' + global.Stockage.moteur + ')' : '') + ' dans ce navigateur.';
+    if (global.Stockage) global.Stockage.estimation().then(est => {
+      if (est && est.quota) zone.textContent += ' Espace disponible sur l’appareil : environ '
+        + Math.round((est.quota - (est.usage || 0)) / 1048576) + ' Mo.';
+    });
   }
 
   function exportData() {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'cs_pobe_' + new Date().toISOString().slice(0, 10) + '.json';
+    a.download = (global.Config.estEcole() ? 'ecole_pobe_' : 'cs_pobe_') + new Date().toISOString().slice(0, 10) + '.json';
+    try { localStorage.setItem('derniereSauvegarde:' + CLE_STOCKAGE, new Date().toISOString()); } catch (e) { /* rien */ }
     document.body.appendChild(a);
     a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
@@ -6656,7 +6680,7 @@
     if (!confirm('⚠️ Toutes les données seront supprimées. Continuer ?')) return;
     if (!confirm('Êtes-vous vraiment sûr ? Exportez d\'abord vos données si besoin.')) return;
     localStorage.removeItem(CLE_STOCKAGE);
-    location.reload();
+    (global.Stockage ? global.Stockage.effacer() : Promise.resolve()).then(() => location.reload());
   }
 
   /* ---------------- Démarrage ---------------- */
@@ -6932,7 +6956,8 @@
 
   /* Passerelle pour les modules ajoutés (bilans, documents de référence). */
   global.AppBridge = {
-    get data() { return data; }, saveData, echapper, openModal, closeModal, anneeActive, formatDate, uid
+    get data() { return data; }, saveData, echapper, openModal, closeModal, anneeActive, formatDate, uid,
+    COLLECTIONS, exportData, showPage, nomEcole, ecoleDuPoste, porteurEcole, CLE_STOCKAGE
   };
 
   /* Ce que le HTML appelle directement. */

@@ -67,6 +67,61 @@
       .replace(/\{ecole\}/g, x.e.nom || '').replace(/\{groupe\}/g, g.nom || '').replace(/\{lien\}/g, g.lien || '');
   }
 
+  /* ---------------- Messages prêts à l'emploi ---------------- */
+  const MODELES = {
+    convocation: { l: 'Convocation à une réunion', t: '📢 *CONVOCATION — Circonscription Scolaire de Pobè*\n\n{salut}Les directeurs et directrices sont convoqués à {objet} le *{date}* à *{heure}* à {lieu}.\n{precisions}\nPrésence obligatoire.\n\nLe Chef de la Circonscription Scolaire' },
+    rappel: { l: 'Rappel de rapport ou de document', t: '⏰ *RAPPEL — CS Pobè*\n\n{salut}{objet} est attendu au plus tard le *{date}*.\n{precisions}\nMerci d’envoyer aussi le paquet de données de l’application École Pobè (menu « Échanges »).' },
+    paquet: { l: 'Demande du paquet de données', t: '🔄 *CS Pobè — Données des écoles*\n\n{salut}Merci d’envoyer avant le *{date}* le paquet de données de votre école : application École Pobè → « Échanges » → « Envoyer le paquet », puis choisir WhatsApp et ce numéro.\n{precisions}' },
+    resultats: { l: 'Résultats / statistiques', t: '📊 *RÉSULTATS — CS Pobè*\n\n{salut}{objet}\n{precisions}' },
+    information: { l: 'Information générale', t: 'ℹ️ *INFORMATION — CS Pobè*\n\n{salut}{objet}\n{precisions}' },
+    libre: { l: 'Message libre', t: '{salut}{precisions}' }
+  };
+  function texteModele(x) {
+    const g = etat(), m = g.modele || {};
+    const v = k => String(m[k] || '').trim();
+    const dt = v('date') ? new Date(v('date') + 'T00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : '…';
+    return (MODELES[m.type || 'convocation'] || MODELES.information).t
+      .replace('{salut}', x ? 'Bonjour ' + (x.nom || 'Monsieur/Madame le Directeur') + ' (' + x.e.nom + '),\n' : '')
+      .replace('{objet}', v('objet') || '…').replace('{date}', dt).replace('{heure}', v('heure') || '…')
+      .replace('{lieu}', v('lieu') || 'la Circonscription Scolaire').replace('{precisions}', v('precisions'))
+      .replace(/\n{3,}/g, '\n\n').trim();
+  }
+  function lireModele() {
+    const g = etat(); g.modele = g.modele || {};
+    ['type', 'objet', 'date', 'heure', 'lieu', 'precisions'].forEach(k => { const el = document.getElementById('waM_' + k); if (el) g.modele[k] = el.value; });
+    App().saveData();
+    const ap = document.getElementById('waApercu'); if (ap) ap.textContent = texteModele(null);
+  }
+  function messageAuGroupe() {
+    lireModele();
+    global.open('https://wa.me/?text=' + encodeURIComponent(texteModele(null)), '_blank', 'noopener');
+  }
+  function messageSuivant() {
+    lireModele();
+    const g = etat(), cle = JSON.stringify(g.modele);
+    if (!g.serie || g.serie.cle !== cle) g.serie = { cle, faits: {} };
+    const x = filtre().find(y => y.num && y.wa && !g.serie.faits[y.e.id]);
+    if (!x) { avis('Message envoyé à tous les directeurs retenus.'); return; }
+    global.open('https://wa.me/' + x.num + '?text=' + encodeURIComponent(texteModele(x)), '_blank', 'noopener');
+    g.serie.faits[x.e.id] = new Date().toISOString();
+    App().saveData();
+    const reste = filtre().filter(y => y.num && y.wa && !g.serie.faits[y.e.id]).length;
+    avis('Ouvert pour ' + x.e.nom + '. Reste ' + reste + ' directeur(s) : touchez encore « Au suivant ».');
+  }
+  function blocMessages() {
+    const m = etat().modele || {};
+    const champ = (k, l, type) => '<div class="form-group"><label>' + l + '</label><input id="waM_' + k + '" type="' + (type || 'text') + '" value="' + esc(m[k] || '') + '" oninput="WhatsApp.lireModele()"></div>';
+    return '<div class="card wa-carte"><h3 style="color:#006633;margin:0 0 8px;">📨 Messages prêts à l’emploi</h3>'
+      + '<div class="form-grid"><div class="form-group"><label>Modèle</label><select id="waM_type" onchange="WhatsApp.lireModele()">'
+      + Object.keys(MODELES).map(k => '<option value="' + k + '"' + ((m.type || 'convocation') === k ? ' selected' : '') + '>' + MODELES[k].l + '</option>').join('') + '</select></div>'
+      + champ('objet', 'Objet (réunion, document, résultat…)') + champ('date', 'Date', 'date') + champ('heure', 'Heure', 'time') + champ('lieu', 'Lieu')
+      + '<div class="form-group" style="grid-column:1/-1;"><label>Précisions</label><textarea id="waM_precisions" rows="2" oninput="WhatsApp.lireModele()">' + esc(m.precisions || '') + '</textarea></div></div>'
+      + '<pre id="waApercu" class="wa-apercu">' + esc(texteModele(null)) + '</pre>'
+      + '<div class="xbar"><button class="btn btn-success" onclick="WhatsApp.messageAuGroupe()">👥 Envoyer au groupe</button>'
+      + '<button class="btn btn-info" onclick="WhatsApp.messageSuivant()">👤 À chaque directeur — au suivant</button></div>'
+      + '<p class="petit muet">« Envoyer au groupe » ouvre WhatsApp avec le message : choisissez le groupe des directeurs. « À chaque directeur » ouvre une conversation personnalisée par directeur, l’un après l’autre.</p></div>';
+  }
+
   function rendu() {
     const page = document.getElementById('whatsapp');
     if (!page) return;
@@ -100,6 +155,7 @@
       + '<button class="btn btn-warning" onclick="WhatsApp.suivant()">▶️ Inviter le suivant</button>'
       + '<button class="btn btn-info" onclick="WhatsApp.partager()">📤 Partager le lien</button>'
       + '</div></div>'
+      + blocMessages()
       + '<div class="xbar"><select id="waZone" onchange="WhatsApp.tableau()"><option value="">Toutes les zones / arrondissements</option>'
       + zones.map(z => '<option>' + esc(z) + '</option>').join('') + '</select>'
       + '<label class="petit"><input type="checkbox" id="waNonInvites" onchange="WhatsApp.tableau()"> seulement les non invités</label>'
@@ -203,7 +259,8 @@
     else global.open('https://wa.me/?text=' + encodeURIComponent(texte), '_blank', 'noopener');
   }
 
-  global.WhatsApp = { rendu, tableau, enregistrer, basculer, numero, inviter, suivant, reinitialiser, vcf, copier, partager, normaliser };
+  global.WhatsApp = { rendu, tableau, enregistrer, basculer, numero, inviter, suivant, reinitialiser, vcf, copier, partager, normaliser,
+    lireModele, messageAuGroupe, messageSuivant, MODELES, texteModele };
   global.Extra = global.Extra || { pages: {} };
   global.Extra.pages.whatsapp = rendu;
 })(window);
