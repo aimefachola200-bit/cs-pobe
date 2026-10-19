@@ -92,7 +92,9 @@
     const id = 'c' + Math.random().toString(36).slice(2, 8);
 
     const R_EXT = 96, R_INT = 68;
-    const R_HAUT = 74, R_BAS = 78;
+    /* Textes en arc centrés dans l'anneau, à mi-chemin entre le grand cercle et le cercle intérieur */
+    const R_MILIEU = (R_EXT - 2 + R_INT + 0.75) / 2;
+    const R_HAUT = R_MILIEU, R_BAS = R_MILIEU;
 
     /* Le texte est étiré d'une étoile à l'autre : l'arc utile couvre environ
        150 degrés de part et d'autre, soit 2,62 radians. */
@@ -116,7 +118,7 @@
 
     const arc = (idArc, texte, rayon, tailleTexte) =>
       '<text font-size="' + tailleTexte + '" font-weight="700" fill="' + encre + '"'
-      + ' text-anchor="middle" font-family="Helvetica, Arial, sans-serif"'
+      + ' text-anchor="middle" dominant-baseline="central" font-family="Helvetica, Arial, sans-serif"'
       + ' letter-spacing="0.4">'
       + '<textPath href="#' + idArc + '" startOffset="50%" textLength="'
       + etirer(rayon).toFixed(1) + '" lengthAdjust="'
@@ -141,7 +143,7 @@
       + '" stroke-width="1.5"/>'
       + arc('h' + id, haut, R_HAUT, haut.length > 30 ? 10 : 12)
       + arc('b' + id, bas, R_BAS, bas.length > 30 ? 9 : 11)
-      + etoile(100 - R_INT - 12, 100, 6) + etoile(100 + R_INT + 12, 100, 6)
+      + etoile(100 - R_MILIEU, 100, 6) + etoile(100 + R_MILIEU, 100, 6)
       + texteCentral
       + '</svg>';
   }
