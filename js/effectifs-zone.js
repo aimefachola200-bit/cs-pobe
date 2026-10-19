@@ -108,32 +108,52 @@
   }
 
   /* ---------------- Tableaux HTML ---------------- */
+  /* Âge retenu pour la moyenne et l'écart type : 4 ans pour « moins de 5 ans », 16 pour « 16 ans et plus ». */
+  const AGE_NUM = AGES.map((_, i) => i + 4);
+  /** Effectif d'une catégorie d'âge pour un cours ('ENS' = tous) et un sexe ('G', 'F', 'T'). */
+  function nAge(agg, g, c, s) {
+    const cl = c === 'ENS' ? CLASSES : [c];
+    return cl.reduce((a, k) => a + (s === 'T' ? agg.age[g][k].G + agg.age[g][k].F : agg.age[g][k][s]), 0);
+  }
+  /** { n, moy, et } : effectif dont l'âge est connu, âge moyen, écart type (population). */
+  function statsAge(agg, c, s) {
+    let n = 0, sm = 0; AGES.forEach((g, i) => { const v = nAge(agg, g, c, s); n += v; sm += v * AGE_NUM[i]; });
+    if (!n) return { n: 0, moy: null, et: null };
+    const moy = sm / n; let v2 = 0; AGES.forEach((g, i) => { v2 += nAge(agg, g, c, s) * (AGE_NUM[i] - moy) ** 2; });
+    return { n, moy, et: Math.sqrt(v2 / n) };
+  }
+  const f2 = (x) => (x === null || x === undefined ? '—' : x.toFixed(2).replace('.', ','));
+  const pc = (v, t) => (t && v ? '<br><small class="eff-pc">' + (Math.round(v / t * 1000) / 10).toString().replace('.', ',') + ' %</small>' : '');
   function tableMatrice(agg) {
-    const th = (t, extra) => `<th${extra || ''}>${esc(t)}</th>`;
+    const th = (t, extra) => `<th${extra || ''}>${esc(t)}</th>`, COLS = [...CLASSES, 'ENS'], SXT = ['G', 'F', 'T'];
+    const totAge = {}; for (const c of COLS) for (const s of SXT) totAge[c + s] = AGES.reduce((a, g) => a + nAge(agg, g, c, s), 0);
     let s = '<table class="eff-t"><thead><tr><th rowspan="2" class="eff-l">Âge</th>' + CLASSES.map(c => th(c, ' colspan="3"')).join('') + th('ENSEMBLE', ' colspan="3"') + '</tr><tr>'
-      + [...CLASSES, 'ENS'].map(() => '<th>G</th><th>F</th><th>T</th>').join('') + '</tr></thead><tbody>';
+      + COLS.map(() => '<th>G</th><th>F</th><th>T</th>').join('') + '</tr></thead><tbody>';
     for (const g of AGES) {
-      let tg = 0, tf = 0;
-      s += `<tr><td class="eff-l">${esc(g)}</td>` + CLASSES.map(c => { const a = agg.age[g][c]; tg += a.G; tf += a.F; return `<td>${a.G || ''}</td><td>${a.F || ''}</td><td class="c">${a.G + a.F || ''}</td>`; }).join('')
-        + `<td class="c">${tg || ''}</td><td class="c">${tf || ''}</td><td class="c"><b>${tg + tf || ''}</b></td></tr>`;
+      s += `<tr><td class="eff-l">${esc(g)}</td>` + COLS.map(c => SXT.map(x => { const v = nAge(agg, g, c, x); return `<td${x === 'T' || c === 'ENS' ? ' class="c"' : ''}>${x === 'T' && c === 'ENS' ? '<b>' + (v || '') + '</b>' : (v || '')}${pc(v, totAge[c + x])}</td>`; }).join('')).join('') + '</tr>';
     }
+    s += '<tr class="tot"><td class="eff-l">Total réparti par âge</td>' + COLS.map(c => SXT.map(x => `<td>${totAge[c + x]}${totAge[c + x] ? '<br><small class="eff-pc">100 %</small>' : ''}</td>`).join('')).join('') + '</tr>';
+    s += '<tr class="stat"><td class="eff-l">Âge moyen (ans)</td>' + COLS.map(c => SXT.map(x => `<td>${f2(statsAge(agg, c, x).moy)}</td>`).join('')).join('') + '</tr>';
+    s += '<tr class="stat"><td class="eff-l">Écart type (ans)</td>' + COLS.map(c => SXT.map(x => `<td>${f2(statsAge(agg, c, x).et)}</td>`).join('')).join('') + '</tr>';
     let ng = 0, nf = 0;
     s += '<tr class="note"><td class="eff-l">Non réparti par âge (effectif saisi par classe)</td>' + CLASSES.map(c => { const a = agg.non[c]; ng += a.G; nf += a.F; return `<td>${a.G || ''}</td><td>${a.F || ''}</td><td class="c">${a.G + a.F || ''}</td>`; }).join('')
       + `<td class="c">${ng || ''}</td><td class="c">${nf || ''}</td><td class="c">${ng + nf || ''}</td></tr>`;
     let TG = 0, TF = 0;
     s += '<tr class="tot"><td class="eff-l">TOTAL (somme des écoles et des classes)</td>' + CLASSES.map(c => { const t = totClasse(agg, c); TG += t.G; TF += t.F; return `<td>${t.G}</td><td>${t.F}</td><td>${t.T}</td>`; }).join('')
-      + `<td>${TG}</td><td>${TF}</td><td>${TG + TF}</td></tr></tbody></table>`;
+      + `<td>${TG}</td><td>${TF}</td><td>${TG + TF}</td></tr></tbody></table>`
+      + '<p class="xnote">Pourcentage : part de la catégorie d\'âge dans l\'effectif du cours et du sexe (colonne). Âge moyen et écart type : « moins de 5 ans » compté 4 ans, « 16 ans et plus » compté 16 ans.</p>';
     return s;
   }
   function tableSynthese(agg) {
-    let s = '<table class="eff-t"><thead><tr><th class="eff-l">Classe</th><th>Garçons</th><th>Filles</th><th>Total</th><th>% filles</th><th>Âge le plus fréquent</th></tr></thead><tbody>';
+    let s = '<table class="eff-t"><thead><tr><th class="eff-l">Classe</th><th>Garçons</th><th>Filles</th><th>Total</th><th>% filles</th><th>Âge le plus fréquent</th><th>Âge moyen G</th><th>Âge moyen F</th><th>Âge moyen</th><th>Écart type G</th><th>Écart type F</th><th>Écart type</th></tr></thead><tbody>';
+    const st = (c) => ['G', 'F', 'T'].map(x => statsAge(agg, c, x)), cel = (c) => { const a = st(c); return a.map(o => `<td>${f2(o.moy)}</td>`).join('') + a.map(o => `<td>${f2(o.et)}</td>`).join(''); };
     let TG = 0, TF = 0;
     for (const c of CLASSES) {
       const t = totClasse(agg, c); TG += t.G; TF += t.F;
       let best = -1, bi = -1; AGES.forEach((g, i) => { const v = agg.age[g][c].G + agg.age[g][c].F; if (v > best) { best = v; bi = i; } });
-      s += `<tr><td class="eff-l">${c}</td><td>${t.G}</td><td>${t.F}</td><td><b>${t.T}</b></td><td>${t.T ? Math.round(t.F / t.T * 100) + ' %' : '—'}</td><td>${best > 0 ? esc(AGES[bi]) : '—'}</td></tr>`;
+      s += `<tr><td class="eff-l">${c}</td><td>${t.G}</td><td>${t.F}</td><td><b>${t.T}</b></td><td>${t.T ? Math.round(t.F / t.T * 100) + ' %' : '—'}</td><td>${best > 0 ? esc(AGES[bi]) : '—'}</td>${cel(c)}</tr>`;
     }
-    return s + `<tr class="tot"><td class="eff-l">TOTAL</td><td>${TG}</td><td>${TF}</td><td>${TG + TF}</td><td>${TG + TF ? Math.round(TF / (TG + TF) * 100) + ' %' : '—'}</td><td></td></tr></tbody></table>`;
+    return s + `<tr class="tot"><td class="eff-l">TOTAL</td><td>${TG}</td><td>${TF}</td><td>${TG + TF}</td><td>${TG + TF ? Math.round(TF / (TG + TF) * 100) + ' %' : '—'}</td><td></td>${cel('ENS')}</tr></tbody></table>`;
   }
 
   /* ---------------- Page ---------------- */
@@ -223,11 +243,11 @@
 
     /* détail par école (zone / CS) */
     if (!estEc && etat.niveau !== 'ecole') {
-      const lignes = [...c.parEcole.values()].map(o => ({ e: o.ecole, t: totaux(o.agg), nb: o.agg.nb })).sort((a, b) => (a.e.nom || '').localeCompare(b.e.nom || '', 'fr'));
+      const lignes = [...c.parEcole.values()].map(o => ({ e: o.ecole, t: totaux(o.agg), nb: o.agg.nb, agg: o.agg })).sort((a, b) => (a.e.nom || '').localeCompare(b.e.nom || '', 'fr'));
       const det = h('div', { class: 'eff-scroll' });
-      det.innerHTML = '<table class="eff-t"><thead><tr><th class="eff-l">École</th><th>Zone</th><th>Garçons</th><th>Filles</th><th>Total</th><th>Relevé</th></tr></thead><tbody>'
-        + lignes.map(l => `<tr><td class="eff-l">${esc(l.e.nom)}</td><td>${esc(l.e.zone_ped || '—')}</td><td>${l.t.G}</td><td>${l.t.F}</td><td><b>${l.t.T}</b></td><td>${l.nb ? '✔' : '— absent'}</td></tr>`).join('')
-        + `<tr class="tot"><td class="eff-l">TOTAL</td><td></td><td>${T.G}</td><td>${T.F}</td><td>${T.T}</td><td>${c.agg.nb}/${lignes.length}</td></tr></tbody></table>`;
+      det.innerHTML = '<table class="eff-t"><thead><tr><th class="eff-l">École</th><th>Zone</th><th>Garçons</th><th>Filles</th><th>Total</th><th>Âge moyen G</th><th>Âge moyen F</th><th>Âge moyen</th><th>Écart type</th><th>Relevé</th></tr></thead><tbody>'
+        + lignes.map(l => `<tr><td class="eff-l">${esc(l.e.nom)}</td><td>${esc(l.e.zone_ped || '—')}</td><td>${l.t.G}</td><td>${l.t.F}</td><td><b>${l.t.T}</b></td>${['G', 'F', 'T'].map(x => `<td>${f2(statsAge(l.agg, 'ENS', x).moy)}</td>`).join('')}<td>${f2(statsAge(l.agg, 'ENS', 'T').et)}</td><td>${l.nb ? '✔' : '— absent'}</td></tr>`).join('')
+        + `<tr class="tot"><td class="eff-l">TOTAL</td><td></td><td>${T.G}</td><td>${T.F}</td><td>${T.T}</td>${['G', 'F', 'T'].map(x => `<td>${f2(statsAge(c.agg, 'ENS', x).moy)}</td>`).join('')}<td>${f2(statsAge(c.agg, 'ENS', 'T').et)}</td><td>${c.agg.nb}/${lignes.length}</td></tr></tbody></table>`;
       blocs.push(h('h3', { class: 'eff-h' }, etat.niveau === 'zone' ? 'Détail par école de la zone' : 'Détail par école'), det);
     }
     if (c.agg.ecarts.length) blocs.push(h('div', { class: 'xnote' }, h('b', null, '⚠ Contrôles de cohérence : '), h('ul', null, c.agg.ecarts.slice(0, 15).map(x => h('li', null, x)))));
@@ -307,6 +327,8 @@
     #effectifsZone table.eff-t td.c{background:#f1f5f9}
     #effectifsZone table.eff-t tr.tot td{background:#d9eadf;font-weight:700}
     #effectifsZone table.eff-t tr.note td{color:#64748b;font-style:italic}
+    #effectifsZone table.eff-t tr.stat td{background:#fff8e1;font-weight:700}
+    #effectifsZone table.eff-t small.eff-pc{color:#64748b;font-size:10px;font-weight:400;white-space:nowrap}
     #effectifsZone .eff-h{margin:18px 0 4px;color:#006633;font-size:15px}
     #effectifsZone .eff-entete{margin-bottom:12px;font-size:13px}
     #effectifsZone .card-courbe{background:#fff;border-radius:8px;padding:8px;margin:8px 0 12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
