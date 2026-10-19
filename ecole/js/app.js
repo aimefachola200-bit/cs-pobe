@@ -9,7 +9,7 @@
   const COLLECTIONS = ['ecoles', 'personnel', 'effectifs', 'infrastructures', 'mobilier',
     'evaluations', 'cep', 'cni', 'rapports', 'courriersArr', 'courriersDep', 'annees',
     'cepSession', 'identite', 'centres', 'compositions', 'apprenants', 'notes', 'fiches', 'certificats', 'visites', 'attributions', 'collegiale', 'unites', 'comite',
-    'presencesApprenants', 'presencesPersonnel', 'joursFeries', 'bilans', 'themesDone'];
+    'presencesApprenants', 'presencesPersonnel', 'joursFeries', 'bilans', 'themesDone', 'whatsapp'];
 
   let data = charger();
   /* Cachets ronds partout (demande du 19/10/2026) : une seule fois, les cachets réglés en rectangulaire passent en rond ;
@@ -4744,7 +4744,8 @@
       + '<td>' + echapper(c.lieuNaiss || '—') + '</td><td>' + echapper(nomEcole(c.ecoleId)) + '</td>'
       + '<td>' + echapper(c.session || '—') + '</td>'
       + '<td class="actions">'
-      + '<button class="btn btn-info btn-sm" onclick="printFicheCEP(\'' + c.id + '\')">🖨️</button>'
+      + '<button class="btn btn-info btn-sm" title="Fiche d’inscription" onclick="printFicheCEP(\'' + c.id + '\')">🖨️</button>'
+      + '<button class="btn btn-success btn-sm" title="Carte scolaire du candidat" onclick="carteCandidat(\'' + c.id + '\')">🪪</button>'
       + '<button class="btn btn-warning btn-sm" onclick="editCep(\'' + c.id + '\')">✏️</button>'
       + '<button class="btn btn-danger btn-sm" onclick="deleteCep(\'' + c.id + '\')">🗑️</button>'
       + '</td></tr>').join('')
@@ -4790,6 +4791,7 @@
       + champ("N° acte de naissance", 'numActe', c.numActe)
       + champ('Numéro EDUCMaster', 'matricule', c.matricule)
       + champ('NPI', 'npi', c.npi)
+      + champ('N° de table', 'numTable', c.numTable)
       + selecteur('Dispense d’âge', 'dispense_age', ['Non', 'Oui'], c.dispense_age)
       + selecteur('Dispense de sport', 'dispense_sport', ['Non', 'Oui'], c.dispense_sport)
       + '</div>'
@@ -4829,105 +4831,145 @@
     saveData(); renderCep();
   }
 
-  /** La fiche d'inscription au CEP, au format officiel. */
+  /* ---------------- Fiche CEP et cartes : format SCOLARIS / GESCOL ---------------- */
+
+  const D = () => global.DocScol;
+  const emblemesDoc = () => Object.assign({ bandeau: global.Embleme && global.Embleme.BANDEAU }, emblemes());
+  const titreDir = e => /^(mme|madame|mlle)\b/i.test(String(e.directeur || '').trim()) ? 'LA DIRECTRICE' : 'LE DIRECTEUR';
+  const telDirecteur = e => e.contact_directeur || e.telephone || '';
+  const dateFr = iso => iso ? formatDate(iso) : '';
+  function qrDoc(type, cle, contenu) {
+    const numero = global.Pieces.numeroDocument(type, cle);
+    return { numero, qr: global.Pieces.qr('CS-POBE|' + numero + '|' + global.Pieces.empreinte(contenu || String(cle)), 96) };
+  }
+  const cachetDe = e => e && e.id ? (taille => global.Pieces.cachet(porteurEcole(e), { taille })) : null;
+
+  /** Toutes les valeurs de la fiche d'inscription (même dictionnaire que SCOLARIS : donnees_fiche). */
+  function donneesFicheCEP(c) {
+    const e = data.ecoles.find(x => x.id == c.ecoleId) || {};
+    const naiss = [dateFr(c.dateNaiss), c.lieuNaiss ? 'à ' + c.lieuNaiss : ''].filter(Boolean).join(' ');
+    const v = qrDoc('CEP', c.id, [e.nom, c.nom, c.prenoms, c.dateNaiss].join('|'));
+    return {
+      emblemes: emblemesDoc(), ddemp: 'PLATEAU', session: c.session || ('JUIN ' + sessionCEP()), centre: c.centre || '',
+      option: c.option, commune: /^pob[eè]$/i.test(e.commune || '') || !e.commune ? 'POBÈ' : e.commune, cs: 'POBÈ', ecole: e.nom || '', statut: e.statut || '',
+      directeur: e.directeur || '', directeur_tel: telDirecteur(e),
+      nom: c.nom, prenoms: c.prenoms, sexe: c.sexe === 'F' ? 'Féminin' : (c.sexe === 'M' ? 'Masculin' : ''),
+      naissance: naiss, educmaster: c.matricule || '', etab: [c.choix1, c.choix2, c.choix3],
+      residence: c.residence, dispense_age: c.dispense_age === 'Oui', dispense_sport: c.dispense_sport === 'Oui',
+      fait_a: e.commune ? (String(e.commune).toUpperCase() === 'POBE' ? 'Pobè' : e.commune) : 'Pobè',
+      fait_le: new Date().toLocaleDateString('fr-FR'),
+      parent_nom: c.parent_signataire || c.pere || c.mere || '',
+      parent_contact: [c.telParent, c.parente ? '(' + c.parente + ')' : ''].filter(Boolean).join(' '),
+      photo: c.photo, sig_parent: c.sig_parent, sig_candidat: c.sig_candidat, sig_directeur: e.signature_image,
+      certifie_a: 'Pobè', certifie_le: new Date().toLocaleDateString('fr-FR'),
+      titre_directeur: titreDir(e), directeur_nom: e.directeur || '', cachet: cachetDe(e), qr: v.qr, numero: v.numero
+    };
+  }
+
+  const barreDoc = boutons => '<div class="barre-doc">' + boutons.join(' ') + '</div>';
+
+  /** La fiche d'inscription au CEP, au format officiel de SCOLARIS / GESCOL. */
   function printFicheCEP(id) {
     const c = data.cep.find(x => x.id == id);
     if (!c) return;
-    const ecole = data.ecoles.find(x => x.id == c.ecoleId) || {};
-    const nomComplet2 = [c.nom, c.prenoms].filter(Boolean).join(' ');
-    const point = v => v ? echapper(v) : '……………………';
-    const coche = (valeur, attendu) => (String(valeur || '').toUpperCase()
-      === attendu.toUpperCase()) ? '<b>[X]</b>' : '[&nbsp;&nbsp;]';
+    const e = data.ecoles.find(x => x.id == c.ecoleId) || {};
+    const manque = [!c.sig_candidat && 'signature du candidat', !c.sig_parent && 'signature du parent',
+      !e.signature_image && 'signature du directeur (Cachets et signatures)'].filter(Boolean);
+    openModal('Fiche d’inscription au CEP — ' + nomComplet(c),
+      barreDoc([
+        '<button class="btn btn-primary" onclick="DocScol.imprimer()">🖨️ Imprimer / PDF</button>',
+        '<button class="btn btn-info" onclick="signerCEP(\'' + c.id + '\', \'sig_candidat\')">✍️ Signature du candidat</button>',
+        '<button class="btn btn-info" onclick="signerCEP(\'' + c.id + '\', \'sig_parent\')">✍️ Signature du parent</button>',
+        '<button class="btn btn-success" onclick="carteCandidat(\'' + c.id + '\')">🪪 Carte du candidat</button>'])
+      + (manque.length ? '<p class="petit muet">À compléter : ' + manque.join(', ') + '.</p>' : '')
+      + '<div class="zone-feuilles">' + D().ficheCEP(donneesFicheCEP(c)) + '</div>');
+  }
 
-    const ligne = (l, v) => '<tr><td style="background:#f8fafc;width:38%;">' + l
-      + '</td><td>' + v + '</td></tr>';
+  /** Signature digitale (élève, parent) tracée au doigt ou au stylet, apposée sur la fiche et la carte. */
+  function signerCEP(id, champ_) {
+    const c = data.cep.find(x => x.id == id);
+    if (!c) return;
+    const qui = champ_ === 'sig_parent' ? 'Parent — ' + (c.parent_signataire || c.pere || c.mere || nomComplet(c)) : 'Candidat — ' + nomComplet(c);
+    global.Pieces.capturerSignature(qui, c[champ_], image => D().reduireSignature(image).then(img => {
+      if (img) c[champ_] = img; else delete c[champ_];
+      saveData();
+      printFicheCEP(id);
+    }));
+  }
 
-    openModal('Fiche d’inscription au CEP — ' + nomComplet2,
-      '<div class="page-a4">'
-      + enteteDocument({
-        direction: 'DIRECTION DÉPARTEMENTALE DES ENSEIGNEMENTS MATERNEL ET PRIMAIRE : PLATEAU',
-        circonscription: 'SERVICE DES EXAMENS ET CONCOURS' })
-      + '<h2 class="titre-a4">FICHE D’INSCRIPTION À L’EXAMEN DU<br>'
-      + 'CERTIFICAT D’ÉTUDES PRIMAIRES (CEP)</h2>'
-      + '<p class="text-center"><b>OPTION : ' + point(c.option) + '</b>'
-      + '<br><span class="petit muet">Rayer la mention inutile</span></p>'
-      + '<table style="width:100%;font-size:12.5px;"><tbody>'
-      + ligne('SESSION DE', '<b>' + point(c.session) + '</b>')
-      + ligne('CENTRE DE', point(c.centre))
-      + '</tbody></table>'
+  /** Données d'une carte (recto + verso), communes à la carte du candidat et à la carte d'identité scolaire. */
+  function donneesCarte(eleve, e, options) {
+    const v = qrDoc(options.type, eleve.id, [e.nom, eleve.nom, eleve.prenoms, eleve.dateNaiss].join('|'));
+    const commune = e.commune && String(e.commune).toUpperCase() !== 'POBE' ? e.commune : 'Pobè';
+    return {
+      emblemes: emblemesDoc(), titre: options.titre, annee: anneeActive(), photo: eleve.photo,
+      champs: options.champs, admin: [['DDEMP', 'PLATEAU'], ['CS', 'POBÈ'], ['ÉCOLE', e.nom || ''], ['CLASSE', options.classe || '']],
+      sig_eleve: options.sig, sig_dir: e.signature_image, dir_titre: titreDir(e) === 'LA DIRECTRICE' ? 'La Directrice' : 'Le Directeur',
+      dir_nom: e.directeur || '', cachet: cachetDe(e), qr: v.qr, code: v.numero, logo: e.logo,
+      ecole: e.nom || '', sous: [e.statut === 'Public' ? 'Publique' : (e.statut || ''), commune].filter(Boolean).join(' · '),
+      lignes: [['Téléphone', e.telephone], ['DDEMP / CS', 'PLATEAU / POBÈ'], ['Commune', commune],
+        ['Arrondissement', e.arrondissement]].concat(options.verso || []),
+      note: options.note || 'Cette carte est strictement personnelle. En cas de perte, prière de la rapporter à l’école ou à la Circonscription Scolaire de Pobè.',
+      urgence: options.urgence
+    };
+  }
 
-      + '<h4 style="margin-top:12px;color:#006633;">École de provenance</h4>'
-      + '<table style="width:100%;font-size:12.5px;"><tbody>'
-      + ligne('COMMUNE DE', point(ecole.commune))
-      + ligne('CIRCONSCRIPTION SCOLAIRE DE', 'POBÈ')
-      + ligne('NOM DE L’ÉCOLE', '<b>' + point(ecole.nom) + '</b>')
-      + ligne('STATUT DE L’ÉCOLE',
-        coche(String(ecole.statut).indexOf('Public') === 0 ? 'PUBLIQUE' : 'PRIVEE', 'PUBLIQUE')
-        + ' Publique &nbsp;&nbsp; '
-        + coche(String(ecole.statut).indexOf('Public') === 0 ? 'PUBLIQUE' : 'PRIVEE', 'PRIVEE')
-        + ' Privée')
-      + ligne('NOM ET PRÉNOM DU DIRECTEUR OU DE LA DIRECTRICE', point(ecole.directeur))
-      + ligne('CONTACT TÉLÉPHONIQUE DU DIRECTEUR', point(ecole.contact_directeur
-        || ecole.telephone))
-      + '</tbody></table>'
+  function carteDuCandidat(c) {
+    const e = data.ecoles.find(x => x.id == c.ecoleId) || {};
+    return donneesCarte(c, e, {
+      type: 'CARTE-CEP', titre: 'CARTE SCOLAIRE DU CANDIDAT(E)', classe: 'CM2', sig: c.sig_candidat,
+      champs: [['N° DE TABLE', c.numTable], ['MATRICULE', c.matricule], ['NIP', c.npi], ['NOM', String(c.nom || '').toUpperCase()],
+        ['PRÉNOM(S)', c.prenoms], ['SEXE', c.sexe], ['DATE DE NAISSANCE', dateFr(c.dateNaiss)], ['LIEU DE NAISSANCE', c.lieuNaiss],
+        ["CENTRE D'EXAMEN", c.centre], ['CLASSE', 'CM2']],
+      verso: [["Centre d'examen", c.centre], ['Session', c.session]],
+      urgence: [c.parent_signataire || c.pere || c.mere, c.telParent].filter(Boolean).join(' ')
+    });
+  }
 
-      + '<h4 style="margin-top:12px;color:#006633;">Candidat(e)</h4>'
-      + '<div style="display:flex;gap:14px;align-items:flex-start;">'
-      + '<table style="flex:1;font-size:12.5px;"><tbody>'
-      + ligne('NOM <span class="petit muet">(en lettres capitales)</span>',
-        '<b>' + point(String(c.nom || '').toUpperCase()) + '</b>')
-      + ligne('PRÉNOMS <span class="petit muet">(sans abréviation)</span>', point(c.prenoms))
-      + ligne('SEXE', coche(c.sexe, 'M') + ' Masculin &nbsp;&nbsp; '
-        + coche(c.sexe, 'F') + ' Féminin')
-      + ligne('DATE ET LIEU DE NAISSANCE', formatDate(c.dateNaiss) + ' à ' + point(c.lieuNaiss))
-      + ligne('NUMÉRO EDUCMASTER', point(c.matricule))
-      + '</tbody></table>'
-      + '<div class="cadre-photo">' + (c.photo
-        ? '<img src="' + c.photo + '" alt="Photo du candidat">'
-        : '<span>Photo du<br>candidat</span>') + '</div>'
-      + '</div>'
+  function carteCandidat(id) {
+    const c = data.cep.find(x => x.id == id);
+    if (!c) return;
+    const k = carteDuCandidat(c);
+    openModal('Carte scolaire du candidat — ' + nomComplet(c),
+      barreDoc([
+        '<button class="btn btn-primary" onclick="DocScol.imprimer()">🖨️ Imprimer / PDF</button>',
+        '<button class="btn btn-info" onclick="signerCarteCEP(\'' + c.id + '\')">✍️ Signature de l’élève</button>',
+        '<button class="btn btn-warning" onclick="printFicheCEP(\'' + c.id + '\')">📋 Fiche d’inscription</button>'])
+      + '<div class="zone-feuilles">' + D().apercuCarte(k) + '<div class="planche-cachee">'
+      + D().planche([k], 'Carte scolaire du candidat') + '</div></div>'
+      + '<p class="petit muet">À l’impression, le recto et le verso tombent l’un derrière l’autre en recto-verso (bord long), à 100 %.</p>');
+  }
+  function signerCarteCEP(id) {
+    const c = data.cep.find(x => x.id == id);
+    if (!c) return;
+    global.Pieces.capturerSignature('Candidat — ' + nomComplet(c), c.sig_candidat, image => D().reduireSignature(image).then(img => {
+      if (img) c.sig_candidat = img; else delete c.sig_candidat;
+      saveData(); carteCandidat(id);
+    }));
+  }
 
-      + '<h4 style="margin-top:12px;color:#006633;">Établissements choisis</h4>'
-      + '<p class="petit muet">Trois établissements par ordre de préférence, sans abréviation.</p>'
-      + '<table style="width:100%;font-size:12.5px;"><tbody>'
-      + ligne('1', point(c.choix1)) + ligne('2', point(c.choix2))
-      + ligne('3', point(c.choix3))
-      + '</tbody></table>'
-
-      + '<table style="width:100%;font-size:12.5px;margin-top:10px;"><tbody>'
-      + ligne('RÉSIDENCE DES PARENTS', point(c.residence))
-      + ligne('DISPENSE D’ÂGE', coche(c.dispense_age, 'Oui') + ' Oui &nbsp;&nbsp; '
-        + coche(c.dispense_age, 'Non') + ' Non')
-      + ligne('DISPENSE DE SPORT', coche(c.dispense_sport, 'Oui') + ' Oui &nbsp;&nbsp; '
-        + coche(c.dispense_sport, 'Non') + ' Non')
-      + '</tbody></table>'
-
-      + '<p class="mt-15">Je certifie exacts les renseignements ci-dessus.</p>'
-      + '<p>Fait à ' + point(ecole.commune || 'Pobè') + ', le '
-      + new Date().toLocaleDateString('fr-FR') + '.</p>'
-      + '<div class="bloc-visas" style="margin-top:22px;">'
-      + '<div class="visa"><div class="ligne-signature"></div>'
-      + '<div class="petit">NOM, PRÉNOM ET SIGNATURE DU PARENT</div>'
-      + '<div class="petit muet">' + point(c.parent_signataire)
-      + (c.parente ? ' — ' + echapper(c.parente) : '') + '<br>Contact : '
-      + point(c.telParent) + '</div></div>'
-      + '<div class="visa"><div class="ligne-signature"></div>'
-      + '<div class="petit">SIGNATURE DU (DE LA) CANDIDAT(E)</div>'
-      + '<div class="petit muet">' + echapper(nomComplet2) + '</div></div>'
-      + '</div>'
-      + piedDocument(ecole, 'CEP', c.id, 'LE DIRECTEUR')
-      + '<div class="cadre-ddemp"><b>RÉSERVÉ À LA DDEMP</b>'
-      + '<div class="bloc-visas">'
-      + '<div class="visa"><div class="ligne-signature"></div>'
-      + '<div class="petit">DOSSIER ÉTUDIÉ PAR</div></div>'
-      + '<div class="visa"><div class="ligne-signature"></div>'
-      + '<div class="petit">CODE</div></div>'
-      + '<div class="visa"><div class="ligne-signature"></div>'
-      + '<div class="petit">COLLATIONNÉ PAR</div></div>'
-      + '</div></div>'
-      + '</div>'
-      + '<div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer ou enregistrer en PDF</button></div>');
+  /** Planche A4 de 10 cartes pour toute une école (candidats au CEP ou cartes d'identité). */
+  function plancheCartes(quoi) {
+    const liste = quoi === 'cni' ? data.cni : data.cep;
+    const parEcole = {};
+    liste.forEach(x => { if (x.ecoleId) parEcole[x.ecoleId] = (parEcole[x.ecoleId] || 0) + 1; });
+    const ids = Object.keys(parEcole);
+    if (!ids.length) { alert('Aucune fiche rattachée à une école.'); return; }
+    if (ids.length === 1) { plancheEcole(quoi, ids[0]); return; }
+    openModal('Planche de cartes — choisir l’école',
+      '<div class="form-group"><label>École</label><select id="choixPlanche">'
+      + ids.map(i => '<option value="' + i + '">' + echapper(nomEcole(i)) + ' (' + parEcole[i] + ')</option>').join('')
+      + '</select></div><div class="text-center mt-15"><button class="btn btn-primary" onclick="plancheEcole(\'' + quoi
+      + '\', document.getElementById(\'choixPlanche\').value)">🪪 Préparer la planche</button></div>');
+  }
+  function plancheEcole(quoi, ecoleId) {
+    const cartes = quoi === 'cni'
+      ? data.cni.filter(x => x.ecoleId == ecoleId).map(carteIdentite)
+      : data.cep.filter(x => x.ecoleId == ecoleId).sort((a, b) => nomComplet(a).localeCompare(nomComplet(b), 'fr')).map(carteDuCandidat);
+    const titre = (quoi === 'cni' ? 'Cartes d’identité scolaires' : 'Cartes scolaires des candidats') + ' — ' + nomEcole(ecoleId);
+    openModal(titre, barreDoc(['<button class="btn btn-primary" onclick="DocScol.imprimer()">🖨️ Imprimer / PDF</button>'])
+      + '<p class="petit muet">' + cartes.length + ' carte(s), 10 par page A4. Imprimez en recto-verso (bord long) à 100 %, puis découpez le long des repères.</p>'
+      + '<div class="zone-feuilles planche-visible">' + D().planche(cartes, titre) + '</div>');
   }
 
   /* ---------------- Cartes d'identité ---------------- */
@@ -4939,7 +4981,8 @@
       + '<td>' + echapper(c.pere || '—') + '</td><td>' + echapper(c.mere || '—') + '</td>'
       + '<td>' + echapper(nomEcole(c.ecoleId)) + '</td>'
       + '<td class="actions">'
-      + '<button class="btn btn-info btn-sm" onclick="printCNI(\'' + c.id + '\')">🖨️</button>'
+      + '<button class="btn btn-success btn-sm" title="Carte d’identité scolaire" onclick="printCNI(\'' + c.id + '\')">🪪</button>'
+      + '<button class="btn btn-info btn-sm" title="Fiche de demande" onclick="printDemandeCNI(\'' + c.id + '\')">🖨️</button>'
       + '<button class="btn btn-warning btn-sm" onclick="editCni(\'' + c.id + '\')">✏️</button>'
       + '<button class="btn btn-danger btn-sm" onclick="deleteCni(\'' + c.id + '\')">🗑️</button>'
       + '</td></tr>').join('')
@@ -4963,6 +5006,9 @@
       + '<div class="form-group"><label>École</label><select name="ecoleId">'
       + '<option value="">—</option>' + optionsEcoles(c.ecoleId) + '</select></div>'
       + champ('Signes particuliers', 'signes', c.signes)
+      + champ('Classe', 'classe', c.classe)
+      + champ('Matricule EDUCMaster / NPI', 'matricule', c.matricule)
+      + champ('Parent à prévenir (nom)', 'parent', c.parent)
       + '</div>'
       + '<div class="form-group"><label>Photo d’identité</label>'
       + '<p class="petit muet mb-15">La photo est réduite puis conservée sur cet ordinateur ; '
@@ -4986,9 +5032,45 @@
     data.cni = data.cni.filter(x => x.id != id);
     saveData(); renderCni();
   }
+  /** Carte d'identité scolaire au format de la carte SCOLARIS / GESCOL (85,6 × 54 mm). */
+  function carteIdentite(c) {
+    const e = data.ecoles.find(x => x.id == c.ecoleId) || {};
+    const mots = String(c.prenoms ? c.nom : (c.nom || '')).trim().split(/\s+/);
+    const nom = c.prenoms ? c.nom : mots[0], prenoms = c.prenoms || mots.slice(1).join(' ');
+    return donneesCarte(c, e, {
+      type: 'CNI', titre: 'CARTE D’IDENTITÉ SCOLAIRE', classe: c.classe, sig: c.sig_eleve,
+      champs: [['MATRICULE', c.matricule], ['NOM', String(nom || '').toUpperCase()], ['PRÉNOM(S)', prenoms], ['SEXE', c.sexe],
+        ['DATE DE NAISSANCE', dateFr(c.dateNaiss)], ['LIEU DE NAISSANCE', c.lieuNaiss], ['N° ACTE NAISS.', c.numActe],
+        ['NATIONALITÉ', c.nationalite || 'Béninoise'], ['DOMICILE', c.domicile], ['CLASSE', c.classe]],
+      verso: [['Père', c.pere], ['Mère', c.mere], ['Signes particuliers', c.signes || 'Néant']],
+      urgence: [c.parent || c.pere || c.mere, c.telephone].filter(Boolean).join(' ')
+    });
+  }
+  function printCNI(id) {
+    const c = data.cni.find(x => x.id == id);
+    if (!c) return;
+    const k = carteIdentite(c);
+    openModal('Carte d’identité scolaire — ' + (c.nom || ''),
+      barreDoc([
+        '<button class="btn btn-primary" onclick="DocScol.imprimer()">🖨️ Imprimer / PDF</button>',
+        '<button class="btn btn-info" onclick="signerCNI(\'' + c.id + '\')">✍️ Signature de l’élève</button>',
+        '<button class="btn btn-warning" onclick="printDemandeCNI(\'' + c.id + '\')">📋 Fiche de demande</button>'])
+      + '<div class="zone-feuilles">' + D().apercuCarte(k) + '<div class="planche-cachee">'
+      + D().planche([k], 'Carte d’identité scolaire') + '</div></div>'
+      + '<p class="petit muet">À l’impression, le recto et le verso tombent l’un derrière l’autre en recto-verso (bord long), à 100 %.</p>');
+  }
+  function signerCNI(id) {
+    const c = data.cni.find(x => x.id == id);
+    if (!c) return;
+    global.Pieces.capturerSignature('Élève — ' + (c.nom || ''), c.sig_eleve, image => D().reduireSignature(image).then(img => {
+      if (img) c.sig_eleve = img; else delete c.sig_eleve;
+      saveData(); printCNI(id);
+    }));
+  }
+
   /** La fiche de demande de carte d'identité, au même format officiel que
       les autres pièces : en-tête, cadre photo, cachet, signature et QR. */
-  function printCNI(id) {
+  function printDemandeCNI(id) {
     const c = data.cni.find(x => x.id == id);
     if (!c) return;
     const ecole = data.ecoles.find(x => x.id == c.ecoleId) || {};
@@ -6883,7 +6965,8 @@
     chargerPhoto, inscrireAuCEP, editerListeClasse, exporterEducmaster,
     renderNotes, majNote, editerBulletin, editerReleveClasse,
     openCepModal, saveCep, deleteCep, editCep: openCepModal, printFicheCEP,
-    openCniModal, saveCni, deleteCni, editCni: openCniModal, printCNI,
+    openCniModal, saveCni, deleteCni, editCni: openCniModal, printCNI, printDemandeCNI, signerCNI,
+    signerCEP, carteCandidat, signerCarteCEP, plancheCartes, plancheEcole,
     openRapportModal, saveRapport, deleteRapport, editRapport: openRapportModal, viewRapport,
     openCourrierModal, saveCourrier, deleteCourrier,
     editCourrier: (id, type) => openCourrierModal(type, id),

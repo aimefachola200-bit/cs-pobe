@@ -48,6 +48,7 @@ body { background: #f0f2f5; color: #333; }
 .btn-danger:hover { background: #b30d23; }
 .btn-warning { background: #FCD116; color: #1e293b; }
 .btn-info { background: #0369a1; color: white; }
+.btn-success { background: #128C4A; color: white; }
 .btn-sm { padding: 6px 12px; font-size: 12px; }
 
 .table-container { background: white; border-radius: 10px; overflow: hidden;
@@ -315,3 +316,22 @@ table.g textarea { resize: vertical; }
   .xbar .btn { flex: 1 1 auto; justify-content: center; }
   .cam-box { padding: 10px; }
 }
+
+/* Fiche CEP et cartes au format SCOLARIS / GESCOL */
+.barre-doc { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 10px; }
+.zone-feuilles svg.feuille-a4 { width: 100%; max-width: 820px; height: auto; display: block; margin: 0 auto 14px;
+  box-shadow: 0 1px 6px rgba(15, 23, 42, .18); background: #fff; }
+.cartes-apercu { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+.cartes-apercu .carte-face { margin: 0; flex: 1 1 300px; max-width: 460px; }
+.cartes-apercu .carte-face > svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 2px 5px rgba(15, 23, 42, .2)); }
+.cartes-apercu figcaption { text-align: center; font-size: 12px; color: #64748b; margin-top: 4px; }
+.planche-cachee { display: none; }
+@media print { .planche-cachee { display: block !important; } .barre-doc { display: none !important; } }
+
+/* Groupe WhatsApp des directeurs */
+.wa-carte { padding: 16px; margin-bottom: 12px; }
+.wa-chiffres { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 10px; }
+.wa-chiffres div { background: #ecfdf3; border: 1px solid #a6f4c5; border-radius: 10px; padding: 10px; text-align: center; }
+.wa-chiffres b { display: block; font-size: 22px; color: #067647; }
+.wa-chiffres span { font-size: 12px; color: #475467; }
+.wa-etapes { margin: 6px 0 8px 18px; font-size: 13.5px; line-height: 1.5; }

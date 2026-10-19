@@ -72,6 +72,7 @@
         <div class="menu-item" data-page="docsref"><span class="icon">📚</span> Documents de référence</div>
         <div class="menu-item" data-page="espaces"><span class="icon">🏢</span> Espaces des divisions</div>
         <div class="menu-item" data-page="synoptique"><span class="icon">🗂️</span> Tableau synoptique</div>
+        <div class="menu-item" data-page="whatsapp"><span class="icon">💬</span> Groupe WhatsApp des directeurs</div>
         <div class="menu-item" data-page="effectifsZone"><span class="icon">📈</span> Effectifs par âge, zone et CS</div>
         <div class="menu-item" data-page="courriers"><span class="icon">📬</span> Archive courriers</div>
         <div class="menu-item" data-page="analyses"><span class="icon">📈</span> Analyses et écarts</div>
@@ -688,6 +689,7 @@
                 <span>
                     <button class="btn btn-info" data-import="cep">📥 Importer</button>
                     <button class="btn btn-warning" data-export="cep">📤 Télécharger</button>
+                    <button class="btn btn-success" onclick="plancheCartes('cep')">🪪 Cartes des candidats</button>
                     <button class="btn btn-primary" onclick="openCepModal()">➕ Inscrire un candidat</button>
                 </span>
             </div>
@@ -786,7 +788,10 @@
         <div id="cni" class="page hidden">
             <div class="page-title">
                 🪪 Fiches de carte d'identité
-                <button class="btn btn-primary" onclick="openCniModal()">➕ Nouvelle fiche</button>
+                <span>
+                    <button class="btn btn-success" onclick="plancheCartes('cni')">🪪 Planche des cartes</button>
+                    <button class="btn btn-primary" onclick="openCniModal()">➕ Nouvelle fiche</button>
+                </span>
             </div>
             <div class="table-container"><div class="table-scroll"><table>
                 <thead><tr><th>Nom et prénoms</th><th>Sexe</th><th>Naissance</th><th>Lieu</th>
@@ -858,6 +863,7 @@
         <div id="docsref" class="page hidden"></div>
         <div id="espaces" class="page hidden"></div>
         <div id="synoptique" class="page hidden"></div>
+        <div id="whatsapp" class="page hidden"></div>
         <div id="effectifsZone" class="page hidden"></div>
 
         <!-- COURRIERS -->
@@ -1200,6 +1206,7 @@
 <script src="js/presences.js"></script>
 <script src="js/qr.js"></script>
 <script src="js/pieces.js"></script>
+<script src="js/documents-scolaires.js"></script>
 <script src="js/examen.js"></script>
 <script src="js/evaluations.js"></script>
 <script src="js/rapports.js"></script>
@@ -1213,6 +1220,7 @@
 <script src="js/effectifs-zone.js"></script>
 <script src="js/synoptique.js"></script>
 <script src="js/espaces.js"></script>
+<script src="js/whatsapp.js"></script>
 <script>
 (function () {
   var img = document.querySelector("#bandeauImpression img");

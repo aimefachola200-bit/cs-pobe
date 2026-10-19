@@ -18,6 +18,7 @@
     'visites',           // les visites et inspections
     'courriers',         // l'archive du courrier de la circonscription
     'repertoires', 'bilans',       // les répertoires de la circonscription
+    'whatsapp',          // le groupe WhatsApp des directeurs, administré par la circonscription
     'maFiche'            // le choix de son école parmi toutes celles de la circonscription ;
                           // en mode ÉCOLE, le bouton du bandeau suffit, l'école étant déjà unique
   ];
