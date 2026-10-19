@@ -1,5 +1,12 @@
 # Installer l'application
 
+## Installer depuis Internet (le plus simple)
+Adresse : https://aimefachola200-bit.github.io/cs-pobe/  (version École : https://aimefachola200-bit.github.io/cs-pobe/ecole/)
+- **PC (Chrome ou Edge)** : ouvrir l'adresse, puis le bouton « Installer » du bandeau vert en bas de l'écran (ou l'icône ⊕ dans la barre d'adresse). Une icône apparaît sur le bureau et dans le menu Démarrer.
+- **Android (téléphone ou tablette, Chrome)** : ouvrir l'adresse, toucher « Installer » dans le bandeau vert (ou menu ⋮ → « Installer l'application »). L'icône apparaît sur l'écran d'accueil.
+- **iPhone / iPad (Safari)** : ouvrir l'adresse, bouton Partager → « Sur l'écran d'accueil ».
+Après la première ouverture, l'application fonctionne sans Internet. Les mises à jour s'installent quand on l'ouvre avec Internet.
+
 L'application fonctionne dans un navigateur, sans internet une fois installée.
 Les données restent sur l'appareil.
 
