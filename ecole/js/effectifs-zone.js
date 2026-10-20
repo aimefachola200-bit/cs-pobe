@@ -417,5 +417,6 @@
     #effectifsZone .card-courbe{background:#fff;border-radius:8px;padding:8px;margin:8px 0 12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
     @media print{#effectifsZone .card-courbe{break-inside:avoid}#effectifsZone .eff-scroll{overflow:visible}}`));
   global.Extra = global.Extra || { pages: {} }; global.Extra.pages.effectifsZone = rendu;
+  global.EffCourbe = courbe;
   global.EffZone = { calcul, courbe, AGES, CLASSES, serieAge, totaux, ajouter, vide, val };
 })(window);
