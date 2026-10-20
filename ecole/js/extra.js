@@ -4,6 +4,29 @@
    Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33 */
 (function (global) {
   'use strict';
+  /* v1.10.10 — avant / arrière : appareil choisi d'après son nom (front / back, avant / arrière…), sinon le suivant :
+     certains téléphones ignorent « facingMode » et rouvraient toujours la même caméra. */
+  async function camerasVideo() { try { return (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'videoinput'); } catch (e) { return []; } }
+  function choisirCamera(cams, face, actuel) {
+    if (!cams || cams.length < 2) return null;
+    const re = face === 'user' ? /front|avant|user|selfie|facing front/i : /back|arri[eè]re|rear|environment|facing back/i;
+    const parNom = cams.filter(c => re.test(c.label || ''));
+    const autre = parNom.find(c => c.deviceId !== actuel) || parNom[0];
+    if (autre) return autre.deviceId;
+    const i = cams.findIndex(c => c.deviceId === actuel);
+    return cams[(i + 1) % cams.length].deviceId;
+  }
+  async function ouvrirFlux(face, appareil) {
+    const base = { width: { ideal: 1920 }, height: { ideal: 1080 } };
+    const essais = appareil ? [{ deviceId: { exact: appareil } }] : [];
+    essais.push({ facingMode: { exact: face } }, { facingMode: { ideal: face } }, {});
+    let err = null;
+    for (const v of essais) {
+      try { return await navigator.mediaDevices.getUserMedia({ video: Object.assign({}, v, base), audio: false }); } catch (e) { err = e; if (e.name === 'NotAllowedError' || e.name === 'SecurityError') throw e; }
+    }
+    throw err;
+  }
+
   const S = global.BilanSchema, REF = global.REF || {};
   const CREDIT = 'Conçu par Maître Aimé FACHE · Tél. 01 96 51 03 33';
   const App = () => global.AppBridge;
@@ -85,11 +108,13 @@
     const video = h('video', { autoplay: true, playsinline: true, muted: true, class: 'cam-video' });
     const info = h('div', { class: 'cam-info' }, 'Démarrage de la caméra…'), shots = h('div', { class: 'cam-shots' });
     const stop = () => { if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; } };
+    let appareil = '';
     async function start() {
       stop(); info.textContent = 'Démarrage de la caméra…';
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { info.textContent = 'Caméra indisponible ici (adresse https ou localhost requise). Utilisez « Photo native » ou « Galerie ».'; return; }
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+        stream = await ouvrirFlux(facing, appareil);
+        const tr = stream.getVideoTracks()[0], rg = tr && tr.getSettings ? tr.getSettings() : {}; appareil = rg.deviceId || appareil;
         video.srcObject = stream; await video.play().catch(() => {});
         const st = stream.getVideoTracks()[0].getSettings ? stream.getVideoTracks()[0].getSettings() : {};
         if (st.facingMode) facing = st.facingMode === 'user' ? 'user' : 'environment';
@@ -107,7 +132,7 @@
       h('div', { class: 'cam-head' }, h('b', null, '📷 Appareil photo — avant / arrière'), h('button', { class: 'btn btn-danger', onclick: close }, '✖ Terminer')),
       h('div', { class: 'cam-stage' }, video), info,
       h('div', { class: 'cam-bar' },
-        h('button', { class: 'btn btn-info', onclick: () => { facing = facing === 'user' ? 'environment' : 'user'; start(); } }, '🔄 Avant ⇄ Arrière'),
+        h('button', { class: 'btn btn-info', onclick: async () => { facing = facing === 'user' ? 'environment' : 'user'; appareil = choisirCamera(await camerasVideo(), facing, appareil) || ''; start(); } }, '🔄 Avant ⇄ Arrière'),
         h('button', { class: 'btn btn-primary cam-snap', onclick: snap }, '📸 Prendre la photo'),
         h('button', { class: 'btn btn-warning', onclick: async () => { for (const p of await pickImages(facing)) { count++; await onCapture(p.data, p.facing); } } }, '📱 Photo native'),
         h('button', { class: 'btn', onclick: async () => { for (const p of await pickImages()) { count++; shots.append(h('img', { src: p.data, alt: '' })); await onCapture(p.data, 'galerie'); } } }, '🖼 Galerie')),
@@ -419,5 +444,5 @@
 
   /* ---------------- branchement ---------------- */
   const oc = global.closeModal; global.closeModal = function () { document.body.classList.remove('bilan-print'); const xp = document.getElementById('xpage'); if (xp) xp.remove(); return oc && oc.apply(this, arguments); };
-  global.Extra = { pages: { bilans: renderBilans, docsref: renderDocs } };
+  global.Extra = { pages: { bilans: renderBilans, docsref: renderDocs }, openCamera };
 })(window);
