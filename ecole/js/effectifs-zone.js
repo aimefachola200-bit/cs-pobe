@@ -83,29 +83,9 @@
   }
 
   /* ---------------- Courbe (SVG) ---------------- */
-  function courbe({ titre, labels, series, w = 780, h: hh = 330, sousTitre }) {
-    const m = { l: 64, r: 24, t: sousTitre ? 46 : 34, b: 76 }, iw = w - m.l - m.r, ih = hh - m.t - m.b;
-    const max = Math.max(1, ...series.flatMap(s => s.values));
-    const joli = (v) => { const p = Math.pow(10, Math.floor(Math.log10(v))), n = v / p; return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * p; };
-    const top = joli(max), x = (i) => m.l + (labels.length < 2 ? iw / 2 : i * iw / (labels.length - 1)), y = (v) => m.t + ih - (v / top) * ih;
-    let s = `<svg class="courbe" viewBox="0 0 ${w} ${hh}" width="100%" role="img" aria-label="${esc(titre)}" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">`;
-    s += `<text x="${w / 2}" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">${esc(titre)}</text>`;
-    if (sousTitre) s += `<text x="${w / 2}" y="34" text-anchor="middle" font-size="11" fill="#64748b">${esc(sousTitre)}</text>`;
-    for (let k = 0; k <= 5; k++) {
-      const v = top * k / 5, yy = y(v);
-      s += `<line x1="${m.l}" y1="${yy}" x2="${w - m.r}" y2="${yy}" stroke="#e2e8f0"/><text x="${m.l - 6}" y="${yy + 4}" text-anchor="end" font-size="11" fill="#475569">${Math.round(v).toLocaleString('fr-FR')}</text>`;
-    }
-    labels.forEach((l, i) => { s += `<text transform="translate(${x(i)} ${hh - m.b + 16}) rotate(-35)" text-anchor="end" font-size="11" fill="#475569">${esc(l)}</text>`; });
-    s += `<line x1="${m.l}" y1="${m.t}" x2="${m.l}" y2="${m.t + ih}" stroke="#94a3b8"/><line x1="${m.l}" y1="${m.t + ih}" x2="${w - m.r}" y2="${m.t + ih}" stroke="#94a3b8"/>`;
-    series.forEach((se) => {
-      const pts = se.values.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
-      s += `<polyline fill="none" stroke="${se.color}" stroke-width="${se.epais || 2.4}" ${se.tirets ? 'stroke-dasharray="6 4"' : ''} stroke-linejoin="round" points="${pts}"/>`;
-      se.values.forEach((v, i) => { s += `<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="3.4" fill="${se.color}"><title>${esc(se.nom)} — ${esc(labels[i])} : ${v}</title></circle>`; });
-    });
-    let lx = m.l; const ly = hh - 10;
-    series.forEach((se) => { s += `<rect x="${lx}" y="${ly - 9}" width="14" height="4" fill="${se.color}"/><text x="${lx + 19}" y="${ly - 3}" font-size="11" fill="#1e293b">${esc(se.nom)}</text>`; lx += 30 + se.nom.length * 6.4; });
-    return s + '</svg>';
-  }
+  /** Graphique au choix (courbe, histogramme, barres empilées, aires, points) — voir js/graphiques.js. */
+  function courbe(opts) { return global.Graphiques ? global.Graphiques.graphique(opts) : ''; }
+
 
 
   /* ---------------- Écoles maternelles par section (SP, SG) ---------------- */

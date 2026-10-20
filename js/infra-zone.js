@@ -168,10 +168,11 @@
     page.querySelector('[data-act="print"]').addEventListener('click', () => window.print());
     page.querySelector('[data-act="xls"]').addEventListener('click', exporter);
   }
+  function sansGraphiques(html) { const d = document.createElement('div'); d.innerHTML = html; d.querySelectorAll('.gchoix, svg').forEach(x => x.remove()); return d.innerHTML; }
   function exporter() {
     if (!derniere) return;
     const c = derniere, css = 'table{border-collapse:collapse;font-family:Arial;font-size:10pt}td,th{border:1px solid #444;padding:3px 6px;text-align:center}th{background:#006633;color:#fff}.inf-l{text-align:left}.tot td{background:#d9eadf;font-weight:bold}';
-    const corps = ['pub', 'prv'].filter(s => c.tot[s].ecoles).map(s => `<h2>${s === 'pub' ? 'Secteur public' : 'Secteur privé'}</h2>` + htmlSecteur(c, s).replace(/<svg[\s\S]*?<\/svg>/g, '')).join('');
+    const corps = ['pub', 'prv'].filter(s => c.tot[s].ecoles).map(s => `<h2>${s === 'pub' ? 'Secteur public' : 'Secteur privé'}</h2>` + sansGraphiques(htmlSecteur(c, s))).join('');
     const html = `<h3>RÉPUBLIQUE DU BÉNIN — MEMP — Circonscription Scolaire de POBÈ</h3><h3>Infrastructures et mobilier — ${esc(etat.annee)}</h3>${corps}<p>${CREDIT}</p>`;
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob(['﻿<html><head><meta charset="utf-8"><style>' + css + '</style></head><body>' + html + '</body></html>'], { type: 'application/vnd.ms-excel' }));
