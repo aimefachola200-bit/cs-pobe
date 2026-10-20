@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Télécharger les applications — MEMP Bénin</title>
+<meta name="description" content="Toutes les applications : CS Pobè, Mon école, MEMP CP, SCOLARIS, GESCOL — Android et Windows.">
+<link rel="icon" href="icons/icon-192.png">
+<style>
+:root{--vert:#006633;--jaune:#fcd116;--rouge:#e8112d;--encre:#1e293b;--doux:#64748b;--fond:#f4f6f9;--carte:#fff;--ligne:#e2e8f0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--encre:#e5e7eb;--doux:#9ca3af;--fond:#0f172a;--carte:#1e293b;--ligne:#334155}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--fond);color:var(--encre);line-height:1.45}
+.drapeau{display:flex;height:6px}.drapeau i{flex:1}.drapeau i:nth-child(1){background:var(--vert)}.drapeau i:nth-child(2){background:var(--jaune)}.drapeau i:nth-child(3){background:var(--rouge)}
+header{max-width:1000px;margin:0 auto;padding:18px 16px 4px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+header img.qr{width:150px;height:150px;background:#fff;border-radius:8px;padding:4px;border:1px solid var(--ligne)}
+header h1{margin:.1em 0;font-size:1.5rem;color:var(--vert)}
+header p{margin:.2em 0;color:var(--doux)}
+.texte{flex:1;min-width:240px}
+main{max-width:1000px;margin:0 auto;padding:8px 16px 32px}
+.astuce{background:var(--carte);border-left:4px solid var(--jaune);border-radius:8px;padding:10px 14px;margin:10px 0 16px;font-size:.95rem}
+h2{font-size:1.1rem;margin:22px 0 8px;color:var(--vert);border-bottom:2px solid var(--ligne);padding-bottom:4px}
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.app{background:var(--carte);border:1px solid var(--ligne);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.app h3{margin:0;font-size:1.05rem}
+.app p{margin:0;color:var(--doux);font-size:.9rem}
+.btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+a.b{display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border-radius:8px;text-decoration:none;font-weight:600;font-size:.92rem;border:1px solid transparent}
+a.and{background:var(--vert);color:#fff}a.win{background:#1f4e79;color:#fff}a.web{background:transparent;color:var(--encre);border-color:var(--ligne)}
+a.b.conseil{outline:3px solid var(--jaune);outline-offset:1px}
+details{background:var(--carte);border:1px solid var(--ligne);border-radius:10px;padding:10px 14px;margin-top:12px}
+summary{cursor:pointer;font-weight:600}
+ol{padding-left:20px;margin:.4em 0}
+footer{text-align:center;color:var(--doux);font-size:.82rem;padding:16px}
+@media print{a.b{border:1px solid #999}.astuce,details{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="drapeau"><i></i><i></i><i></i></div>
+<header>
+  <img class="qr" src="telecharger-qr.png" alt="QR code de cette page de téléchargement">
+  <div class="texte">
+    <p><b>RÉPUBLIQUE DU BÉNIN — MINISTÈRE DES ENSEIGNEMENTS MATERNEL ET PRIMAIRE</b></p>
+    <h1>Télécharger les applications</h1>
+    <p>Toutes les applications au même endroit, pour téléphone Android et pour PC Windows. Elles fonctionnent sans Internet une fois installées.</p>
+    <p id="appareil"></p>
+  </div>
+</header>
+<main>
+  <div class="astuce">📱 <b>Partager :</b> faites scanner le QR code ci-dessus avec l'appareil photo du téléphone, ou envoyez l'adresse de cette page par WhatsApp.
+    Les liens ne changent jamais : pour mettre à jour, réinstallez par-dessus avec le même bouton (les données sont conservées).</div>
+
+  <h2>Circonscription scolaire de Pobè</h2>
+  <div class="grille">
+    <div class="app"><h3>🏛️ CS Pobè</h3><p>Gestion des écoles, du personnel, des effectifs, des examens et des documents de la circonscription.</p>
+      <div class="btns"><a class="b and" href="https://github.com/aimefachola200-bit/scolaris/releases/download/cs-pobe/CS-Pobe.apk">Android</a>
+        <a class="b win" href="https://github.com/aimefachola200-bit/scolaris/releases/download/cs-pobe/CS-Pobe-Installation.exe">Windows</a>
+        <a class="b web" href="https://aimefachola200-bit.github.io/cs-pobe/">En ligne</a></div></div>
+    <div class="app"><h3>🏫 Mon école Pobè</h3><p>Application des écoles de la CS Pobè : élèves, notes, CEP, cartes, fiches officielles.</p>
+      <div class="btns"><a class="b and" href="https://github.com/aimefachola200-bit/scolaris/releases/download/cs-pobe/Ecole-Pobe.apk">Android</a>
+        <a class="b win" href="https://github.com/aimefachola200-bit/scolaris/releases/download/cs-pobe/Ecole-Pobe-Installation.exe">Windows</a>
+        <a class="b web" href="https://aimefachola200-bit.github.io/cs-pobe/ecole/">En ligne</a></div></div>
+  </div>
+
+  <h2>Conseillers pédagogiques (Application CP du MEMP)</h2>
+  <div class="grille">
+    <div class="app"><h3>🧑‍🏫 MEMP CP</h3><p>Fiches de collecte, effectifs, infrastructures, CEP, activités et bilans des conseillers pédagogiques.</p>
+      <div class="btns"><a class="b and" href="https://github.com/aimefachola200-bit/scolaris/releases/download/memp-cp/MEMP-CP.apk">Android</a>
+        <a class="b win" href="https://github.com/aimefachola200-bit/scolaris/releases/download/memp-cp/MEMP-CP-Installation.exe">Windows</a>
+        <a class="b web" href="https://aimefachola200-bit.github.io/memp-cp-app/">En ligne</a></div></div>
+    <div class="app"><h3>🧑‍🏫 MEMP CP Pobè</h3><p>La même application, préparée avec les écoles, le personnel et les zones de la CS Pobè.</p>
+      <div class="btns"><a class="b and" href="https://github.com/aimefachola200-bit/scolaris/releases/download/memp-cp/MEMP-CP-Pobe.apk">Android</a>
+        <a class="b win" href="https://github.com/aimefachola200-bit/scolaris/releases/download/memp-cp/MEMP-CP-Pobe-Installation.exe">Windows</a>
+        <a class="b web" href="https://aimefachola200-bit.github.io/memp-cp-pobe/">En ligne</a></div></div>
+  </div>
+
+  <h2>SCOLARIS</h2>
+  <div class="grille">
+    <div class="app"><h3>SCOLARIS Public</h3><p>Écoles publiques : gestion complète de l'école.</p>
+      <div class="btns"><a class="b and" href="https://github.com/aimefachola200-bit/scolaris/releases/latest/download/SCOLARIS-Public.apk">Android</a>
+        <a class="b win" href="https://github.com/aimefachola200-bit/scolaris/releases/latest/download/SCOLARIS-Public-Installation.exe">Windows</a></div></div>
+    <div class="app"><h3>SCOLARIS (écoles privées)</h3><p>Écoles privées, avec paiements et trésorerie. Android autonome : fonctionne seul sur le téléphone.</p>
+      <div class="btns"><a class="b and" href="https://github.com/aimefachola200-bit/scolaris/releases/latest/download/SCOLARIS-Autonome.apk">Android</a>
+        <a class="b win" href="https://github.com/aimefachola200-bit/scolaris/releases/latest/download/SCOLARIS-Installation.exe">Windows</a></div></div>
+    <div class="app"><h3>SCOLARIS Circonscription</h3><p>Pour la circonscription scolaire (CCS, CP, divisions).</p>
+      <div class="btns"><a class="b and" href="https://github.com/aimefachola200-bit/scolaris/releases/latest/download/SCOLARIS-Circonscription.apk">Android</a>
+        <a class="b win" href="https://github.com/aimefachola200-bit/scolaris/releases/latest/download/SCOLARIS-Circonscription-Installation.exe">Windows</a></div></div>
+    <div class="app"><h3>SCOLARIS DDEMP</h3><p>Pour la direction départementale.</p>
+      <div class="btns"><a class="b and" href="https://github.com/aimefachola200-bit/scolaris/releases/latest/download/SCOLARIS-DDEMP.apk">Android</a>
+        <a class="b win" href="https://github.com/aimefachola200-bit/scolaris/releases/latest/download/SCOLARIS-DDEMP-Installation.exe">Windows</a></div></div>
+  </div>
+
+  <h2>GESCOL</h2>
+  <div class="grille">
+    <div class="app"><h3>GESCOL Public</h3><p>Écoles publiques.</p>
+      <div class="btns"><a class="b and" href="https://github.com/aimefachola200-bit/gescol/releases/latest/download/GESCOL-Public.apk">Android</a>
+        <a class="b win" href="https://github.com/aimefachola200-bit/gescol/releases/latest/download/GESCOL-Public-Installation.exe">Windows</a></div></div>
+    <div class="app"><h3>GESCOL (écoles privées)</h3><p>Écoles privées. Android autonome : fonctionne seul sur le téléphone.</p>
+      <div class="btns"><a class="b and" href="https://github.com/aimefachola200-bit/gescol/releases/latest/download/GESCOL-Autonome.apk">Android</a>
+        <a class="b win" href="https://github.com/aimefachola200-bit/gescol/releases/latest/download/GESCOL-Installation.exe">Windows</a></div></div>
+    <div class="app"><h3>GESCOL Circonscription</h3><p>Pour la circonscription scolaire.</p>
+      <div class="btns"><a class="b and" href="https://github.com/aimefachola200-bit/gescol/releases/latest/download/GESCOL-Circonscription.apk">Android</a>
+        <a class="b win" href="https://github.com/aimefachola200-bit/gescol/releases/latest/download/GESCOL-Circonscription-Installation.exe">Windows</a></div></div>
+    <div class="app"><h3>GESCOL DDEMP</h3><p>Pour la direction départementale.</p>
+      <div class="btns"><a class="b and" href="https://github.com/aimefachola200-bit/gescol/releases/latest/download/GESCOL-DDEMP.apk">Android</a>
+        <a class="b win" href="https://github.com/aimefachola200-bit/gescol/releases/latest/download/GESCOL-DDEMP-Installation.exe">Windows</a></div></div>
+  </div>
+
+  <details><summary>📱 Installer sur Android</summary><ol>
+    <li>Touchez le bouton <b>Android</b> de l'application voulue : le fichier se télécharge.</li>
+    <li>Ouvrez le fichier téléchargé. Si le téléphone le demande, autorisez l'installation depuis le navigateur.</li>
+    <li>Touchez <b>Installer</b>. À la première photo, autorisez la caméra.</li></ol></details>
+  <details><summary>💻 Installer sur un PC Windows</summary><ol>
+    <li>Cliquez sur le bouton <b>Windows</b> de l'application voulue, puis ouvrez le fichier téléchargé.</li>
+    <li>Si Windows affiche « Windows a protégé votre PC » : <b>Informations complémentaires</b> puis <b>Exécuter quand même</b>.</li>
+    <li>Cochez « Créer une icône sur le Bureau », puis lancez l'application.</li></ol></details>
+</main>
+<footer>Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33</footer>
+<script>
+(function () {
+  var ua = navigator.userAgent || '', android = /Android/i.test(ua), windows = /Windows/i.test(ua);
+  var p = document.getElementById('appareil');
+  if (android) { p.textContent = '📱 Votre appareil : Android — touchez les boutons verts « Android ».'; }
+  else if (windows) { p.textContent = '💻 Votre appareil : PC Windows — cliquez sur les boutons bleus « Windows ».'; }
+  var cls = android ? 'and' : (windows ? 'win' : '');
+  if (cls) { document.querySelectorAll('a.b.' + cls).forEach(function (a) { a.classList.add('conseil'); }); }
+})();
+</script>
+</body>
+</html>
