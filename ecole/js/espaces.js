@@ -25,7 +25,7 @@
   function divisions() {
     const base = [
       { id: 'ccs', icone: '🏛️', titre: 'Chef de la Circonscription Scolaire (C/CS)', role: 'Direction et pilotage de la circonscription : validation des bilans, supervision des divisions, relations avec la DDEMP et les partenaires.',
-        pages: [['synoptique', 'Tableau synoptique'], ['effectifsZone', 'Effectifs par âge'], ['infraZone', 'Infrastructures et mobilier'], ['bilans', 'Bilans'], ['analyses', 'Analyses et écarts'], ['courriers', 'Courriers'], ['identite', 'Cachets et signatures']] },
+        pages: [['synoptique', 'Tableau synoptique'], ['effectifsZone', 'Effectifs par âge'], ['infraZone', 'Infrastructures et mobilier'], ['ecolesZone', 'Écoles : structure et équipements'], ['bilans', 'Bilans'], ['analyses', 'Analyses et écarts'], ['courriers', 'Courriers'], ['identite', 'Cachets et signatures']] },
       { id: 'secretariat', icone: '🗄️', titre: 'Secrétariat', role: "Réception et enregistrement du courrier, archives, tenue des dossiers du personnel et des écoles, préparation des documents à signer.",
         pages: [['courriers', 'Archive courriers'], ['ecoles', 'Écoles'], ['administratif', 'Personnel administratif'], ['fiches', 'Fiches officielles'], ['certificats', 'Certificats'], ['identite', 'Cachets et signatures']] },
       { id: 'cdosp', icone: '🧭', titre: 'Division C/DOSP', role: "Organisation et suivi pédagogique : planification des activités, visites, évaluations, examens blancs et suivi des résultats.",
@@ -33,7 +33,7 @@
     ];
     const zones = [...new Set([...global.Donnees.ZONES, ...App().data.ecoles.map(e => e.zone_ped).filter(Boolean)])];
     zones.forEach(z => base.push({ id: 'cp-' + norm(z).replace(/ /g, ''), cp: true, zone: z, icone: '👥', titre: 'Conseiller pédagogique — ' + z, role: `Animation pédagogique de la ${z} : visites de classe, suivi des unités pédagogiques, effectifs et bilans de la zone.`,
-      pages: [['effectifsZone', 'Effectifs de la zone'], ['infraZone', 'Infrastructures et mobilier'], ['visites', 'Visites'], ['bilans', 'Bilans'], ['synoptique', 'Synoptique'], ['rapports', 'Rapports de rentrée'], ['fiches', 'Fiches officielles']] }));
+      pages: [['effectifsZone', 'Effectifs de la zone'], ['infraZone', 'Infrastructures et mobilier'], ['ecolesZone', 'Écoles : structure et équipements'], ['visites', 'Visites'], ['bilans', 'Bilans'], ['synoptique', 'Synoptique'], ['rapports', 'Rapports de rentrée'], ['fiches', 'Fiches officielles']] }));
     return base;
   }
   const norm = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
