@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vérification d'un document — CS Pobè</title>
+<meta name="description" content="Vérification des documents scolaires émis par les applications de la Circonscription Scolaire de Pobè">
+<style>
+  :root { --vert: #006633; --fond: #f3f6f4; --texte: #17201b; --muet: #5b6b62; --ok: #067647; --ko: #b42318; --carte: #fff; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --fond: #101613; --texte: #e8efe9; --muet: #9fb0a5; --carte: #18211c; --ok: #4ade80; --ko: #f87171; } }
+  :root[data-theme="dark"] { --fond: #101613; --texte: #e8efe9; --muet: #9fb0a5; --carte: #18211c; --ok: #4ade80; --ko: #f87171; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 system-ui, "Segoe UI", Roboto, Arial, sans-serif; background: var(--fond); color: var(--texte); }
+  header { background: var(--vert); color: #fff; padding: 18px 16px; }
+  header h1 { margin: 0; font-size: 19px; } header p { margin: 2px 0 0; opacity: .85; font-size: 14px; }
+  .filet { display: flex; height: 5px; } .filet span { flex: 1; } .filet span:nth-child(1) { background: #008751; } .filet span:nth-child(2) { background: #FCD116; } .filet span:nth-child(3) { background: #E8112D; }
+  main { max-width: 560px; margin: 0 auto; padding: 18px 16px 40px; }
+  .carte { background: var(--carte); border-radius: 14px; padding: 18px; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+  .etat { font-size: 20px; font-weight: 700; margin: 0 0 10px; } .ok { color: var(--ok); } .ko { color: var(--ko); }
+  dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; } dt { color: var(--muet); } dd { margin: 0; font-weight: 600; word-break: break-word; }
+  .note { color: var(--muet); font-size: 14px; margin-top: 16px; }
+</style>
+</head>
+<body>
+<header><h1>Circonscription Scolaire de Pobè</h1><p>Vérification d'un document scolaire</p></header>
+<div class="filet"><span></span><span></span><span></span></div>
+<main><div class="carte" id="res"><p class="etat">Lecture…</p></div>
+<p class="note">Cette page contrôle que le numéro et les informations inscrits dans le code QR n'ont pas été modifiés. Pour une
+confirmation officielle, comparez-les avec le document présenté et, en cas de doute, adressez-vous à l'école émettrice ou à la
+Circonscription Scolaire de Pobè, qui retrouve le document par son numéro.</p></main>
+<script>
+function verifier() {
+  'use strict';
+  function empreinte(texte) {
+    var h1 = 0x811c9dc5, h2 = 0x01000193;
+    for (var i = 0; i < texte.length; i++) {
+      h1 = ((h1 ^ texte.charCodeAt(i)) * 0x01000193) >>> 0;
+      h2 = ((h2 + texte.charCodeAt(i) * (i + 7)) * 0x85ebca6b) >>> 0;
+    }
+    return (h1.toString(36) + h2.toString(36)).slice(0, 11).toUpperCase();
+  }
+  var TYPES = { CEP: "Fiche d'inscription au CEP", CC: 'Carte scolaire du candidat', CI: "Carte d'identité scolaire", CNI: 'Fiche de demande de carte d’identité',
+    CERT: 'Certificat', RELEVE: 'Relevé de notes', ATT: 'Attestation' };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var p = {};
+  location.hash.replace(/^#/, '').split('&').forEach(function (kv) {
+    var i = kv.indexOf('='); if (i > 0) { try { p[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1).replace(/\+/g, ' ')); } catch (e) { /* ignoré */ } }
+  });
+  var res = document.getElementById('res');
+  if (!p.n || !p.e) { res.innerHTML = '<p class="etat ko">Aucun document à vérifier.</p><p>Scannez le code QR imprimé sur la fiche ou la carte.</p>'; return; }
+  var r = p.r || '';
+  var bon = empreinte('CS-POBE|' + p.n + '|' + r).slice(0, 8) === String(p.e).toUpperCase();
+  var type = String(p.n).split('-')[0], annee = String(p.n).split('-')[1] || '';
+  res.innerHTML = (bon ? '<p class="etat ok">✔ Code authentique, non modifié</p>' : '<p class="etat ko">✖ Code altéré : ce document ne doit pas être accepté</p>')
+    + '<dl><dt>Document</dt><dd>' + esc(TYPES[type] || type) + '</dd><dt>Numéro</dt><dd>' + esc(p.n) + '</dd>'
+    + (annee ? '<dt>Émis en</dt><dd>' + esc(annee) + '</dd>' : '') + (r ? '<dt>Concerne</dt><dd>' + esc(r) + '</dd>' : '')
+    + '<dt>Émetteur</dt><dd>Circonscription Scolaire de Pobè — DDEMP Plateau</dd></dl>';
+}
+verifier();
+window.addEventListener('hashchange', verifier);
+</script>
+</body>
+</html>
