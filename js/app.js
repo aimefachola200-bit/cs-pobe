@@ -102,7 +102,38 @@
 
   /* ---------------- Navigation ---------------- */
 
-  function showPage(id, el) {
+  /* Bouton « ← Retour » : page précédente (pile des pages vues), sinon le tableau de bord */
+  const pileRetour = [];
+  function barreRetour() {
+    let b = document.getElementById('barre-retour');
+    if (b) return b;
+    const main = document.querySelector('.main');
+    if (!main) return null;
+    b = document.createElement('div');
+    b.id = 'barre-retour'; b.className = 'barre-retour no-print';
+    b.innerHTML = '<button type="button" class="btn-retour" title="Revenir à la page précédente" aria-label="Revenir à la page précédente">← Retour</button>'
+      + '<button type="button" class="btn-retour sec" title="Tableau de bord" aria-label="Tableau de bord">🏠 Tableau de bord</button>';
+    b.children[0].addEventListener('click', retourPage);
+    b.children[1].addEventListener('click', () => showPage('dashboard', document.querySelector('.menu-item[data-page="dashboard"]')));
+    main.insertBefore(b, main.firstChild);
+    if (!document.getElementById('css-retour')) {
+      const s = document.createElement('style'); s.id = 'css-retour';
+      s.textContent = '.barre-retour{display:flex;gap:6px;margin:0 0 12px;position:sticky;top:0;z-index:5;padding:4px 0;background:inherit}'
+        + '.btn-retour{border:1px solid #cbd5e1;background:#fff;color:#006633;border-radius:18px;padding:5px 12px;font-weight:600;cursor:pointer;font-size:.9em}'
+        + '.btn-retour:hover{background:#e8f3ee}.btn-retour.sec{color:#475467;font-weight:500}@media print{.barre-retour{display:none}}';
+      document.head.appendChild(s);
+    }
+    return b;
+  }
+  function retourPage() {
+    const id = pileRetour.pop() || 'dashboard';
+    showPage(id, document.querySelector('.menu-item[data-page="' + id + '"]'), true);
+  }
+  function showPage(id, el, depuisRetour) {
+    const actuelle = document.querySelector('.page:not(.hidden)');
+    if (!depuisRetour && actuelle && actuelle.id !== id) { pileRetour.push(actuelle.id); if (pileRetour.length > 50) pileRetour.shift(); }
+    const br = barreRetour();
+    if (br) br.style.display = (id === 'dashboard' && !pileRetour.length) ? 'none' : 'flex';
     document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
     const page = document.getElementById(id);
     if (page) page.classList.remove('hidden');
