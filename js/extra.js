@@ -399,10 +399,13 @@
   const doneSet = () => App().data.themesDone;
   const dfmt = (d) => d === 'PM' ? 'À programmer' : (d && d.length === 10 ? new Date(d + 'T12:00').toLocaleDateString('fr-FR') : (d || ''));
 
-  function renderDocs() {
-    const r = document.getElementById('docsref'); if (!r) return; r.replaceChildren();
+  /* v2.0 : appelé aussi par « Documents officiels » (js/officiel.js) pour un onglet, dans son propre conteneur. */
+  let cibleDocs = null;
+  function renderDocs(onglet, cible) {
+    if (onglet) { dtab = onglet; cibleDocs = cible || null; }
+    const r = cibleDocs || document.getElementById('docsref'); if (!r) return; r.replaceChildren();
     const TABSD = [['pdf', '📄 Fiches PDF'], ['themes', '🧭 Thèmes 2026-2027'], ['planif', '📚 Planification CI → CM2'], ['reg', '📕 Règlement intérieur']];
-    r.append(h('div', { class: 'page-title' }, '📚 Documents de référence'),
+    if (!cibleDocs) r.append(h('div', { class: 'page-title' }, '📚 Documents de référence'),
       h('div', { class: 'tabs' }, ...TABSD.map(([k, l]) => h('div', { class: 'tab' + (k === dtab ? ' active' : ''), onclick: () => { dtab = k; renderDocs(); } }, l))));
     const c = h('div'); r.append(c);
     if (dtab === 'pdf') {
@@ -444,5 +447,5 @@
 
   /* ---------------- branchement ---------------- */
   const oc = global.closeModal; global.closeModal = function () { document.body.classList.remove('bilan-print'); const xp = document.getElementById('xpage'); if (xp) xp.remove(); return oc && oc.apply(this, arguments); };
-  global.Extra = { pages: { bilans: renderBilans, docsref: renderDocs }, openCamera };
+  global.Extra = { pages: { bilans: renderBilans, docsref: renderDocs }, renderDocs, openCamera };
 })(window);

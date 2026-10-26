@@ -18,25 +18,11 @@
 <!-- Bandeau officiel : n'apparaît qu'à l'impression, en tête de chaque document -->
 <div id="bandeauImpression"><img alt="Ministère des Enseignements Maternel et Primaire — République du Bénin"></div>
 
-<div class="header">
-    <div>
-        <h1 id="titreApplication">🏫 Circonscription Scolaire de POBÈ</h1>
-        <div class="subtitle" id="sousTitreApplication">Département du Plateau — République du Bénin</div>
-        <button id="btnEcolePoste" class="btn btn-warning btn-sm hidden" style="margin-top:6px;"
-            onclick="editerEcoleDuPoste()">✏️ Modifier ma fiche école</button>
-        <button id="btnChangerEcole" class="btn btn-info btn-sm hidden" style="margin-top:6px;"
-            onclick="changerNomEcoleDuPoste()">🔄 Ce n'est pas mon école ? Choisir son nom</button>
-    </div>
-    <div style="display:flex;align-items:center;gap:12px;">
-        <label style="font-size:13px;">Année scolaire
-            <select id="anneeActive" style="margin-left:6px;padding:4px 8px;border-radius:6px;border:0;"></select>
-        </label>
-        <div id="currentDate"></div>
-    </div>
-</div>
-
+<div id="voile" class="voile" hidden></div>
 <div class="container">
-    <div class="sidebar">
+    <aside class="sidebar" id="lateral" aria-label="Menu principal">
+        <div class="marque"><span class="logo-g" aria-hidden="true">🏫</span><span><span id="marqueNom">CS Pobè</span><small id="marqueSous">Circonscription scolaire</small></span></div>
+        <nav class="menu-defile">
         <h3>Menu principal</h3>
         <div class="menu-item active" data-page="dashboard"><span class="icon">📊</span> Tableau de bord</div>
         <div class="menu-item" data-page="alertes"><span class="icon">🚨</span> Alertes</div>
@@ -71,12 +57,12 @@
         <div class="menu-item" data-page="certificats"><span class="icon">📜</span> Certificats</div>
         <div class="menu-item" data-page="rapports"><span class="icon">📄</span> Rapports de rentrée</div>
         <div class="menu-item" data-page="bilans"><span class="icon">📊</span> Bilans trimestriels / annuel</div>
-        <div class="menu-item" data-page="docsref"><span class="icon">📚</span> Documents de référence</div>
+        <div class="menu-item" data-page="docsref"><span class="icon">📚</span> Documents officiels</div>
         <div class="menu-item" data-page="espaces"><span class="icon">🏢</span> Espaces des divisions</div>
         <div class="menu-item" data-page="synoptique"><span class="icon">🗂️</span> Tableau synoptique</div>
         <div class="menu-item" data-page="whatsapp"><span class="icon">💬</span> Groupe WhatsApp des directeurs</div>
         <div class="menu-item" data-page="effectifsZone"><span class="icon">📈</span> Effectifs par âge, zone et CS</div>
-        <div class="menu-item" data-page="cepZone"><span class="icon">🎓</span> CEP : candidats et réussite (fiches)</div>
+        <div class="menu-item" data-page="cepZone"><span class="icon">🎓</span> Candidats au CEP par sexe</div>
         <div class="menu-item" data-page="ecolesZone"><span class="icon">🏫</span> Écoles : structure et équipements</div>
         <div class="menu-item" data-page="infraZone"><span class="icon">🏗️</span> Infrastructures et mobilier (consolidé)</div>
         <div class="menu-item" data-page="courriers"><span class="icon">📬</span> Archive courriers</div>
@@ -86,9 +72,24 @@
         <div class="menu-item" data-page="joursFeries"><span class="icon">📆</span> Jours fériés</div>
         <div class="menu-item" data-page="importation"><span class="icon">📥</span> Import Excel</div>
         <div class="menu-item" data-page="backup"><span class="icon">💾</span> Sauvegarde</div>
-        <div class="credit-concepteur">Conçu par<br><b>Maître Aimé FACHE</b><br>Tél. 01 96 51 03 33</div>
-    </div>
+        </nav>
+        <div class="lateral-pied">Version <b class="version-app">—</b><br>Conception : Maître Aimé FACHE · 01 96 51 03 33</div>
+    </aside>
 
+    <div class="zone">
+    <header class="header barre-haut">
+        <button id="btnMenu" class="btn-menu" type="button" aria-expanded="false" aria-controls="lateral" aria-label="Ouvrir le menu">☰</button>
+        <div class="bh-titre">
+            <strong id="titreApplication">🏫 Circonscription Scolaire de POBÈ</strong>
+            <span class="subtitle" id="sousTitreApplication">Département du Plateau — République du Bénin</span>
+        </div>
+        <div class="bh-droite">
+            <button id="btnEcolePoste" class="btn btn-warning btn-sm hidden" onclick="editerEcoleDuPoste()">✏️ Ma fiche école</button>
+            <button id="btnChangerEcole" class="btn btn-info btn-sm hidden" onclick="changerNomEcoleDuPoste()">🔄 Ce n'est pas mon école ?</button>
+            <label class="bh-annee">Année <select id="anneeActive" aria-label="Année scolaire"></select></label>
+            <span id="currentDate" class="bh-date"></span>
+        </div>
+    </header>
     <div class="main">
         <!-- TABLEAU DE BORD -->
         <div id="dashboard" class="page">
@@ -249,7 +250,7 @@
                 <input type="text" id="searchCarriere" placeholder="🔍 Nom ou matricule de l'agent...">
                 <select id="filterEcoleCarriere"><option value="">Toutes écoles</option></select>
             </div>
-            <div style="display:grid;grid-template-columns:minmax(280px,360px) 1fr;gap:20px;">
+            <div class="grille-carriere" style="display:grid;grid-template-columns:minmax(280px,360px) 1fr;gap:20px;">
                 <div class="table-container" style="max-height:70vh;overflow:auto;">
                     <div style="padding:12px;background:#006633;color:white;"><b>Agents</b></div>
                     <table><tbody id="listeCarriere"></tbody></table>
@@ -1201,6 +1202,7 @@
             </div>
         </div>
     </div>
+    </div><!-- .zone -->
 </div>
 
 <div id="modal" class="modal">
@@ -1216,12 +1218,33 @@
 <script src="js/config.js"></script>
 <script src="js/embleme.js"></script>
 <script src="js/stockage.js"></script>
-<script>chargerScripts(["js/donnees.js", "js/carriere.js", "js/calendrier.js", "js/presences.js", "js/qr.js", "js/pieces.js", "js/documents-scolaires.js", "js/examen.js", "js/evaluations.js", "js/rapports.js", "js/certificats.js", "js/tableur.js", "js/import.js", "data/ref.js", "js/bilan-schema.js", "js/app.js", "js/extra.js", "js/graphiques.js", "js/effectifs-zone.js", "js/infra-zone.js", "js/ecoles-zone.js", "js/cep-zone.js", "js/synoptique.js", "js/espaces.js", "js/whatsapp.js", "js/ameliorations.js"]);</script>
+<script>chargerScripts(["js/donnees.js", "js/carriere.js", "js/calendrier.js", "js/presences.js", "js/qr.js", "js/pieces.js", "js/documents-scolaires.js", "js/examen.js", "js/evaluations.js", "js/rapports.js", "js/certificats.js", "js/tableur.js", "js/import.js", "data/ref.js", "js/bilan-schema.js", "js/app.js", "js/extra.js", "js/graphiques.js", "js/effectifs-zone.js", "js/infra-zone.js", "js/ecoles-zone.js", "js/cep-zone.js", "js/synoptique.js", "js/espaces.js", "js/whatsapp.js", "js/ameliorations.js", "data/officiel.js", "data/documents-officiels.js", "js/officiel.js", "js/tableau-bord.js", "js/interface.js"]);</script>
 <script>
 (function () {
   var img = document.querySelector("#bandeauImpression img");
   if (img && window.Embleme) img.src = window.Embleme.BANDEAU;
-  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register("sw.js").catch(function () {});
+  /* Mise à jour automatique : vérifiée au démarrage, au retour sur l'application et toutes les 30 minutes
+     (sans cache HTTP) ; une nouvelle version installée recharge la page (sauf si une fenêtre est ouverte). */
+  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(function (reg) {
+        var verifier = function () { reg.update().catch(function () {}); };
+        verifier(); setInterval(verifier, 30 * 60 * 1000);
+        document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") verifier(); });
+      }).catch(function () {});
+    });
+    var dejaControle = !!navigator.serviceWorker.controller, recharge = false;
+    navigator.serviceWorker.addEventListener("controllerchange", function () {
+      if (!dejaControle) { dejaControle = true; return; }
+      if (recharge) return;
+      var occupe = document.querySelector(".modal.active") || document.querySelector(".cam-overlay");
+      if (occupe) { window.__majEnAttente = true; return; }
+      recharge = true; location.reload();
+    });
+    document.addEventListener("click", function (e) {
+      if (window.__majEnAttente && e.target.closest && e.target.closest(".close-btn")) { window.__majEnAttente = false; setTimeout(function () { location.reload(); }, 300); }
+    });
+  }
 })();
 </script>
 <!-- Installation de l'application (PC, Android, tablette, iPhone / iPad) -->

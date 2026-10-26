@@ -69,7 +69,7 @@
     + (o.trait ? ' stroke="' + o.trait + '" stroke-width="' + n2(o.ep || 0.6) + '"' : '') + '/>';
   const ligne = (x1, y1, x2, y2, coul, ep, tirets) => '<line x1="' + n2(x1) + '" y1="' + n2(y1) + '" x2="' + n2(x2)
     + '" y2="' + n2(y2) + '" stroke="' + coul + '" stroke-width="' + n2(ep) + '"' + (tirets ? ' stroke-dasharray="' + tirets + '"' : '') + '/>';
-  const image = (src, x, y, w, h, aligne) => src ? '<image href="' + esc(src) + '" x="' + n2(x) + '" y="' + n2(y) + '" width="'
+  const image = (src, x, y, w, h, aligne) => src ? '<image href="' + esc(src) + '" xlink:href="' + esc(src) + '" x="' + n2(x) + '" y="' + n2(y) + '" width="'
     + n2(w) + '" height="' + n2(h) + '" preserveAspectRatio="' + (aligne || 'xMidYMid') + ' meet"/>' : '';
   /** Un SVG (cachet, QR) imbriqué à la position voulue. */
   function imbriquer(svg, x, y, w, h) {
@@ -234,7 +234,7 @@
     }
     s += texte(297.6, 828, 'Conception : Maître Aimé FACHE', { famille: HELV, taille: 6, italique: true, couleur: '#8A93A6', ancre: 'c' });
 
-    return '<svg class="feuille-a4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595.28 841.89"'
+    return '<svg class="feuille-a4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 595.28 841.89"'
       + ' role="img" aria-label="Fiche d\'inscription au CEP">' + rect(0, 0, 595.28, 841.89, { fond: '#fff' }) + s + '</svg>';
   }
 
@@ -332,11 +332,11 @@
   }
 
   const carteSVG = (contenu, x, y) => '<svg x="' + n2(x || 0) + '" y="' + n2(y || 0) + '" width="' + CW + '" height="' + CH
-    + '" viewBox="0 0 ' + CW + ' ' + CH + '" xmlns="http://www.w3.org/2000/svg">' + contenu + '</svg>';
+    + '" viewBox="0 0 ' + CW + ' ' + CH + '" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' + contenu + '</svg>';
 
   /** Aperçu écran d'une carte : recto et verso côte à côte. */
   function apercuCarte(k) {
-    const f = (c, t) => '<figure class="carte-face"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + CW + ' ' + CH + '">' + c
+    const f = (c, t) => '<figure class="carte-face"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ' + CW + ' ' + CH + '">' + c
       + '</svg><figcaption>' + t + '</figcaption></figure>';
     return '<div class="cartes-apercu">' + f(carteRecto(k), 'Recto') + f(carteVerso(k), 'Verso') + '</div>';
   }
@@ -358,7 +358,7 @@
           [[x - 3, y + CH, x - 1, y + CH], [x, y + CH + 1, x, y + CH + 3], [x + CW + 1, y, x + CW + 3, y], [x + CW, y - 3, x + CW, y - 1]]
             .forEach(([a, b, c, e]) => { s += ligne(a, b, c, e, '#98A2B3', 0.12); });
         });
-        pages.push('<svg class="feuille-a4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 297">' + s + '</svg>');
+        pages.push('<svg class="feuille-a4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 210 297">' + s + '</svg>');
       });
     }
     return pages.join('');

@@ -43,5 +43,7 @@
     return !estEcole() || PAGES_CIRCONSCRIPTION.indexOf(page) < 0;
   }
 
-  global.Config = { MODE, estEcole, pageVisible, PAGES_CIRCONSCRIPTION, TITRES };
+  /* Version de l'application (affichée dans le menu ; lue aussi pour l'APK et l'installateur Windows). */
+  global.Config = { MODE, estEcole, pageVisible, PAGES_CIRCONSCRIPTION, TITRES,
+    version: '2.0.0' };
 })(window);

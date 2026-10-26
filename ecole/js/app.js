@@ -9,7 +9,8 @@
   const COLLECTIONS = ['ecoles', 'personnel', 'effectifs', 'infrastructures', 'mobilier',
     'evaluations', 'cep', 'cni', 'rapports', 'courriersArr', 'courriersDep', 'annees',
     'cepSession', 'identite', 'centres', 'compositions', 'apprenants', 'notes', 'fiches', 'certificats', 'visites', 'attributions', 'collegiale', 'unites', 'comite',
-    'presencesApprenants', 'presencesPersonnel', 'joursFeries', 'bilans', 'themesDone', 'whatsapp'];
+    'presencesApprenants', 'presencesPersonnel', 'joursFeries', 'bilans', 'themesDone', 'whatsapp',
+    'officielPerso'];   // v2.0 : emplois du temps et planifications modifiés sur cet appareil
 
   let data = charger();
   /* Cachets ronds partout (demande du 19/10/2026) : une seule fois, les cachets réglés en rectangulaire passent en rond ;
@@ -228,6 +229,7 @@
   /* ---------------- Tableau de bord ---------------- */
 
   function renderDashboard() {
+    if (global.TableauBord) { try { global.TableauBord.render(); return; } catch (e) { console.error(e); } }
     const compte = t => data.ecoles.filter(e => e.type === t).length;
     const totalEleves = data.effectifs.reduce((s, e) =>
       s + (parseInt(e.total, 10) || ((parseInt(e.totalG, 10) || 0) + (parseInt(e.totalF, 10) || 0))), 0);

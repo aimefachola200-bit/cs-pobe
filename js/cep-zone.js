@@ -64,7 +64,8 @@
     const d = App().data, estEc = global.Config.estEcole();
     let list = d.ecoles.filter(estPrimaire);
     if (!estEc && etat.niveau === 'zone') list = list.filter(e => (e.zone_ped || '') === etat.zone);
-    const cle = !estEc && etat.niveau === 'cs' ? (e) => e.zone_ped || 'Sans zone' : (e) => e.nom;
+    const N = estEc ? 'ecoles' : etat.niveau;
+    const cle = N === 'cs' ? (e) => e.zone_ped || 'Sans zone' : N === 'arr' ? (e) => e.arrondissement || 'Sans arrondissement' : (e) => e.nom;
     const grp = new Map(), tot = { nom: 'TOTAL', pub: vide(), prv: vide() };
     for (const e of list.sort((a, b) => (a.nom || '').localeCompare(b.nom || '', 'fr'))) {
       const k = cle(e); if (!grp.has(k)) grp.set(k, { nom: k, pub: vide(), prv: vide() });
@@ -72,7 +73,7 @@
     }
     const g = [...grp.values()].sort((a, b) => a.nom.localeCompare(b.nom, 'fr', { numeric: true }));
     for (const x of [...g, tot]) { indic(x.pub); indic(x.prv); }
-    return { grp: g, tot, lib: !estEc && etat.niveau === 'cs' ? 'Zone pédagogique' : 'École' };
+    return { grp: g, tot, lib: N === 'cs' ? 'Zone pédagogique' : N === 'arr' ? 'Arrondissement' : 'École' };
   }
   const f2 = (v, dd = 2) => (v === null || v === undefined ? '—' : (Math.round(v * 10 ** dd) / 10 ** dd).toString().replace('.', ','));
   const pc = (v) => (v === null || v === undefined ? '—' : f2(v, 1) + ' %');
@@ -87,7 +88,7 @@
   function htmlSecteur(c, s) {
     const g = c.grp.filter(x => x[s].ecoles), labels = g.map(x => x.nom), L = esc(c.lib);
     let h = tableau(c, s, '1. Candidats au CEP : effectifs par sexe et pourcentages',
-      `<tr><th class="cz-l" rowspan="2">${L}</th><th rowspan="2">Écoles</th><th colspan="3">Inscrits</th><th colspan="3">Répartition</th><th colspan="3">Ont composé</th><th colspan="3">Taux de présence</th></tr><tr>${'<th>G</th><th>F</th><th>T</th>'}<th>% G</th><th>% F</th><th>Parité F/G</th>${'<th>G</th><th>F</th><th>T</th>'.repeat(2)}</tr>`,
+      `<tr><th class="cz-l" rowspan="2">${L}</th><th rowspan="2">Écoles</th><th colspan="3">Inscrits</th><th colspan="3">Répartition</th><th colspan="3">Présents (ont composé)</th><th colspan="3">Taux de présence</th></tr><tr>${'<th>G</th><th>F</th><th>T</th>'}<th>% G</th><th>% F</th><th>Parité F/G</th>${'<th>G</th><th>F</th><th>T</th>'.repeat(2)}</tr>`,
       (x) => [td(x.fiches + '/' + x.ecoles), ...x.r.insc.map(v => td(v)), td(pc(x.p_g), 'ind'), td(pc(x.p_f), 'ind'), td(f2(x.parite), 'ind' + (x.parite !== null && x.parite < 0.9 ? ' alerte' : '')),
         ...x.r.comp.map(v => td(v)), ...x.presence.map(v => td(pc(v), 'ind'))]);
     h += graphe('Candidats au CEP', labels, [{ nom: 'Garçons', color: PAL[0], values: g.map(x => x[s].insc[0]) }, { nom: 'Filles', color: PAL[1], values: g.map(x => x[s].insc[1]) },
@@ -113,13 +114,14 @@
     if (!etat.zone || zones.indexOf(etat.zone) < 0) etat.zone = zones[0] || '';
     const c = calcul(); derniere = c;
     const opt = (cle, opts) => `<select data-cle="${cle}">${opts.map(([v, l]) => `<option value="${esc(v)}"${String(etat[cle]) === String(v) ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
-    const niv = estEc ? '' : [['cs', '🏛️ Circonscription (par zone)'], ['zone', '📍 Zone pédagogique (par école)']]
+    const niv = estEc ? '' : [['cs', '🏛️ Par zone pédagogique'], ['arr', '🗺️ Par arrondissement'], ['ecoles', '🏫 Par école (toute la CS)'], ['zone', '📍 Une zone (par école)']]
       .map(([k, l]) => `<button class="btn btn-sm ${etat.niveau === k ? 'btn-primary' : ''}" data-niv="${k}">${l}</button>`).join(' ');
-    let html = `<div class="page-title">🎓 CEP : candidats et réussite (rubriques des fiches)</div><div class="xbar no-print">${niv} ${opt('annee', annees.map(a => [a, 'Année ' + a]))}`
+    let html = `<div class="page-title">🎓 Candidats présentés au CEP dans la circonscription, par sexe</div><div class="xbar no-print">${niv} ${opt('annee', annees.map(a => [a, 'Année ' + a]))}`
       + (!estEc && etat.niveau === 'zone' ? opt('zone', zones.map(z => [z, z])) : '')
       + '</div><div class="xbar no-print"><button class="btn btn-primary" data-act="print">🖨️ Imprimer / PDF</button> <button class="btn btn-info" data-act="xls">⬇ Excel</button></div>'
-      + '<div class="text-center" style="font-size:13px;margin:8px 0"><b>RÉPUBLIQUE DU BÉNIN</b><br>MINISTÈRE DES ENSEIGNEMENTS MATERNEL ET PRIMAIRE<br>CIRCONSCRIPTION SCOLAIRE DE POBÈ<h3 style="margin:6px 0 0">CEP : CANDIDATS ET RÉUSSITE</h3>Année scolaire ' + esc(etat.annee) + '</div>'
+      + '<div class="text-center" style="font-size:13px;margin:8px 0"><b>RÉPUBLIQUE DU BÉNIN</b><br>MINISTÈRE DES ENSEIGNEMENTS MATERNEL ET PRIMAIRE<br>CIRCONSCRIPTION SCOLAIRE DE POBÈ<h3 style="margin:6px 0 0">CANDIDATS PRÉSENTÉS AU CEP, PAR SEXE — INSCRITS, PRÉSENTS, ADMIS</h3>Année scolaire ' + esc(etat.annee) + '</div>'
       + '<p class="xnote">Source : rubrique « Résultats aux examens » des fiches officielles (compléments : inscrits, ont composé, admis par sexe, dont enfants handicapés) ; à défaut, inscrits tirés de la liste des candidats au CEP. Taux de réussite = admis ÷ ont composé (à défaut ÷ inscrits) ; parité F/G = filles ÷ garçons ; écart type de la population.</p>';
+    html += synthese(c);
     for (const [s, lib, coul] of [['pub', 'Secteur public', '#006633'], ['prv', 'Secteur privé (à part)', '#8e44ad']]) {
       const t = c.tot[s]; if (!t.ecoles) continue;
       html += `<h3 class="cz-sect" style="color:${coul};border-color:${coul}">${lib} — ${t.r.insc[2]} inscrits (${t.insc[0]} G · ${t.insc[1]} F) · ${t.r.adm[2]} admis · réussite ${pc(t.reussite[2])}</h3>` + htmlSecteur(c, s);
@@ -130,10 +132,19 @@
     page.querySelector('[data-act="print"]').addEventListener('click', () => window.print());
     page.querySelector('[data-act="xls"]').addEventListener('click', exporter);
   }
+  /** Récapitulatif de la circonscription : public, privé et ensemble (inscrits, présents, admis — G / F / T). */
+  function synthese(c) {
+    const P = c.tot.pub, V = c.tot.prv, S = (k) => [0, 1].map(j => P[k][j] + V[k][j]);
+    const ens = { insc: S('insc'), comp: S('comp'), adm: S('adm') };
+    const ligne = (lib, x, cl) => `<tr${cl ? ' class="tot"' : ''}><td class="cz-l">${lib}</td>` + ['insc', 'comp', 'adm'].map(k => [x[k][0], x[k][1], x[k][0] + x[k][1]].map(v => td(v)).join('')).join('')
+      + td(pc(tx(x.adm[0] + x.adm[1], (x.comp[0] + x.comp[1]) || (x.insc[0] + x.insc[1]))), 'ind') + '</tr>';
+    return '<h4 class="cz-h">Récapitulatif — total de la circonscription</h4><div class="cz-scroll"><table class="cz-t"><thead><tr><th class="cz-l" rowspan="2">Secteur</th><th colspan="3">Inscrits</th><th colspan="3">Présents (ont composé)</th><th colspan="3">Admis</th><th rowspan="2">Taux de réussite</th></tr><tr>'
+      + '<th>G</th><th>F</th><th>T</th>'.repeat(3) + '</tr></thead><tbody>' + ligne('Public', P) + ligne('Privé', V) + ligne('TOTAL CS', ens, true) + '</tbody></table></div>';
+  }
   function exporter() {
     if (!derniere) return;
     const c = derniere, tmp = document.createElement('div');
-    tmp.innerHTML = ['pub', 'prv'].filter(s => c.tot[s].ecoles).map(s => `<h2>${s === 'pub' ? 'Secteur public' : 'Secteur privé'}</h2>` + htmlSecteur(c, s)).join('');
+    tmp.innerHTML = synthese(c) + ['pub', 'prv'].filter(s => c.tot[s].ecoles).map(s => `<h2>${s === 'pub' ? 'Secteur public' : 'Secteur privé'}</h2>` + htmlSecteur(c, s)).join('');
     tmp.querySelectorAll('.gchoix, svg').forEach(x => x.remove());
     const css = 'table{border-collapse:collapse;font-family:Arial;font-size:10pt}td,th{border:1px solid #444;padding:3px 6px;text-align:center}th{background:#006633;color:#fff}.cz-l{text-align:left}.tot td{background:#d9eadf;font-weight:bold}';
     const a = document.createElement('a');

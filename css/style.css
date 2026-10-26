@@ -348,3 +348,185 @@ table.g textarea { resize: vertical; }
 .rappel-sauvegarde span { flex: 1 1 260px; }
 .wa-apercu { white-space: pre-wrap; background: #e7f8ee; border-radius: 10px; padding: 10px 12px; font: 13px/1.45 system-ui, sans-serif; margin: 6px 0; }
 @media print { .rappel-sauvegarde, .badge-alertes { display: none !important; } }
+
+/* ======================================================================
+   v2.0 — Présentation commune avec SCOLARIS et GESCOL
+   Menu latéral fixe (tiroir ☰ sur téléphone et tablette), barre du haut blanche,
+   zone de travail claire, indicateurs, raccourcis et cartes comme dans SCOLARIS / GESCOL.
+   ====================================================================== */
+:root { --bleu: #1F4E79; --bleu2: #2E6DA4; --fond: #F4F6F9; --bord: #D0D5DD; --txt: #1D2939; --gris: #667085;
+  --vert: #1B7F3B; --rouge: #B42318; --orange: #B54708; --lat: #12324F; }
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--fond); color: var(--txt); font-size: 14.5px; font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+* { font-family: inherit; }
+.container { display: block; height: auto; overflow: visible; min-height: 100vh; }
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 260px; background: var(--lat); color: #DCE6F2; padding: 0;
+  display: flex; flex-direction: column; z-index: 600; overflow: hidden; box-shadow: none; padding-top: env(safe-area-inset-top, 0px); }
+.sidebar .marque { display: flex; gap: 10px; align-items: center; padding: 14px 16px; color: #fff; font-weight: 700; font-size: 16px;
+  border-bottom: 1px solid rgba(255,255,255,.1); }
+.sidebar .marque small { display: block; font-weight: 500; font-size: 11.5px; color: #9FB6CE; max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.logo-g { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #2E6DA4, #1B7F3B); display: grid; place-items: center; font-size: 18px; flex: none; }
+.sidebar .menu-defile { flex: 1; overflow-y: auto; padding: 6px 8px 20px; -webkit-overflow-scrolling: touch; }
+.sidebar h3 { padding: 12px 10px 4px; font-size: 11.5px; color: #7F97B0; letter-spacing: .05em; margin: 4px 0 0; }
+.menu-item { padding: 8px 10px; border-radius: 7px; border-left: 0; gap: 8px; color: #C9D7E6; font-size: 14px; transition: background .15s; }
+.menu-item:hover { background: rgba(255,255,255,.07); color: #fff; border-left-color: transparent; }
+.menu-item.active { background: #2E6DA4; color: #fff; font-weight: 600; border-left-color: transparent; }
+.menu-item .icon { font-size: 14px; width: 20px; text-align: center; flex: none; }
+.lateral-pied { padding: 8px 16px; border-top: 1px solid rgba(255,255,255,.1); color: #7F97B0; font-size: 11.5px; line-height: 1.45; }
+.lateral-pied b { color: #DCE6F2; }
+.zone { margin-left: 260px; min-width: 0; }
+.header.barre-haut { position: sticky; top: 0; z-index: 500; min-height: 56px; background: #fff; color: var(--txt); border-bottom: 1px solid var(--bord);
+  display: flex; align-items: center; gap: 12px; padding: 6px 20px; box-shadow: 0 1px 3px rgba(16,24,40,.05); flex-wrap: nowrap; }
+.barre-haut .bh-titre { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; flex: 1; }
+.barre-haut .bh-titre strong { font-size: 15.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: none; }
+.barre-haut .subtitle { font-size: 12.5px; color: var(--gris); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 1; }
+.barre-haut .bh-droite { display: flex; align-items: center; gap: 10px; flex: none; }
+.barre-haut .bh-annee { font-size: 13px; color: var(--gris); white-space: nowrap; }
+.barre-haut .bh-annee select { margin-left: 4px; padding: 4px 6px; border: 1px solid var(--bord); border-radius: 6px; background: #fff; font-size: 13px; }
+.barre-haut .bh-date { font-size: 12.5px; color: var(--gris); white-space: nowrap; }
+.btn-menu { display: none; background: none; border: 1px solid var(--bord); border-radius: 7px; font-size: 20px; padding: 2px 10px; cursor: pointer; color: var(--bleu); flex: none; }
+.voile { position: fixed; inset: 0; background: rgba(16,24,40,.45); z-index: 550; }
+.voile[hidden] { display: none; }
+.main { padding: 20px 24px 60px; overflow: visible; }
+.barre-retour { top: 56px !important; background: var(--fond) !important; }
+.page-title { font-size: 21px; font-weight: 700; color: var(--txt); border-bottom: 0; padding-bottom: 0; margin-bottom: 14px; }
+.stat-card { border: 1px solid var(--bord); border-left: 4px solid var(--vert); box-shadow: none; padding: 14px 16px; }
+.stat-card h4 { font-size: 12.5px; color: var(--gris); letter-spacing: .03em; font-weight: 500; }
+.stat-card .value { font-size: 24px; }
+.table-container, .form-container, .search-bar, .xcard { box-shadow: none; border: 1px solid var(--bord); }
+.table-container { overflow-x: auto; }
+.btn-primary { background: var(--bleu); } .btn-primary:hover { background: var(--bleu2); }
+
+/* tableau de bord (comme SCOLARIS / GESCOL) */
+.entete { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.entete h1 { font-size: 22px; margin: 0 0 4px; }
+.sous { color: var(--gris); margin: 0; }
+.entete .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.carte { background: #fff; border: 1px solid var(--bord); border-radius: 10px; padding: 18px; margin-bottom: 18px; }
+.carte h2 { font-size: 17px; margin: 0 0 10px; }
+.grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.grille2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 18px; }
+.kpi { background: #fff; border: 1px solid var(--bord); border-radius: 10px; padding: 14px 16px; }
+.kpi .l { color: var(--gris); font-size: 12.5px; text-transform: uppercase; letter-spacing: .03em; }
+.kpi .v { font-size: 24px; font-weight: 700; margin-top: 4px; }
+.kpi .v small { font-size: 14px; color: var(--gris); font-weight: 500; }
+.kpi .d { color: var(--gris); font-size: 12.5px; }
+.raccourcis { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin: 6px 0 18px; }
+.raccourcis a { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; justify-content: center; min-height: 86px; padding: 12px 14px;
+  background: #fff; border: 1px solid var(--bord); border-radius: 12px; color: var(--txt); text-decoration: none; cursor: pointer; }
+.raccourcis a:hover, .raccourcis a:focus-visible { border-color: var(--bleu); background: #F5F8FC; }
+.raccourcis .ico { font-size: 26px; line-height: 1; }
+.raccourcis b { font-size: 15px; color: var(--bleu); }
+.raccourcis .d { font-size: 12px; color: var(--gris); }
+.raccourcis a.alerte { border-color: #FDA29B; background: #FEF3F2; }
+.tw { overflow-x: auto; border: 1px solid var(--bord); border-radius: 10px; -webkit-overflow-scrolling: touch; }
+table.t { width: 100%; border-collapse: collapse; background: #fff; }
+table.t th, table.t td { padding: 8px 10px; border-bottom: 1px solid #EAECF0; text-align: left; vertical-align: middle; font-size: 13.5px; }
+table.t th { background: #F9FAFB; font-size: 12px; color: #475467; text-transform: uppercase; letter-spacing: .02em; }
+table.t td.num, table.t th.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.t tr.b td { font-weight: 700; background: #F9FAFB; }
+table.t tr.st td { font-weight: 600; background: #FCFCFD; }
+.alerte-l { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border-radius: 8px; margin-bottom: 6px; background: #F9FAFB; border-left: 4px solid #98A2B3; }
+.alerte-l.danger { border-left-color: var(--rouge); background: #FEF3F2; }
+.alerte-l.warning { border-left-color: #F79009; background: #FFFAEB; }
+.alerte-l.info { border-left-color: var(--bleu2); background: #EFF8FF; }
+.alerte-l .ico { font-size: 18px; }
+.liste-l > div { padding: 8px 0; border-bottom: 1px solid #EAECF0; }
+.liste-l > div:last-child { border-bottom: 0; }
+.vide { color: var(--gris); }
+
+/* documents officiels */
+.doc-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.doc-carte { background: #fff; border: 1px solid var(--bord); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.doc-carte h3 { font-size: 15px; margin: 0; color: var(--txt); }
+.doc-carte p { margin: 0; font-size: 13px; color: #475467; }
+.doc-carte .xbar { margin: 6px 0 0; }
+.sec-h { font-size: 16px; margin: 18px 0 10px; color: var(--bleu); }
+.cal-liste { display: grid; gap: 8px; }
+.cal-l { background: #fff; border: 1px solid var(--bord); border-left: 5px solid #ccc; border-radius: 8px; padding: 8px 12px; font-size: 13.5px; }
+.cal-l .sub { color: var(--gris); font-size: 12.5px; }
+table.edt { border-collapse: collapse; width: 100%; background: #fff; }
+table.edt th, table.edt td { border: 1px solid #98A2B3; padding: 4px 6px; font-size: 12.5px; vertical-align: top; text-align: left; }
+table.edt th { background: #EEF4FA; color: var(--txt); text-transform: none; }
+table.edt td.edt-h { white-space: nowrap; font-weight: 600; background: #F9FAFB; }
+table.edt tr.edt-pause td { background: #FFFAEB; text-align: center; }
+table.edt textarea { width: 100%; min-width: 110px; border: 1px solid transparent; background: transparent; resize: vertical; font-size: 12.5px; padding: 2px; }
+table.edt textarea:focus { border-color: var(--bleu2); background: #fff; outline: none; }
+.reg-art { background: #fff; border: 1px solid var(--bord); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; }
+.reg-art.titre { background: #EEF4FA; font-weight: 700; }
+.reg-art p { margin: 4px 0 0; white-space: pre-wrap; font-size: 13.5px; }
+
+/* téléphones et tablettes : menu en tiroir, comme SCOLARIS */
+@media (max-width: 1000px) {
+  .sidebar { transform: translateX(-100%); transition: transform .2s; box-shadow: 0 0 30px rgba(0,0,0,.3); width: min(84vw, 300px); }
+  .sidebar.ouvert { transform: none; }
+  .zone { margin-left: 0; }
+  .btn-menu { display: block; }
+  .barre-haut .bh-date { display: none; }
+  .main { padding: 14px 12px 50px; }
+}
+@media (max-width: 768px) {
+  /* annule l'ancien empilement « menu au-dessus du contenu » */
+  .container { flex-direction: column; height: auto; overflow: visible; }
+  .sidebar { width: min(84vw, 300px); overflow: hidden; }
+  .header.barre-haut { position: sticky; padding: 6px 10px; gap: 8px; }
+  .barre-haut .bh-droite #btnEcolePoste, .barre-haut .bh-droite #btnChangerEcole { padding: 5px 8px; font-size: 11.5px; }
+  .barre-haut .bh-annee { font-size: 0; } .barre-haut .bh-annee select { font-size: 13px; margin: 0; }
+  .page-title { font-size: 18px; }
+  .entete h1 { font-size: 19px; }
+  .stats-grid, .grille { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .kpi, .stat-card { padding: 10px 12px; }
+  .kpi .v, .stat-card .value { font-size: 20px; }
+  .raccourcis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .raccourcis a { min-height: 74px; padding: 10px; }
+  .raccourcis .ico { font-size: 22px; } .raccourcis b { font-size: 14px; }
+  .search-bar { padding: 10px; } .search-bar input, .search-bar select { min-width: 0; flex: 1 1 140px; }
+  .form-container { padding: 14px; } .form-grid { grid-template-columns: 1fr; }
+  .modal { padding: 0; } .modal-content { width: 100%; max-width: 100%; max-height: 100vh; min-height: 100vh; border-radius: 0; padding: 14px; }
+  .page-title > span, .page-title > div { display: flex; flex-wrap: wrap; gap: 6px; }
+  .btn { padding: 8px 12px; font-size: 13.5px; }
+  .tabs { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tab { white-space: nowrap; flex: none; }
+  table { font-size: 12.5px; }
+  th, td { padding: 7px 6px; }
+  .rappel-sauvegarde { top: auto; bottom: 12px; }
+  .carte { padding: 14px; }
+}
+@media (max-width: 420px) { .barre-haut .bh-droite #btnChangerEcole { display: none; } }
+@media print {
+  .sidebar, .barre-haut, .voile, .barre-retour, .raccourcis { display: none !important; }
+  .zone { margin: 0; }
+  .main { padding: 0 !important; }
+}
+
+/* v2.0 — compléments « Documents officiels » et tableau de bord */
+.doc-carte { flex-direction: row; align-items: flex-start; flex-wrap: wrap; }
+.doc-ic { font-size: 28px; line-height: 1; }
+.doc-txt { flex: 1 1 160px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.doc-txt b { font-size: 14.5px; color: var(--txt); }
+.doc-txt small { color: var(--gris); font-size: 12px; }
+.doc-btns { display: flex; gap: 6px; flex-wrap: wrap; width: 100%; justify-content: flex-end; }
+.doc-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 2px; }
+.doc-actions .btn { margin: 0; }
+.cal-pastille { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 8px; vertical-align: -1px; border: 1px solid rgba(0,0,0,.15); }
+.tabs.tabs-2 { margin-top: -4px; }
+.tabs.tabs-2 .tab { font-size: 13px; padding: 6px 12px; }
+.reg-titre { font-size: 15px; margin: 16px 0 8px; padding: 8px 12px; background: #EEF4FA; border-radius: 8px; color: var(--bleu); }
+.reg-texte { margin-top: 10px; }
+table.edt-plan textarea { min-width: 130px; }
+.kpi .d .h { color: var(--vert, #079455); font-weight: 600; }
+@media print {
+  .doc-actions, .tabs, .no-print { display: none !important; }
+  table.edt textarea { border: 0; resize: none; overflow: visible; }
+  .tw { overflow: visible !important; }
+}
+/* le rappel de sauvegarde ne masque plus la barre du haut */
+.rappel-sauvegarde { top: auto; bottom: 14px; }
+@media (min-width: 1001px) { .rappel-sauvegarde { left: 272px; right: 12px; } }
+/* longues références (arrêtés, pointillés) : retour à la ligne plutôt que débordement sur téléphone */
+.carte, .doc-corps p, .doc-corps .sous, .xres, .entete .sous { overflow-wrap: anywhere; }
+.main { min-width: 0; }
+@media (max-width: 768px) { .grille-carriere { grid-template-columns: minmax(0, 1fr) !important; } }
+a.btn { text-decoration: none; display: inline-flex; align-items: center; }
+.btn-secondary { background: #fff; color: var(--bleu); border: 1px solid var(--bord); }
+.btn-secondary:hover { background: #F5F8FC; }
