@@ -1,5 +1,5 @@
 {
- "version": "d3aefcf6faa7",
+ "version": "9d83f39d3c93",
  "files": [
   "./",
   "css/style.css",
@@ -56,6 +56,7 @@
   "js/documents-scolaires.js",
   "js/donnees.js",
   "js/ecoles-zone.js",
+  "js/educmaster.js",
   "js/effectifs-zone.js",
   "js/embleme.js",
   "js/espaces.js",
@@ -71,6 +72,7 @@
   "js/presences.js",
   "js/qr.js",
   "js/rapports.js",
+  "js/registres.js",
   "js/stockage.js",
   "js/synoptique.js",
   "js/tableau-bord.js",

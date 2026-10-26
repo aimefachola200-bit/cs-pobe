@@ -20,6 +20,7 @@
   const RACCOURCIS_ECOLE = [
     ['maFiche', '🧑‍💼', 'Ma fiche école', 'Renseignements'], ['apprenants', '🧒', 'Apprenants', 'Listes par classe'],
     ['presenceApprenants', '🗓️', 'Présences', 'Appel du jour'], ['notes', '🗒️', 'Notes et bulletins', 'Évaluations'],
+    ['registres', '📋', 'Registres et synthèse', 'Appel, affichage, statistiques'], ['educmaster', '🔄', 'EducMaster', 'Élèves et notes'],
     ['personnel', '👥', 'Personnel', 'Enseignants'], ['cep', '📋', 'Inscription CEP', 'Fiches candidats'],
     ['docsref', '📚', 'Documents officiels', 'Calendrier, emplois du temps'], ['echanges', '🔄', 'Envoyer à la CS', 'Paquet de l’école'],
     ['fiches', '🗂️', 'Fiches officielles', 'À imprimer'], ['backup', '💾', 'Sauvegarde', 'Garder une copie']

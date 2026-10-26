@@ -4091,9 +4091,7 @@
     const g = liste.filter(a2 => a2.sexe === 'G').length;
     openModal('Liste de classe — ' + (ecole ? ecole.nom : '') + ' — ' + cours,
       '<div style="border:2px solid #006633;padding:16px;">'
-      + '<div class="text-center"><b>RÉPUBLIQUE DU BÉNIN</b><br>'
-      + 'MINISTÈRE DES ENSEIGNEMENTS MATERNEL ET PRIMAIRE<br>'
-      + 'CIRCONSCRIPTION SCOLAIRE DE POBÈ<br><b>' + echapper(ecole ? ecole.nom : '') + '</b>'
+      + enteteDocument({ etablissement: ecole ? ecole.nom : '' }) + '<div class="text-center">'
       + '<h3 style="color:#006633;margin:8px 0;">LISTE NOMINATIVE — ' + echapper(cours)
       + '</h3>Année scolaire ' + echapper(anneeActive()) + ' — ' + liste.length
       + ' apprenant(s) : ' + g + ' garçon(s), ' + (liste.length - g) + ' fille(s)</div>'
@@ -4111,7 +4109,7 @@
         + '<td>' + echapper(a2.matricule || '') + '</td>'
         + '<td class="emargement"></td></tr>').join('')
       + '</tbody></table>'
-      + piedDocument(ecole, 'LISTE', ecoleId + '-' + cours, 'Le Directeur')
+      + (global.Registres ? global.Registres.pied(ecole, cours, 'LISTE', ecoleId + '-' + cours, 'Liste ' + cours + ' ' + (ecole ? ecole.nom : '')) : piedDocument(ecole, 'LISTE', ecoleId + '-' + cours, 'Le Directeur'))
       + '</div><div class="text-center mt-15">'
       + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer</button></div>');
   }
@@ -4535,9 +4533,7 @@
 
     openModal('Registre de présence — ' + (ecole ? ecole.nom : '') + ' — ' + formatDate(date),
       '<div style="border:2px solid #006633;padding:16px;">'
-      + '<div class="text-center"><b>RÉPUBLIQUE DU BÉNIN</b><br>'
-      + 'MINISTÈRE DES ENSEIGNEMENTS MATERNEL ET PRIMAIRE<br>'
-      + 'CIRCONSCRIPTION SCOLAIRE DE POBÈ<br><b>' + echapper(ecole ? ecole.nom : '') + '</b>'
+      + enteteDocument({ etablissement: ecole ? ecole.nom : '' }) + '<div class="text-center">'
       + '<h3 style="color:#006633;margin:8px 0;">REGISTRE DE PRÉSENCE DU PERSONNEL</h3>'
       + 'Date : ' + formatDate(date) + ' — heure officielle de service : '
       + global.Presences.HEURE_DEBUT_SERVICE + '</div>'
@@ -4714,10 +4710,7 @@
 
     openModal('Bulletin — ' + nomComplet(a2),
       '<div style="border:2px solid #006633;padding:18px;">'
-      + '<div class="text-center"><b>RÉPUBLIQUE DU BÉNIN</b><br>'
-      + 'MINISTÈRE DES ENSEIGNEMENTS MATERNEL ET PRIMAIRE<br>'
-      + 'CIRCONSCRIPTION SCOLAIRE DE POBÈ<br><b>'
-      + echapper(ecole ? ecole.nom : '') + '</b>'
+      + enteteDocument({ etablissement: ecole ? ecole.nom : '' }) + '<div class="text-center">'
       + '<h2 style="color:#006633;margin:8px 0;">BULLETIN DE NOTES</h2>'
       + echapper(V().libellePeriode(periode)) + ' — année scolaire '
       + echapper(anneeActive()) + '</div>'
@@ -4751,7 +4744,7 @@
       + '<p class="petit muet mt-15">Une matière est maîtrisée à partir de '
       + V().SEUIL_MATIERE + '/20. Le seuil demande six maîtrises sur neuf matières composées, '
       + 'les deux tiers lorsque les onze le sont. Une matière non composée sort du calcul.</p>'
-      + piedDocument(ecole, 'BULLETIN', a2.id + '-' + cle, 'Le Directeur')
+      + (global.Registres ? global.Registres.pied(ecole, a2.cours, 'BULLETIN', a2.id + '-' + cle, 'Bulletin ' + nomComplet(a2) + ' ' + cle) : piedDocument(ecole, 'BULLETIN', a2.id + '-' + cle, 'Le Directeur'))
       + '</div><div class="text-center mt-15">'
       + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer</button></div>');
   }
@@ -4782,9 +4775,7 @@
 
     openModal('Relevé de notes — ' + (ecole ? ecole.nom : '') + ' — ' + cours,
       '<div style="border:2px solid #006633;padding:16px;">'
-      + '<div class="text-center"><b>RÉPUBLIQUE DU BÉNIN</b><br>'
-      + 'MINISTÈRE DES ENSEIGNEMENTS MATERNEL ET PRIMAIRE<br>'
-      + 'CIRCONSCRIPTION SCOLAIRE DE POBÈ<br><b>' + echapper(ecole ? ecole.nom : '') + '</b>'
+      + enteteDocument({ etablissement: ecole ? ecole.nom : '' }) + '<div class="text-center">'
       + '<h3 style="color:#006633;margin:8px 0;">RELEVÉ DE NOTES — ' + echapper(cours)
       + '</h3>' + echapper(V().libellePeriode(periode)) + ' — ' + echapper(anneeActive())
       + '</div>'
@@ -4805,8 +4796,8 @@
       + '</b> ayant composé, <b>' + admis + '</b> ayant atteint le seuil'
       + (composants.length ? ', soit <b>' + Math.round(admis / composants.length * 1000) / 10
         + ' %</b>' : '') + '.</p>'
-      + piedDocument(ecole, 'RELEVE', ecoleId + '-' + cours + '-' + clePeriodeNotes(),
-        'Le Directeur')
+      + (global.Registres ? global.Registres.pied(ecole, cours, 'RELEVE', ecoleId + '-' + cours + '-' + clePeriodeNotes(), 'Releve de notes ' + cours + ' ' + clePeriodeNotes() + ' ' + (ecole ? ecole.nom : ''))
+        : piedDocument(ecole, 'RELEVE', ecoleId + '-' + cours + '-' + clePeriodeNotes(), 'Le Directeur'))
       + '</div><div class="text-center mt-15">'
       + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer</button></div>');
   }
@@ -7063,7 +7054,8 @@
   /* Passerelle pour les modules ajoutés (bilans, documents de référence). */
   global.AppBridge = {
     get data() { return data; }, saveData, echapper, openModal, closeModal, anneeActive, formatDate, uid,
-    COLLECTIONS, exportData, showPage, nomEcole, ecoleDuPoste, porteurEcole, CLE_STOCKAGE
+    COLLECTIONS, exportData, showPage, nomEcole, ecoleDuPoste, porteurEcole, CLE_STOCKAGE,
+    enteteDocument, emblemes, attributionDe, nomComplet, feuilleDe, clePeriode, telecharger
   };
 
   /* Ce que le HTML appelle directement. */

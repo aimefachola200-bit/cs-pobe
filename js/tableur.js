@@ -315,9 +315,25 @@
       if (!candidat) throw new Error('aucune feuille trouvée dans le classeur');
       nomFeuille = candidat;
     }
+    return lignesFeuille(fichiers[nomFeuille], chaines);
+  }
 
+  function chainesPartagees(fichiers) {
+    const chaines = [];
+    const partagees = fichiers['xl/sharedStrings.xml'];
+    if (partagees) {
+      balises(partagees, 'si').forEach(si => {
+        chaines.push(balises(si.contenu, 't').map(t => deshtml(t.contenu)).join(''));
+      });
+    }
+    return chaines;
+  }
+
+  /* Les lignes d'une feuille, à leur vraie place (numéro r de la ligne) : les modèles officiels ont des
+     lignes d'en-tête fusionnées et parfois vides, il ne faut pas les décaler. */
+  function lignesFeuille(xml, chaines) {
     const lignes = [];
-    balises(fichiers[nomFeuille], 'row').forEach(row => {
+    balises(xml || '', 'row').forEach(row => {
       const cellules = [];
       balises(row.contenu, 'c').forEach(c => {
         const colonne = numeroColonne(attribut(c.attrs, 'r'));
@@ -337,9 +353,31 @@
       for (let i = 0; i < cellules.length; i++) {
         if (cellules[i] === undefined) cellules[i] = '';
       }
+      const r = parseInt(attribut(row.attrs, 'r'), 10);
+      if (r > 0 && r - 1 > lignes.length) while (lignes.length < r - 1) lignes.push([]);
       lignes.push(cellules);
     });
     return lignes;
+  }
+
+  /** Toutes les feuilles, dans l'ordre du classeur : [{ nom, lignes }]. */
+  function lireFeuillesXlsx(fichiers) {
+    const chaines = chainesPartagees(fichiers);
+    const wb = fichiers['xl/workbook.xml'] || '';
+    const rels = {};
+    balises(fichiers['xl/_rels/workbook.xml.rels'] || '', 'Relationship').forEach(r => {
+      rels[attribut(r.attrs, 'Id')] = String(attribut(r.attrs, 'Target') || '').replace(/^\/?xl\//, '').replace(/^\//, '');
+    });
+    const feuilles = balises(wb, 'sheet').map(sh => {
+      const id = attribut(sh.attrs, 'r:id'), cible = rels[id];
+      const chemin = cible ? 'xl/' + cible : null;
+      return { nom: deshtml(attribut(sh.attrs, 'name') || ''), lignes: lignesFeuille(chemin && fichiers[chemin], chaines) };
+    });
+    if (!feuilles.length) {
+      Object.keys(fichiers).filter(n => /^xl\/worksheets\/.*\.xml$/.test(n)).sort()
+        .forEach((n, i) => feuilles.push({ nom: 'Feuille' + (i + 1), lignes: lignesFeuille(fichiers[n], chaines) }));
+    }
+    return feuilles;
   }
 
   /* ---------------- CSV ---------------- */
@@ -379,5 +417,12 @@
       .then(lignes => lignes.filter(l => l.some(x => String(x).trim() !== '')));
   }
 
-  global.Tableur = { lire, lireCSV };
+  /** Classeur entier : [{ nom, lignes }] (un CSV donne une seule feuille). */
+  function lireClasseur(fichier) {
+    const nom = (fichier.name || '').toLowerCase();
+    if (nom.endsWith('.csv') || nom.endsWith('.txt')) return fichier.text().then(t => [{ nom: 'Feuille1', lignes: lireCSV(t) }]);
+    return fichier.arrayBuffer().then(dezipper).then(lireFeuillesXlsx);
+  }
+
+  global.Tableur = { lire, lireCSV, lireClasseur };
 })(window);

@@ -48,6 +48,8 @@
         <div class="menu-item" data-page="presenceApprenants"><span class="icon">🗓️</span> Présence des apprenants</div>
         <div class="menu-item" data-page="presencePersonnel"><span class="icon">🕗</span> Présence du personnel</div>
         <div class="menu-item" data-page="notes"><span class="icon">🗒️</span> Notes et bulletins</div>
+        <div class="menu-item" data-page="registres"><span class="icon">📋</span> Registres, affichage, statistiques, synthèse</div>
+        <div class="menu-item" data-page="educmaster"><span class="icon">🔄</span> EducMaster : élèves et notes</div>
         <div class="menu-item" data-page="cep"><span class="icon">📋</span> Inscription CEP</div>
         <div class="menu-item" data-page="cm2"><span class="icon">🎯</span> Écoles à CM2 et CEP 2027</div>
         <div class="menu-item" data-page="examen"><span class="icon">🏟️</span> Examen blanc</div>
@@ -568,10 +570,11 @@
                 <span>
                     <button class="btn btn-info" data-import="apprenants">📥 Importer</button>
                     <button class="btn btn-warning" data-export="apprenants">📊 Excel</button>
-                    <button class="btn btn-info" onclick="exporterEducmaster()">📤 EDUCMaster</button>
+                    <button class="btn btn-info" onclick="exporterEducmaster()">📤 Liste apprenants + enseignants</button>
                     <button class="btn btn-primary" onclick="openApprenantModal()">➕ Apprenant</button>
                 </span>
             </div>
+            <div class="xbar no-print" style="margin:6px 0 10px"><button class="btn btn-info btn-sm" type="button" onclick="showPage('registres')">📋 Registre d’appel, affichage, statistiques, synthèse</button> <button class="btn btn-warning btn-sm" type="button" onclick="showPage('educmaster')">🔄 EducMaster : élèves et notes</button></div>
             <div class="search-bar">
                 <select id="filterEcoleApp"><option value="">Toutes écoles</option></select>
                 <select id="filterCoursApp"><option value="">Tous les cours</option></select>
@@ -590,6 +593,7 @@
         <!-- PRÉSENCE DES APPRENANTS -->
         <div id="presenceApprenants" class="page hidden">
             <div class="page-title">🗓️ Présence des apprenants</div>
+            <div class="xbar no-print" style="margin:6px 0 10px"><button class="btn btn-info btn-sm" type="button" onclick="showPage('registres')">📋 Registre d’appel, affichage, statistiques, synthèse</button> <button class="btn btn-warning btn-sm" type="button" onclick="showPage('educmaster')">🔄 EducMaster : élèves et notes</button></div>
             <div class="alert alert-info">
                 Le calendrier scolaire (rubrique « Jours fériés ») exclut automatiquement les
                 week-ends et les jours fériés : seuls les jours de classe réellement saisis
@@ -670,6 +674,7 @@
                     <button class="btn btn-primary" onclick="editerReleveClasse()">📄 Relevé de la classe</button>
                 </span>
             </div>
+            <div class="xbar no-print" style="margin:6px 0 10px"><button class="btn btn-info btn-sm" type="button" onclick="showPage('registres')">📋 Registre d’appel, affichage, statistiques, synthèse</button> <button class="btn btn-warning btn-sm" type="button" onclick="showPage('educmaster')">🔄 EducMaster : élèves et notes</button></div>
             <div class="alert alert-info">
                 Choisissez une école, un cours et une période, puis saisissez les notes
                 directement dans le tableau. Le total, la moyenne, le nombre de maîtrises,
@@ -877,6 +882,8 @@
         <div id="infraZone" class="page hidden"></div>
         <div id="ecolesZone" class="page hidden"></div>
         <div id="cepZone" class="page hidden"></div>
+        <div id="registres" class="page hidden"></div>
+        <div id="educmaster" class="page hidden"></div>
 
         <!-- COURRIERS -->
         <div id="courriers" class="page hidden">
@@ -1218,7 +1225,7 @@
 <script src="js/config.js"></script>
 <script src="js/embleme.js"></script>
 <script src="js/stockage.js"></script>
-<script>chargerScripts(["js/donnees.js", "js/carriere.js", "js/calendrier.js", "js/presences.js", "js/qr.js", "js/pieces.js", "js/documents-scolaires.js", "js/examen.js", "js/evaluations.js", "js/rapports.js", "js/certificats.js", "js/tableur.js", "js/import.js", "data/ref.js", "js/bilan-schema.js", "js/app.js", "js/extra.js", "js/graphiques.js", "js/effectifs-zone.js", "js/infra-zone.js", "js/ecoles-zone.js", "js/cep-zone.js", "js/synoptique.js", "js/espaces.js", "js/whatsapp.js", "js/ameliorations.js", "data/officiel.js", "data/documents-officiels.js", "js/officiel.js", "js/tableau-bord.js", "js/interface.js"]);</script>
+<script>chargerScripts(["js/donnees.js", "js/carriere.js", "js/calendrier.js", "js/presences.js", "js/qr.js", "js/pieces.js", "js/documents-scolaires.js", "js/examen.js", "js/evaluations.js", "js/rapports.js", "js/certificats.js", "js/tableur.js", "js/import.js", "data/ref.js", "js/bilan-schema.js", "js/app.js", "js/extra.js", "js/graphiques.js", "js/effectifs-zone.js", "js/infra-zone.js", "js/ecoles-zone.js", "js/cep-zone.js", "js/synoptique.js", "js/espaces.js", "js/whatsapp.js", "js/ameliorations.js", "data/officiel.js", "data/documents-officiels.js", "js/officiel.js", "js/tableau-bord.js", "js/registres.js", "js/educmaster.js", "js/interface.js"]);</script>
 <script>
 (function () {
   var img = document.querySelector("#bandeauImpression img");

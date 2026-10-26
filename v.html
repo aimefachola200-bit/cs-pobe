@@ -40,7 +40,10 @@ function verifier() {
     return (h1.toString(36) + h2.toString(36)).slice(0, 11).toUpperCase();
   }
   var TYPES = { CEP: "Fiche d'inscription au CEP", CC: 'Carte scolaire du candidat', CI: "Carte d'identité scolaire", CNI: 'Fiche de demande de carte d’identité',
-    CERT: 'Certificat', RELEVE: 'Relevé de notes', ATT: 'Attestation' };
+    CERT: 'Certificat', RELEVE: 'Relevé de notes', ATT: 'Attestation', REGISTRE: "Registre d'appel (présence des élèves)",
+    RELEVEMENS: 'Tableau de relevés mensuels de présence', AFFICHAGE: "Tableau d'affichage de la classe", STATPRES: 'Statistiques de présence',
+    STATEVAL: 'Statistiques des évaluations', SYNTHESE: "Synthèse de l'évaluation", PRESENCE: 'Registre de présence du personnel', BULLETIN: 'Bulletin de notes',
+    LISTE: 'Liste de classe', PV: 'Procès-verbal', FICHE: 'Fiche officielle', CARRIERE: 'Fiche de carrière', RETRAITE: 'Pièce de retraite', VISITE: 'Rapport de visite' };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var p = {};
   location.hash.replace(/^#/, '').split('&').forEach(function (kv) {
