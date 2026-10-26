@@ -264,7 +264,7 @@
     const actions = h('div', { class: 'xbar no-print' },
       h('button', { class: 'btn btn-primary', onclick: imprimer }, '🖨️ Imprimer / PDF'),
       h('button', { class: 'btn btn-info', onclick: exporterExcel }, '⬇ Excel'),
-      h('button', { class: 'btn', onclick: exporterSaisie }, '📤 Exporter (CSV réimportable)'),
+      h('button', { class: 'btn', onclick: exporterSaisie }, '📤 Exporter (Excel réimportable)'),
       h('button', { class: 'btn btn-warning', onclick: importer }, '📥 Importer Excel / CSV'));
 
     const carte = (v, l, cl) => h('div', { class: 'stat-card ' + (cl || '') }, h('h4', null, l), h('div', { class: 'value' }, v));
@@ -330,8 +330,8 @@
       + ['G', 'F', 'T'].map(s => `<tr><td class="eff-l">${{ G: 'Garçons', F: 'Filles', T: 'Ensemble' }[s]}</td>` + serieAge(c.agg, '')[s].map(v => `<td>${v}</td>`).join('') + '</tr>').join('') + '</tbody></table>'
       + [['pub', 'publiques'], ['prv', 'privées']].filter(([k]) => c.mats[k].ecoles.length).map(([k, l]) => `<h3>Écoles maternelles ${l} : effectifs par section (SP, SG)</h3>` + htmlMat(c.mats[k].m, c.mats[k].ecoles, etat.niveau !== 'ecole')).join('<br>')
       + `<p>${CREDIT}</p>`;
-    saveFile(new Blob(['﻿<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><style>' + CSS_XLS + '</style></head><body>' + html + '</body></html>'], { type: 'application/vnd.ms-excel' }),
-      clean('Effectifs_age_classe_' + titre + '_' + etat.annee) + '.xls');
+    saveFile(window.XlsxEcrire.depuisHtmlBlob('﻿<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><style>' + CSS_XLS + '</style></head><body>' + html + '</body></html>'),
+      clean('Effectifs_age_classe_' + titre + '_' + etat.annee) + '.xlsx');
   }
   const ENTETE_CSV = ['Ecole', 'Annee', 'Age', ...CLASSES.flatMap(c => SX.map(s => c + '_' + s))];
   const csv = (rows) => '﻿' + rows.map(r => r.map(x => { const t = String(x ?? ''); return /[;"\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; }).join(';')).join('\r\n');
@@ -342,13 +342,13 @@
       for (const g of AGES) rows.push([e.nom, etat.annee, g, ...CLASSES.flatMap(c => SX.map(s => (r.ages || {})[g + '_' + c + '_' + s] || ''))]);
       rows.push([e.nom, etat.annee, 'TOTAL_CLASSE', ...CLASSES.flatMap(c => SX.map(s => r['c_' + c.toLowerCase() + '_' + s] || ''))]);
     }
-    saveFile(new Blob([csv(rows)], { type: 'text/csv;charset=utf-8' }), clean('Saisie_effectifs_' + libelleNiveau() + '_' + etat.annee) + '.csv');
+    saveFile(global.XlsxEcrire.classeur([{ nom: 'Saisie effectifs', lignes: rows, entete: 0 }]), clean('Saisie_effectifs_' + libelleNiveau() + '_' + etat.annee) + '.xlsx');
     toast('Fichier exporté : complétez-le dans Excel puis réimportez-le (CSV ou .xlsx, une seule feuille).');
   }
   async function importer() {
     const f = await pickFile('.csv,.xlsx,.txt'); if (!f) return;
     let lignes; try { lignes = await global.Tableur.lire(f); } catch (e) { return toast('Fichier illisible : ' + e.message, 'err'); }
-    const hi = lignes.findIndex(l => norm(l[0]) === 'ecole'); if (hi < 0) return alert('En-tête introuvable : la première colonne doit s\'appeler « Ecole ». Utilisez « Exporter (CSV réimportable) ».');
+    const hi = lignes.findIndex(l => norm(l[0]) === 'ecole'); if (hi < 0) return alert('En-tête introuvable : la première colonne doit s\'appeler « Ecole ». Utilisez « Exporter (Excel réimportable) ».');
     const tete = lignes[hi].map(x => String(x).trim()), idx = {};
     ENTETE_CSV.forEach(k => { idx[k] = tete.findIndex(t => t.toLowerCase() === k.toLowerCase()); });
     if (idx.Age < 0 || CLASSES.every(c => idx[c + '_G'] < 0)) return alert('Colonnes « Age » ou « CI_G … CM2_F » introuvables.');

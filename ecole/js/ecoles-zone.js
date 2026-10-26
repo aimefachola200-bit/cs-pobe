@@ -167,8 +167,8 @@
     tmp.querySelectorAll('.gchoix, svg').forEach(x => x.remove());
     const css = 'table{border-collapse:collapse;font-family:Arial;font-size:10pt}td,th{border:1px solid #444;padding:3px 6px;text-align:center}th{background:#006633;color:#fff}.ez-l{text-align:left}.tot td{background:#d9eadf;font-weight:bold}';
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob(['﻿<html><head><meta charset="utf-8"><style>' + css + '</style></head><body><h3>RÉPUBLIQUE DU BÉNIN — MEMP — Circonscription Scolaire de POBÈ</h3><h3>Écoles : structure pédagogique et équipements — ' + esc(etat.annee) + '</h3>' + tmp.innerHTML + '<p>' + CREDIT + '</p></body></html>'], { type: 'application/vnd.ms-excel' }));
-    a.download = 'Ecoles_structure_equipements_' + etat.annee + '.xls'; document.body.append(a); a.click(); setTimeout(() => a.remove(), 1500);
+    a.href = URL.createObjectURL(window.XlsxEcrire.depuisHtmlBlob('﻿<html><head><meta charset="utf-8"><style>' + css + '</style></head><body><h3>RÉPUBLIQUE DU BÉNIN — MEMP — Circonscription Scolaire de POBÈ</h3><h3>Écoles : structure pédagogique et équipements — ' + esc(etat.annee) + '</h3>' + tmp.innerHTML + '<p>' + CREDIT + '</p></body></html>'));
+    a.download = 'Ecoles_structure_equipements_' + etat.annee + '.xlsx'; document.body.append(a); a.click(); setTimeout(() => a.remove(), 1500);
   }
   document.head.append(Object.assign(document.createElement('style'), { textContent: `
     #ecolesZone .ez-scroll{overflow-x:auto;background:#fff;border-radius:8px;margin:6px 0 12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}

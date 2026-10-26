@@ -175,8 +175,8 @@
     const corps = ['pub', 'prv'].filter(s => c.tot[s].ecoles).map(s => `<h2>${s === 'pub' ? 'Secteur public' : 'Secteur privé'}</h2>` + sansGraphiques(htmlSecteur(c, s))).join('');
     const html = `<h3>RÉPUBLIQUE DU BÉNIN — MEMP — Circonscription Scolaire de POBÈ</h3><h3>Infrastructures et mobilier — ${esc(etat.annee)}</h3>${corps}<p>${CREDIT}</p>`;
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob(['﻿<html><head><meta charset="utf-8"><style>' + css + '</style></head><body>' + html + '</body></html>'], { type: 'application/vnd.ms-excel' }));
-    a.download = 'Infrastructures_mobilier_' + etat.annee + '.xls'; document.body.append(a); a.click(); setTimeout(() => a.remove(), 1500);
+    a.href = URL.createObjectURL(window.XlsxEcrire.depuisHtmlBlob('﻿<html><head><meta charset="utf-8"><style>' + css + '</style></head><body>' + html + '</body></html>'));
+    a.download = 'Infrastructures_mobilier_' + etat.annee + '.xlsx'; document.body.append(a); a.click(); setTimeout(() => a.remove(), 1500);
   }
   document.head.append(Object.assign(document.createElement('style'), { textContent: `
     #infraZone .inf-scroll{overflow-x:auto;background:#fff;border-radius:8px;margin:6px 0 12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}

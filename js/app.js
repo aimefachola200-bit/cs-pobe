@@ -6322,10 +6322,14 @@
     mobilier: { nom: 'mobilier', colonnes: [
       ['_ecole', 'École'], ['categorie', 'Catégorie'], ['designation', 'Désignation'],
       ['quantite', 'Quantité'], ['etat', 'État'], ['classe', 'Classe concernée']] },
+    /* Mêmes rubriques que le modèle d'importation « Candidats au CEP (liste EDUCMaster ou Excel) » :
+       le fichier téléchargé se réimporte tel quel, et les identifiants (matricule EDUCMaster, NPI) restent du texte. */
     cep: { nom: 'candidats-cep', colonnes: [
-      ['nom', 'Nom et prénoms'], ['sexe', 'Sexe'], ['dateNaiss', 'Date de naissance'],
-      ['lieuNaiss', 'Lieu de naissance'], ['numActe', "N° d'acte"], ['pere', 'Nom du père'],
-      ['mere', 'Nom de la mère'], ['_ecole', 'École'], ['session', 'Session'],
+      ['_rang', 'N°'], ['matricule', 'Matricule / N° EDUCMaster'], ['npi', 'NPI'], ['numTable', 'N° de table'],
+      ['nom', 'Nom'], ['prenoms', 'Prénoms'], ['sexe', 'Sexe'], ['dateNaiss', 'Date de naissance'],
+      ['lieuNaiss', 'Lieu de naissance'], ['numActe', "N° d'acte de naissance"], ['pere', 'Nom du père'],
+      ['mere', 'Nom de la mère'], ['parent_signataire', 'Parent signataire'], ['telParent', 'Téléphone du parent'],
+      ['residence', 'Résidence des parents'], ['_ecole', 'École'], ['option', 'Option'], ['session', 'Session'],
       ['centre', "Centre d'examen"]] }
   };
 
@@ -6351,6 +6355,7 @@
   /** Valeurs calculées, reconnaissables à leur préfixe. */
   function valeurExport(ligne, cle) {
     if (cle.charAt(0) !== '_') return ligne[cle];
+    if (cle === '_rang') return ligne.__rang || '';
     const anc = global.Carriere.anciennetes(ligne, anneeReference());
     switch (cle) {
       case '_ecole': return nomEcole(ligne.ecoleId);
@@ -6371,8 +6376,34 @@
     return /[;"\n\r]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
   }
 
+  /* Les boutons « Excel » produisaient des fichiers CSV : sur un téléphone ils s'ouvraient vides ou en une seule
+     colonne, et ne passaient pas à l'importation. Ils donnent maintenant un vrai classeur .xlsx : rubriques en gras,
+     identifiants en texte ; chaque tableau qui suit une ligne vide et un titre va sur sa propre feuille. */
+  function classeurDepuisCSV(nom, contenu) {
+    const lignes = global.XlsxEcrire.lireCSV(contenu), feuilles = [];
+    const base = nom.replace(/\.csv$/i, '').replace(/^cs-pobe-/, '').replace(/-?\d{4}-\d{4}$/, '');
+    let cur = { nom: base === 'educmaster' ? 'Apprenants' : (base.charAt(0).toUpperCase() + base.slice(1)).replace(/-/g, ' '), lignes: [] };
+    for (let i = 0; i < lignes.length; i++) {
+      const l = lignes[i], prec = lignes[i - 1], suiv = lignes[i + 1];
+      const titre = l.length && l.filter(x => x !== '').length === 1 && prec && !prec.length && suiv && suiv.filter(x => x !== '').length >= 2;
+      if (titre && cur.lignes.length) {
+        while (cur.lignes.length && !cur.lignes[cur.lignes.length - 1].length) cur.lignes.pop();
+        feuilles.push(cur); cur = { nom: String(l.find(x => x !== '')).slice(0, 31), lignes: [] };
+        if (base !== 'educmaster') cur.lignes.push(l);
+        continue;
+      }
+      cur.lignes.push(l);
+    }
+    feuilles.push(cur);
+    return global.XlsxEcrire.classeur(feuilles);
+  }
+
   function telecharger(nom, contenu, type) {
-    const blob = new Blob(['\ufeff' + contenu], { type: type || 'text/csv;charset=utf-8' });
+    if (!type && /\.csv$/i.test(nom) && global.XlsxEcrire) {
+      nom = nom.replace(/\.csv$/i, '.xlsx');
+      contenu = classeurDepuisCSV(nom.replace(/\.xlsx$/i, '.csv'), contenu);
+    }
+    const blob = contenu instanceof Blob ? contenu : new Blob(['\ufeff' + contenu], { type: type || 'text/csv;charset=utf-8' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = nom;
@@ -6400,6 +6431,7 @@
     if (modele.filtre) lignes = lignes.filter(modele.filtre);
     if (!lignes.length) { alert('Rien à télécharger dans ce module.'); return; }
 
+    lignes = lignes.map((l, i) => Object.assign({}, l, { __rang: i + 1 }));
     const contenu = [modele.colonnes.map(c => champCSV(c[1])).join(';')]
       .concat(lignes.map(l => modele.colonnes.map(c => champCSV(valeurExport(l, c[0]))).join(';')))
       .join('\r\n');

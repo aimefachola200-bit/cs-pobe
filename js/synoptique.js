@@ -125,8 +125,8 @@
     let html = `<h3>RÉPUBLIQUE DU BÉNIN — MEMP — Circonscription Scolaire de POBÈ</h3><h3>Tableau synoptique — ${esc(titreNiveau())} — ${esc(etat.annee)}</h3>` + tableSynoptique(derniere);
     if (!global.Config.estEcole() && etat.niveau === 'cs') html += '<br>' + tableRepartition(derniere, 'zone_ped', 'Zone pédagogique');
     if (!global.Config.estEcole() && (etat.niveau === 'cs' || etat.niveau === 'zone')) html += '<br>' + tableRepartition(derniere, 'unite_ped', 'Unité pédagogique');
-    saveFile(new Blob(['﻿<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><style>' + css + '</style></head><body>' + html + `<p>${CREDIT}</p></body></html>`], { type: 'application/vnd.ms-excel' }),
-      clean('Tableau_synoptique_' + titreNiveau() + '_' + etat.annee) + '.xls');
+    saveFile(window.XlsxEcrire.depuisHtmlBlob('﻿<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><style>' + css + '</style></head><body>' + html + `<p>${CREDIT}</p></body></html>`),
+      clean('Tableau_synoptique_' + titreNiveau() + '_' + etat.annee) + '.xlsx');
   }
 
   document.head.append(h('style', null, `

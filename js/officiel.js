@@ -43,7 +43,7 @@
       + '<tr>' + entetes.map(e => '<th style="background:#12324F;color:#fff">' + esc(e) + '</th>').join('') + '</tr>'
       + lignes.map(l => '<tr>' + l.map(c => '<td style="vertical-align:top">' + esc(c).replace(/\n/g, '<br style="mso-data-placement:same-cell">') + '</td>').join('') + '</tr>').join('')
       + '</table></body></html>';
-    const a = h('a', { href: URL.createObjectURL(new Blob(['﻿' + html], { type: 'application/vnd.ms-excel' })), download: nom + '.xls' });
+    const a = h('a', { href: URL.createObjectURL(window.XlsxEcrire.depuisHtmlBlob('﻿' + html)), download: nom + '.xlsx' });
     document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   }
   const barre = (...boutons) => h('div', { class: 'doc-actions no-print' }, ...boutons);

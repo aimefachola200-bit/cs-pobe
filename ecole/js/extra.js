@@ -390,7 +390,7 @@
   async function exportXls(b) {
     const html = await bilanHtml(b, []);
     const css = 'table{border-collapse:collapse}td,th{border:1px solid #888;padding:3px;text-align:center;font:11px Arial}th{background:#e8f2ec}.lab{text-align:left;font-weight:bold}.tot td{background:#fff3c4;font-weight:bold}.calc{background:#f3f3f3}.bilan-ban{width:900px}h2,h3{font:bold 13px Arial}';
-    saveFile(new Blob(['﻿<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><style>' + css + '</style></head><body>' + html + '</body></html>'], { type: 'application/vnd.ms-excel' }), clean(fileBase(b)) + '.xls');
+    saveFile(window.XlsxEcrire.depuisHtmlBlob('﻿<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><style>' + css + '</style></head><body>' + html + '</body></html>'), clean(fileBase(b)) + '.xlsx');
   }
 
   /* ================= DOCUMENTS DE RÉFÉRENCE ================= */
