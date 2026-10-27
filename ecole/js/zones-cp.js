@@ -49,8 +49,8 @@
   const date = () => new Date().toLocaleDateString('fr-FR');
 
   function fenetre(titre, corps, feuilles, nomFichier) {
-    A().openModal(titre, '<div class="xbar no-print"><button class="btn btn-primary" type="button" id="zcpImprimer">🖨️ Imprimer / PDF</button> '
-      + '<button class="btn btn-info" type="button" id="zcpExcel">📊 Excel</button></div>'
+    A().openModal(titre, '<div class="xbar no-print"><button class="btn btn-primary" type="button" id="zcpImprimer">\uE008 Imprimer / PDF</button> '
+      + '<button class="btn btn-info" type="button" id="zcpExcel">\uE015 Excel</button></div>'
       + '<div class="page-a4 zcp-doc">' + A().enteteDocument({}) + corps
       + '<p style="margin-top:14px">Pobè, le ' + date() + '</p></div>');
     document.getElementById('zcpImprimer').onclick = () => { document.body.classList.add('bilan-print'); window.print(); setTimeout(() => document.body.classList.remove('bilan-print'), 1500); };
@@ -67,7 +67,7 @@
   const ligneEcole = (e, i) => [i + 1, e.nom || '', e.arrondissement || '', e.village || e.localite || '', directeurDe(e).nom, contactDe(e)];
 
   function tableEcoles(liste, titre, edition) {
-    const crayon = (e, t) => edition ? ' <button class="btn btn-sm no-print zcp-comp" onclick="openEcoleModal(\'' + esc(e.id) + '\')" title="' + esc(t) + '">✏️</button>' : '';
+    const crayon = (e, t) => edition ? ' <button class="btn btn-sm no-print zcp-comp" onclick="openEcoleModal(\'' + esc(e.id) + '\')" title="' + esc(t) + '">\uE006</button>' : '';
     const cellule = (e, v, j) => {
       if (j === 0) return '<td class="c">' + esc(v) + '</td>';
       if (j === 4 && v && directeurDe(e).source)
@@ -84,8 +84,8 @@
   /** Bloc pour l'espace CP de la zone (HTML). */
   function blocEcoles(zone) {
     const { pub, prv } = ecolesZone(zone);
-    return '<div class="xbar no-print"><button class="btn btn-primary btn-sm" onclick="ZonesCP.imprimerEcoles(\'' + esc(zone) + '\')">🖨️ Imprimer / PDF</button>'
-      + '<button class="btn btn-info btn-sm" onclick="ZonesCP.excelEcoles(\'' + esc(zone) + '\')">📊 Excel</button></div>'
+    return '<div class="xbar no-print"><button class="btn btn-primary btn-sm" onclick="ZonesCP.imprimerEcoles(\'' + esc(zone) + '\')">\uE008 Imprimer / PDF</button>'
+      + '<button class="btn btn-info btn-sm" onclick="ZonesCP.excelEcoles(\'' + esc(zone) + '\')">\uE015 Excel</button></div>'
       + '<p class="xnote">' + (pub.length + prv.length) + ' école(s) en activité dans la ' + esc(zone) + ' : ' + pub.length + ' publique(s), ' + prv.length
       + ' privée(s). Les écoles ne fonctionnant plus n’y figurent pas.</p>'
       + tableEcoles(pub, 'Écoles publiques', true) + tableEcoles(prv, 'Écoles privées (laïques et confessionnelles)', true);
@@ -135,7 +135,7 @@
         + l.map((p, i) => '<tr><td class="c">' + (i + 1) + '</td><td><b>' + esc(p.nom) + '</b></td><td class="c">' + esc(p.sexe || '') + '</td><td>' + esc(p.statut || '') + '</td><td>' + esc(p.grade || '')
           + '</td><td>' + esc(libFonction(p)) + '</td><td>' + esc(p.ecoleId ? A().nomEcole(p.ecoleId) : 'Service CS') + '</td><td>' + esc(p.telephone || '') + '</td>'
           + (edition ? '<td class="no-print">' + (z === SANS_ZONE || !ecoleDe(p) || !ecoleDe(p).zone_ped
-            ? '<button class="btn btn-warning btn-sm" onclick="ZonesCP.attribuerZone(\'' + esc(p.id) + '\')">📍 ' + (z === SANS_ZONE ? 'Attribuer une zone' : 'Changer') + '</button>'
+            ? '<button class="btn btn-warning btn-sm" onclick="ZonesCP.attribuerZone(\'' + esc(p.id) + '\')">\uE02C ' + (z === SANS_ZONE ? 'Attribuer une zone' : 'Changer') + '</button>'
             : '<span class="petit muet">zone de l’école</span>') + '</td>' : '') + '</tr>').join('')
         + '</tbody></table></div></div>';
     }).join('') || '<p class="xnote">Aucun enseignant dans cette rubrique.</p>';
@@ -143,8 +143,8 @@
   /** Bloc pour l'espace CP de la zone (HTML). */
   function blocPersonnel(zone) {
     const rep = repartition();
-    return '<div class="xbar no-print"><button class="btn btn-info btn-sm" onclick="ZonesCP.excelPersonnel(\'' + esc(zone) + '\')">📊 Excel</button>'
-      + '<button class="btn btn-sm" onclick="showPage(\'personnelZones\')">👥 Toutes les zones</button></div>'
+    return '<div class="xbar no-print"><button class="btn btn-info btn-sm" onclick="ZonesCP.excelPersonnel(\'' + esc(zone) + '\')">\uE015 Excel</button>'
+      + '<button class="btn btn-sm" onclick="showPage(\'personnelZones\')">\uE01C Toutes les zones</button></div>'
       + tableauRecap(rep, [zone]) + listesZone(rep, zone, true);
   }
   function feuillesPersonnel(zones) {
@@ -170,7 +170,7 @@
     A().openModal('Attribuer une zone — ' + p.nom, '<form id="zcpForm"><p class="xnote">L’enseignant est rangé dans la zone de son école. Sans école rattachée à une zone, on lui attribue ici une zone pédagogique.</p>'
       + '<div class="form-group"><label>Zone pédagogique</label><select name="zone"><option value="">— Personnel de la CS (zone à attribuer) —</option>'
       + ZONES().map(z => '<option' + (p.zone === z ? ' selected' : '') + '>' + esc(z) + '</option>').join('') + '</select></div>'
-      + '<div class="text-center mt-15"><button type="submit" class="btn btn-primary">💾 Enregistrer</button> <button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button></div></form>');
+      + '<div class="text-center mt-15"><button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> <button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button></div></form>');
     document.getElementById('zcpForm').onsubmit = (ev) => {
       ev.preventDefault(); p.zone = new FormData(ev.target).get('zone') || ''; A().saveData(); A().closeModal(); rafraichir();
     };
@@ -183,7 +183,7 @@
     const zones = [...ZONES(), SANS_ZONE], rep = repartition();
     if (!onglet || zones.indexOf(onglet) < 0) onglet = 'Récapitulatif';
     const nb = (z) => RUBRIQUES.reduce((s, r) => s + rep[z][r[0]].length, 0);
-    el.innerHTML = '<div class="page-title">👥 Personnel enseignant par zone, section et cours<span><button class="btn btn-warning" onclick="ZonesCP.excelPersonnel()">📊 Excel</button></span></div>'
+    el.innerHTML = '<div class="page-title">\uE01C Personnel enseignant par zone, section et cours<span><button class="btn btn-warning" onclick="ZonesCP.excelPersonnel()">\uE015 Excel</button></span></div>'
       + '<p class="xnote">Chaque enseignant (et éducateur) en poste est rangé dans la zone de son école ; à défaut, dans la zone portée sur sa fiche. Sans zone, il figure dans « ' + SANS_ZONE + ' » en attendant qu’on lui en attribue une. Les rubriques suivent le cours tenu (ou la section en maternelle) saisi dans la fiche de l’agent ou dans l’attribution des classes.</p>'
       + '<div class="tabs no-print">' + ['Récapitulatif', ...zones].map(z => '<button class="tab' + (z === onglet ? ' active' : '') + '" onclick="ZonesCP.onglet(\'' + esc(z) + '\')">' + esc(z)
         + (z === 'Récapitulatif' ? '' : ' (' + nb(z) + ')') + '</button>').join('') + '</div>'

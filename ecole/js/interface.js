@@ -1,5 +1,5 @@
 /* CS Pobè / Mon école — présentation commune avec SCOLARIS et GESCOL :
-   menu latéral en tiroir (☰) sur téléphone et tablette, marque et version dans le menu,
+   menu latéral en tiroir (\uE03E) sur téléphone et tablette, marque et version dans le menu,
    mise à jour automatique de l'application (service worker). Conception : Maître Aimé FACHE */
 (function (global) {
   'use strict';

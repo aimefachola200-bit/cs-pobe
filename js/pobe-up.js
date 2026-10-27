@@ -5,7 +5,7 @@
      vides sont remplies ; les valeurs posées automatiquement par l'ancien référentiel (zones des maternelles, unités
      « UP … » provisoires) et les effectifs de maternelle mal rangés (sections dans CI / CP / CE1) sont corrigés ;
      ce que l'utilisateur a saisi lui-même reste ;
-   • ♻ réinitialiser : remet les valeurs officielles (une UP, une école, des effectifs, ou tout).
+   • \uE058 réinitialiser : remet les valeurs officielles (une UP, une école, des effectifs, ou tout).
    Chaque valeur posée est notée sur la fiche (_officiel) : une mise à jour ultérieure des données ne remplace que ce
    qui n'a pas été modifié depuis. */
 (function (global) {

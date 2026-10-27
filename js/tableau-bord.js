@@ -11,19 +11,19 @@
   const lien = page => "showPage('" + page + "', document.querySelector('.menu-item[data-page=" + page + "]'))";
 
   const RACCOURCIS_CS = [
-    ['ecoles', '🏫', 'Écoles', 'Liste et fiches'], ['personnel', '👥', 'Personnel', 'Enseignants et carrières'],
-    ['effectifs', '👨‍🎓', 'Effectifs', 'Élèves par école'], ['echanges', '🔄', 'Échanges', 'Paquets des écoles'],
-    ['visites', '🔎', 'Visites', 'Inspections'], ['fiches', '🗂️', 'Fiches officielles', 'À imprimer'],
-    ['docsref', '📚', 'Documents officiels', 'Calendrier, planifications'], ['courriers', '📬', 'Courriers', 'Arrivée et départ'],
-    ['bilans', '📊', 'Bilans', 'Trimestriels et annuel'], ['backup', '💾', 'Sauvegarde', 'Garder une copie']
+    ['ecoles', '\uE022', 'Écoles', 'Liste et fiches'], ['personnel', '\uE01C', 'Personnel', 'Enseignants et carrières'],
+    ['effectifs', '\uE020', 'Effectifs', 'Élèves par école'], ['echanges', '\uE058', 'Échanges', 'Paquets des écoles'],
+    ['visites', '\uE02A', 'Visites', 'Inspections'], ['fiches', '\uE011', 'Fiches officielles', 'À imprimer'],
+    ['docsref', '\uE031', 'Documents officiels', 'Calendrier, planifications'], ['courriers', '\uE04F', 'Courriers', 'Arrivée et départ'],
+    ['bilans', '\uE015', 'Bilans', 'Trimestriels et annuel'], ['backup', '\uE007', 'Sauvegarde', 'Garder une copie']
   ];
   const RACCOURCIS_ECOLE = [
-    ['maFiche', '🧑‍💼', 'Ma fiche école', 'Renseignements'], ['apprenants', '🧒', 'Apprenants', 'Listes par classe'],
-    ['presenceApprenants', '🗓️', 'Présences', 'Appel du jour'], ['notes', '🗒️', 'Notes et bulletins', 'Évaluations'],
-    ['registres', '📋', 'Registres et synthèse', 'Appel, affichage, statistiques'], ['educmaster', '🔄', 'EducMaster', 'Élèves et notes'],
-    ['personnel', '👥', 'Personnel', 'Enseignants'], ['cep', '📋', 'Inscription CEP', 'Fiches candidats'],
-    ['docsref', '📚', 'Documents officiels', 'Calendrier, emplois du temps'], ['echanges', '🔄', 'Envoyer à la CS', 'Paquet de l’école'],
-    ['fiches', '🗂️', 'Fiches officielles', 'À imprimer'], ['backup', '💾', 'Sauvegarde', 'Garder une copie']
+    ['maFiche', '\uE01D', 'Ma fiche école', 'Renseignements'], ['apprenants', '\uE01F', 'Apprenants', 'Listes par classe'],
+    ['presenceApprenants', '\uE017', 'Présences', 'Appel du jour'], ['notes', '\uE010', 'Notes et bulletins', 'Évaluations'],
+    ['registres', '\uE00F', 'Registres et synthèse', 'Appel, affichage, statistiques'], ['educmaster', '\uE058', 'EducMaster', 'Élèves et notes'],
+    ['personnel', '\uE01C', 'Personnel', 'Enseignants'], ['cep', '\uE00F', 'Inscription CEP', 'Fiches candidats'],
+    ['docsref', '\uE031', 'Documents officiels', 'Calendrier, emplois du temps'], ['echanges', '\uE058', 'Envoyer à la CS', 'Paquet de l’école'],
+    ['fiches', '\uE011', 'Fiches officielles', 'À imprimer'], ['backup', '\uE007', 'Sauvegarde', 'Garder une copie']
   ];
 
   function kpi(libelle, valeur, detail, page) {
@@ -59,7 +59,7 @@
     const existe = p => !!document.querySelector('.menu-item[data-page="' + p + '"]');
     const racc = (ecole() ? RACCOURCIS_ECOLE : RACCOURCIS_CS).filter(([p]) => vis(p) && existe(p));
     const raccHtml = '<div class="raccourcis">'
-      + (al.length ? '<a href="#" class="alerte" onclick="event.preventDefault();' + lien('alertes') + '"><span class="ico">🚨</span><b>Alertes</b><span class="d">' + al.length + ' point(s) à voir</span></a>' : '')
+      + (al.length ? '<a href="#" class="alerte" onclick="event.preventDefault();' + lien('alertes') + '"><span class="ico">\uE041</span><b>Alertes</b><span class="d">' + al.length + ' point(s) à voir</span></a>' : '')
       + racc.map(([p, i, t, s]) => '<a href="#" onclick="event.preventDefault();' + lien(p) + '"><span class="ico">' + i + '</span><b>' + t + '</b><span class="d">' + s + '</span></a>').join('') + '</div>';
 
     /* indicateurs */
@@ -90,10 +90,10 @@
 
     /* alertes */
     const blocAlertes = '<div class="carte"><h2>' + (ecole() ? '1' : '2') + '. Points à surveiller</h2>'
-      + (al.length ? al.slice(0, 5).map(a => '<div class="alerte-l ' + a.niveau + '"><span class="ico">' + (a.niveau === 'danger' ? '⛔' : a.niveau === 'warning' ? '⚠️' : 'ℹ️') + '</span><div>'
+      + (al.length ? al.slice(0, 5).map(a => '<div class="alerte-l ' + a.niveau + '"><span class="ico">' + (a.niveau === 'danger' ? '\uE036' : a.niveau === 'warning' ? '\uE041' : '\uE07B') + '</span><div>'
         + '<b>' + esc(a.titre) + '</b>' + (a.action ? ' <a href="#" onclick="event.preventDefault();' + a.action + '">' + esc(a.libelle) + '</a>' : '') + '</div></div>').join('')
         + (al.length > 5 ? '<p><a href="#" onclick="event.preventDefault();' + lien('alertes') + '">Voir les ' + al.length + ' alertes</a></p>' : '')
-        : '<p class="sous">✔ Rien à signaler : tout est à jour.</p>') + '</div>';
+        : '<p class="sous">\uE003 Rien à signaler : tout est à jour.</p>') + '</div>';
 
     const n0 = ecole() ? 2 : 3;
     const liste = (items, vide) => items.length ? '<div class="liste-l">' + items.join('') + '</div>' : '<p class="sous">' + vide + '</p>';

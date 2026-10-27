@@ -1,5 +1,5 @@
 {
- "version": "df6a4732f189",
+ "version": "2eccf7611b64",
  "files": [
   "./",
   "css/style.css",
@@ -69,6 +69,7 @@
   "js/examen.js",
   "js/extra.js",
   "js/graphiques.js",
+  "js/icones.js",
   "js/import.js",
   "js/infra-zone.js",
   "js/interface.js",
@@ -76,6 +77,9 @@
   "js/pieces.js",
   "js/pobe-up.js",
   "js/presences.js",
+  "js/pvs-cs.js",
+  "js/pvs-modules.js",
+  "js/pvs.js",
   "js/qr.js",
   "js/rapports.js",
   "js/registres.js",

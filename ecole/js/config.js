@@ -27,11 +27,11 @@
 
   const TITRES = {
     CIRCONSCRIPTION: {
-      titre: '🏫 Circonscription Scolaire de POBÈ',
+      titre: '\uE022 Circonscription Scolaire de POBÈ',
       sousTitre: 'Département du Plateau — République du Bénin'
     },
     ECOLE: {
-      titre: '🏫 {ecole}',
+      titre: '\uE022 {ecole}',
       sousTitre: 'Circonscription Scolaire de Pobè — Département du Plateau'
     }
   };
@@ -45,5 +45,5 @@
 
   /* Version de l'application (affichée dans le menu ; lue aussi pour l'APK et l'installateur Windows). */
   global.Config = { MODE, estEcole, pageVisible, PAGES_CIRCONSCRIPTION, TITRES,
-    version: '2.7.0' };
+    version: '2.8.0' };
 })(window);

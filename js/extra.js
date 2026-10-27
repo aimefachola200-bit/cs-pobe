@@ -129,13 +129,13 @@
       try { const d = await shrink(video, facing === 'user'); count++; shots.append(h('img', { src: d, alt: '' })); info.textContent = count + ' photo(s) · ' + (facing === 'user' ? 'caméra avant' : 'caméra arrière'); await onCapture(d, facing); } finally { busy = false; }
     };
     const ov = h('div', { class: 'cam-overlay' }, h('div', { class: 'cam-box' },
-      h('div', { class: 'cam-head' }, h('b', null, '📷 Appareil photo — avant / arrière'), h('button', { class: 'btn btn-danger', onclick: close }, '✖ Terminer')),
+      h('div', { class: 'cam-head' }, h('b', null, '\uE03C Appareil photo — avant / arrière'), h('button', { class: 'btn btn-danger', onclick: close }, '\uE002 Terminer')),
       h('div', { class: 'cam-stage' }, video), info,
       h('div', { class: 'cam-bar' },
-        h('button', { class: 'btn btn-info', onclick: async () => { facing = facing === 'user' ? 'environment' : 'user'; appareil = choisirCamera(await camerasVideo(), facing, appareil) || ''; start(); } }, '🔄 Avant ⇄ Arrière'),
-        h('button', { class: 'btn btn-primary cam-snap', onclick: snap }, '📸 Prendre la photo'),
-        h('button', { class: 'btn btn-warning', onclick: async () => { for (const p of await pickImages(facing)) { count++; await onCapture(p.data, p.facing); } } }, '📱 Photo native'),
-        h('button', { class: 'btn', onclick: async () => { for (const p of await pickImages()) { count++; shots.append(h('img', { src: p.data, alt: '' })); await onCapture(p.data, 'galerie'); } } }, '🖼 Galerie')),
+        h('button', { class: 'btn btn-info', onclick: async () => { facing = facing === 'user' ? 'environment' : 'user'; appareil = choisirCamera(await camerasVideo(), facing, appareil) || ''; start(); } }, '\uE058 Avant ⇄ Arrière'),
+        h('button', { class: 'btn btn-primary cam-snap', onclick: snap }, '\uE03C Prendre la photo'),
+        h('button', { class: 'btn btn-warning', onclick: async () => { for (const p of await pickImages(facing)) { count++; await onCapture(p.data, p.facing); } } }, '\uE045 Photo native'),
+        h('button', { class: 'btn', onclick: async () => { for (const p of await pickImages()) { count++; shots.append(h('img', { src: p.data, alt: '' })); await onCapture(p.data, 'galerie'); } } }, '\uE046 Galerie')),
       shots));
     document.body.append(ov); start();
   }
@@ -178,16 +178,16 @@
       h('td', null, (b.updated || '').slice(0, 10)))));
     const s = () => { const b = find(vue.sel); if (!b) toast('Sélectionnez un bilan dans la liste.'); return b; };
     r.append(
-      h('div', { class: 'page-title' }, '📊 Bilans des activités pédagogiques', h('button', { class: 'btn btn-primary', onclick: create }, '➕ Nouveau bilan')),
+      h('div', { class: 'page-title' }, '\uE015 Bilans des activités pédagogiques', h('button', { class: 'btn btn-primary', onclick: create }, '\uE001 Nouveau bilan')),
       h('p', { class: 'xnote' }, 'Bilans trimestriels (T1, T2, T3) et annuel — niveau zone pédagogique (CP) et niveau circonscription scolaire (CCS). Cliquez sur une ligne pour la sélectionner, double-clic pour l\'ouvrir.'),
       h('div', { class: 'xbar' },
-        h('button', { class: 'btn btn-info', onclick: () => { const b = s(); b && open(b.id); } }, '📂 Ouvrir'),
-        h('button', { class: 'btn btn-warning', onclick: () => loadFile(null) }, '⬆ Charger'),
-        h('button', { class: 'btn btn-primary', onclick: () => { const b = s(); b && preview(b); } }, '⬇ PDF / Imprimer'),
-        h('button', { class: 'btn btn-primary', onclick: () => { const b = s(); b && exportXls(b); } }, '⬇ Excel'),
-        h('button', { class: 'btn btn-primary', onclick: () => { const b = s(); b && exportJson(b); } }, '⬇ JSON'),
-        h('button', { class: 'btn btn-warning', onclick: () => { const b = s(); b && resetB(b); } }, '♻ Réinitialiser'),
-        h('button', { class: 'btn btn-danger', onclick: () => { const b = s(); b && deleteB(b); } }, '🗑 Supprimer')),
+        h('button', { class: 'btn btn-info', onclick: () => { const b = s(); b && open(b.id); } }, '\uE014 Ouvrir'),
+        h('button', { class: 'btn btn-warning', onclick: () => loadFile(null) }, '\uE00A Charger'),
+        h('button', { class: 'btn btn-primary', onclick: () => { const b = s(); b && preview(b); } }, '\uE009 PDF / Imprimer'),
+        h('button', { class: 'btn btn-primary', onclick: () => { const b = s(); b && exportXls(b); } }, '\uE009 Excel'),
+        h('button', { class: 'btn btn-primary', onclick: () => { const b = s(); b && exportJson(b); } }, '\uE009 JSON'),
+        h('button', { class: 'btn btn-warning', onclick: () => { const b = s(); b && resetB(b); } }, '\uE058 Réinitialiser'),
+        h('button', { class: 'btn btn-danger', onclick: () => { const b = s(); b && deleteB(b); } }, '\uE005 Supprimer')),
       h('div', { class: 'table-container' }, h('div', { class: 'table-scroll' }, h('table', null,
         h('thead', null, h('tr', null, ...['Niveau', 'Période', 'Année', '% visites de classes', '% réussite évaluation', 'Statut', 'Modifié'].map(x => h('th', null, x)))),
         rows.length ? body : h('tbody', null, h('tr', null, h('td', { colspan: 7, class: 'text-center' }, 'Aucun bilan. Cliquez sur « Nouveau bilan » ou « Charger ».')))))));
@@ -208,7 +208,7 @@
         h('div', { class: 'form-group' }, h('label', null, 'Année scolaire'), h('input', { name: 'annee', required: true, value: App().anneeActive() })),
         h('div', { class: 'form-group' }, h('label', null, 'N° de la zone (niveau zone)'), h('input', { name: 'numZone', type: 'number', min: 1, value: 1 })),
         h('div', { class: 'form-group' }, h('label', null, 'Nombre de zones du CS (niveau CS)'), h('input', { name: 'zones', type: 'number', min: 1, value: 6 }))),
-      h('div', { class: 'text-center mt-15' }, h('button', { class: 'btn btn-primary', type: 'submit' }, '✔ Créer'), ' ', h('button', { class: 'btn btn-danger', type: 'button', onclick: App().closeModal }, 'Annuler')));
+      h('div', { class: 'text-center mt-15' }, h('button', { class: 'btn btn-primary', type: 'submit' }, '\uE003 Créer'), ' ', h('button', { class: 'btn btn-danger', type: 'button', onclick: App().closeModal }, 'Annuler')));
     App().openModal('Nouveau bilan des activités pédagogiques', '<div id="xcreate"></div>'); document.getElementById('xcreate').append(f);
   }
 
@@ -241,7 +241,7 @@
   }
 
   /* ---------- éditeur ---------- */
-  const TABS = [['entete', 'En-tête'], ['t1', '1. Réseau'], ['act', '2. Activités'], ['conc', '3. Concertations'], ['t4', '4. Couverture'], ['ev', '5. Évaluations'], ['ana', '6. Analyses'], ['prob', '7. Difficultés'], ['photos', '📷 Photos']];
+  const TABS = [['entete', 'En-tête'], ['t1', '1. Réseau'], ['act', '2. Activités'], ['conc', '3. Concertations'], ['t4', '4. Couverture'], ['ev', '5. Évaluations'], ['ana', '6. Analyses'], ['prob', '7. Difficultés'], ['photos', '\uE03C Photos']];
 
   function editor(r, b) {
     let timer = null, dirty = false; const calcs = [];
@@ -250,7 +250,7 @@
     const touch = () => { dirty = true; state.textContent = 'Modification…'; refresh(); clearTimeout(timer); timer = setTimeout(save, 700); };
     function refresh() {
       for (const c of calcs) if (c.el.isConnected) c.el.textContent = S.fmtCell(S.cellValue(b, c.tid, c.row, c.col), c.spec);
-      const w = S.checks(b); warn.replaceChildren(...(w.length ? [h('div', { class: 'alert alert-warning' }, h('b', null, '⚠ Contrôles de cohérence : '), h('ul', null, ...w.slice(0, 8).map(x => h('li', null, x))))] : []));
+      const w = S.checks(b); warn.replaceChildren(...(w.length ? [h('div', { class: 'alert alert-warning' }, h('b', null, '\uE041 Contrôles de cohérence : '), h('ul', null, ...w.slice(0, 8).map(x => h('li', null, x))))] : []));
     }
     function grid(tid) {
       const spec = S.TABLES[tid], L = S.layoutHead(spec.head), trs = Array.from({ length: L.headRows }, () => h('tr'));
@@ -276,8 +276,8 @@
       draw();
       return h('div', { class: 'xcard' }, h('h3', null, title), hint ? h('p', { class: 'xnote' }, hint) : null,
         h('div', { class: 'gridwrap' }, h('table', { class: 'g' }, h('thead', null, h('tr', null, h('th', null, 'N°'), ...cols.map(c => h('th', null, c.l)), h('th', null, ''))), tb)),
-        h('p', null, h('button', { class: 'btn btn-info btn-sm', onclick: () => { b.lists[name].push(newRow()); touch(); draw(); } }, '➕ Ajouter une ligne'), ' ',
-          name === 'problemes' ? h('button', { class: 'btn btn-warning btn-sm', onclick: () => { b.lists.problemes.sort((x, y) => (+y.ampleur || 0) - (+x.ampleur || 0)); touch(); draw(); } }, '🔢 Trier par ampleur') : null));
+        h('p', null, h('button', { class: 'btn btn-info btn-sm', onclick: () => { b.lists[name].push(newRow()); touch(); draw(); } }, '\uE001 Ajouter une ligne'), ' ',
+          name === 'problemes' ? h('button', { class: 'btn btn-warning btn-sm', onclick: () => { b.lists.problemes.sort((x, y) => (+y.ampleur || 0) - (+x.ampleur || 0)); touch(); draw(); } }, '\uE040 Trier par ampleur') : null));
     }
     const area = (k, l, rows) => h('div', { class: 'form-group xwide' }, h('label', null, l), h('textarea', { rows: rows || 4, oninput: (e) => { b.textes[k] = e.target.value; touch(); } }, b.textes[k] || ''));
     const ef = (k, l, type) => h('div', { class: 'form-group' }, h('label', null, l), h('input', { type: type || 'text', value: b.entete[k] ?? '', oninput: (e) => { b.entete[k] = e.target.value; touch(); } }));
@@ -289,13 +289,13 @@
         wrap.replaceChildren(...(ps.length ? ps.map(p => h('figure', { class: 'photo' }, h('img', { src: p.data, alt: p.legende || 'Photo' }),
           h('input', { type: 'text', placeholder: 'Légende (activité, lieu, date…)', value: p.legende || '', oninput: async (e) => { p.legende = e.target.value; await PhotoDB.put(p); } }),
           h('figcaption', null, new Date(p.date).toLocaleString('fr-FR') + ' · ' + (p.facing === 'user' ? 'caméra avant' : p.facing === 'environment' ? 'caméra arrière' : 'galerie')),
-          h('button', { class: 'btn btn-danger btn-sm', onclick: async () => { if (confirm('Supprimer cette photo ?')) { await PhotoDB.del(p.id); draw(); } } }, '🗑 Supprimer'))) : [h('div', { class: 'xnote' }, "Aucune photo. Utilisez l'appareil photo (caméra avant ou arrière) pour joindre des preuves : elles seront ajoutées en annexe du PDF.")]));
+          h('button', { class: 'btn btn-danger btn-sm', onclick: async () => { if (confirm('Supprimer cette photo ?')) { await PhotoDB.del(p.id); draw(); } } }, '\uE005 Supprimer'))) : [h('div', { class: 'xnote' }, "Aucune photo. Utilisez l'appareil photo (caméra avant ou arrière) pour joindre des preuves : elles seront ajoutées en annexe du PDF.")]));
       };
       draw();
       const add = async (data, facing) => { await PhotoDB.put({ id: uid(), bilanId: b.id, data, facing, legende: '', date: now() }); if (vue.tab === 'photos') draw(); };
       return h('div', { class: 'xcard' }, h('h3', null, 'Preuves photographiques'),
-        h('p', null, h('button', { class: 'btn btn-primary', onclick: () => openCamera(add) }, "📷 Ouvrir l'appareil photo"), ' ',
-          h('button', { class: 'btn btn-info', onclick: async () => { for (const p of await pickImages()) await add(p.data, p.facing); } }, '🖼 Ajouter depuis la galerie')), wrap);
+        h('p', null, h('button', { class: 'btn btn-primary', onclick: () => openCamera(add) }, "\uE03C Ouvrir l'appareil photo"), ' ',
+          h('button', { class: 'btn btn-info', onclick: async () => { for (const p of await pickImages()) await add(p.data, p.facing); } }, '\uE046 Ajouter depuis la galerie')), wrap);
     }
 
     function show() {
@@ -316,7 +316,7 @@
             const d = S.draftAnalysis(b), keys = Object.keys(d).filter(k => d[k]); if (!keys.length) return toast("Renseignez d'abord les résultats de l'évaluation et les activités.");
             const filled = keys.filter(k => (b.textes[k] || '').trim()); if (filled.length && !confirm('Certaines analyses sont déjà rédigées. Les écraser par le brouillon automatique ?')) keys.forEach(k => { if (filled.includes(k)) delete d[k]; });
             Object.assign(b.textes, d); touch(); show();
-          } }, "✨ Générer un brouillon d'analyse (à relire)")),
+          } }, "\uE03D Générer un brouillon d'analyse (à relire)")),
           h('div', { class: 'form-grid xone' }, area('quant', '6.1 Analyse quantitative'), area('qual', '6.2 Analyse qualitative'), area('genre', '6.3 Performances selon le genre', 3), area('champs', '6.4 Performances selon les disciplines (Français, Mathématiques…)', 3), area('up', '6.5 Apport des unités pédagogiques (UP)', 3), area('conclusion', '6.6 Conclusion', 3)))],
         prob: () => [listEd('problemes', [{ k: 'designation', l: 'Désignation du problème', area: true, w: '230px' }, { k: 'ampleur', l: 'Ampleur (%)', num: true, w: '70px' }, { k: 'obs', l: 'Observations / solutions envisagées', area: true, w: '260px' }], () => ({ designation: '', ampleur: '', obs: '' }), '7. Difficultés majeures rencontrées', "Classez-les par ordre d'importance (ampleur en % des écoles/classes concernées)."),
           h('div', { class: 'xcard' }, h('h3', null, 'Commentaires et perspectives'), h('div', { class: 'form-grid xone' }, area('commentaires', 'Commentaires'), area('perspectives', 'Perspectives et recommandations')))],
@@ -326,18 +326,18 @@
     }
 
     const bar = h('div', { class: 'xbar' },
-      h('button', { class: 'btn btn-warning', onclick: () => { save(); loadFile(b); } }, '⬆ Charger'),
-      h('button', { class: 'btn btn-primary', onclick: () => { save(); preview(b); } }, '⬇ PDF / Imprimer'),
-      h('button', { class: 'btn btn-primary', onclick: () => { save(); exportXls(b); } }, '⬇ Excel'),
-      h('button', { class: 'btn btn-primary', onclick: () => { save(); exportJson(b); } }, '⬇ JSON'),
-      h('button', { class: 'btn btn-info', onclick: () => { vue.tab = 'photos'; show(); openCamera(async (d, f) => { await PhotoDB.put({ id: uid(), bilanId: b.id, data: d, facing: f, legende: '', date: now() }); if (vue.tab === 'photos') show(); }); } }, '📷 Appareil photo'),
-      b.periode !== 'ANNUEL' && b.niveau === 'ZONE' ? h('button', { class: 'btn', onclick: () => { const nz = String(b.entete.numZone || '').replace(/\D/g, ''); const sc = App().data.ecoles.filter(x => !nz || String(x.zone_ped || '').replace(/\D/g, '') === nz); const a = b.actors[0].k; b.data['t1.' + a + '.em_e'] = String(sc.filter(x => /^EM/.test(x.type || '')).length); b.data['t1.' + a + '.ep_e'] = String(sc.filter(x => !/^EM/.test(x.type || '')).length); touch(); show(); toast(sc.length + ' école(s) reprise(s) de la liste. Complétez les classes et effectifs.'); } }, '✨ Pré-remplir') : null,
+      h('button', { class: 'btn btn-warning', onclick: () => { save(); loadFile(b); } }, '\uE00A Charger'),
+      h('button', { class: 'btn btn-primary', onclick: () => { save(); preview(b); } }, '\uE009 PDF / Imprimer'),
+      h('button', { class: 'btn btn-primary', onclick: () => { save(); exportXls(b); } }, '\uE009 Excel'),
+      h('button', { class: 'btn btn-primary', onclick: () => { save(); exportJson(b); } }, '\uE009 JSON'),
+      h('button', { class: 'btn btn-info', onclick: () => { vue.tab = 'photos'; show(); openCamera(async (d, f) => { await PhotoDB.put({ id: uid(), bilanId: b.id, data: d, facing: f, legende: '', date: now() }); if (vue.tab === 'photos') show(); }); } }, '\uE03C Appareil photo'),
+      b.periode !== 'ANNUEL' && b.niveau === 'ZONE' ? h('button', { class: 'btn', onclick: () => { const nz = String(b.entete.numZone || '').replace(/\D/g, ''); const sc = App().data.ecoles.filter(x => !nz || String(x.zone_ped || '').replace(/\D/g, '') === nz); const a = b.actors[0].k; b.data['t1.' + a + '.em_e'] = String(sc.filter(x => /^EM/.test(x.type || '')).length); b.data['t1.' + a + '.ep_e'] = String(sc.filter(x => !/^EM/.test(x.type || '')).length); touch(); show(); toast(sc.length + ' école(s) reprise(s) de la liste. Complétez les classes et effectifs.'); } }, '\uE03D Pré-remplir') : null,
       b.periode === 'ANNUEL' || b.niveau === 'CS' ? h('button', { class: 'btn btn-info', onclick: () => { if (!confirm('Recalculer ce bilan à partir des ' + (b.periode === 'ANNUEL' ? 'trois trimestres' : 'bilans de zone') + ' disponibles ? Les valeurs concernées seront remplacées.')) return; const n = consolidateInto(b); if (!n) return toast('Aucun bilan source trouvé sur cet appareil.'); dirty = true; save(); toast(n + ' bilan(s) consolidé(s).'); renderBilans(); } }, 'Σ Consolider') : null,
-      h('button', { class: 'btn btn-primary', onclick: () => { b.statut = b.statut === 'Finalisé' ? 'Brouillon' : 'Finalisé'; dirty = true; save(); renderBilans(); } }, b.statut === 'Finalisé' ? '🔓 Rouvrir' : '✅ Finaliser'),
-      h('button', { class: 'btn btn-warning', onclick: () => { save(); resetB(b); } }, '♻ Réinitialiser'),
-      h('button', { class: 'btn btn-danger', onclick: () => deleteB(b) }, '🗑 Supprimer'),
+      h('button', { class: 'btn btn-primary', onclick: () => { b.statut = b.statut === 'Finalisé' ? 'Brouillon' : 'Finalisé'; dirty = true; save(); renderBilans(); } }, b.statut === 'Finalisé' ? '\uE034 Rouvrir' : '\uE004 Finaliser'),
+      h('button', { class: 'btn btn-warning', onclick: () => { save(); resetB(b); } }, '\uE058 Réinitialiser'),
+      h('button', { class: 'btn btn-danger', onclick: () => deleteB(b) }, '\uE005 Supprimer'),
       h('button', { class: 'btn', onclick: () => { save(); vue.mode = 'list'; renderBilans(); } }, '← Liste'));
-    r.append(h('div', { class: 'page-title' }, '📊 ' + S.bilanLabel(b), h('span', null, h('span', { class: 'badge ' + (b.statut === 'Finalisé' ? 'badge-success' : 'badge-warning') }, b.statut || 'Brouillon'), ' ', state)),
+    r.append(h('div', { class: 'page-title' }, '\uE015 ' + S.bilanLabel(b), h('span', null, h('span', { class: 'badge ' + (b.statut === 'Finalisé' ? 'badge-success' : 'badge-warning') }, b.statut || 'Brouillon'), ' ', state)),
       h('p', { class: 'xnote' }, b.niveau === 'CS' ? 'Circonscription scolaire de ' + (b.entete.nomCs || '') : 'Zone pédagogique n° ' + (b.entete.numZone || '') + ' — CS ' + (b.entete.nomCs || '')), bar, warn, tabsEl, body);
     show();
   }
@@ -384,7 +384,7 @@
   async function preview(b) {
     const photos = await PhotoDB.all(b.id), html = await bilanHtml(b, photos);
     document.body.classList.add('bilan-print'); if (!document.getElementById('xpage')) document.head.append(h('style', { id: 'xpage' }, '@page { size: A4 landscape; margin: 8mm; }'));
-    App().openModal(S.bilanLabel(b), '<div class="text-center xbar"><button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer ou enregistrer en PDF</button></div>' + html);
+    App().openModal(S.bilanLabel(b), '<div class="text-center xbar"><button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer ou enregistrer en PDF</button></div>' + html);
     toast('Astuce : dans la boîte d\'impression, choisissez « Enregistrer au format PDF » (paysage).');
   }
   async function exportXls(b) {
@@ -404,13 +404,13 @@
   function renderDocs(onglet, cible) {
     if (onglet) { dtab = onglet; cibleDocs = cible || null; }
     const r = cibleDocs || document.getElementById('docsref'); if (!r) return; r.replaceChildren();
-    const TABSD = [['pdf', '📄 Fiches PDF'], ['themes', '🧭 Thèmes 2026-2027'], ['planif', '📚 Planification CI → CM2'], ['reg', '📕 Règlement intérieur']];
-    if (!cibleDocs) r.append(h('div', { class: 'page-title' }, '📚 Documents de référence'),
+    const TABSD = [['pdf', '\uE00D Fiches PDF'], ['themes', '\uE042 Thèmes 2026-2027'], ['planif', '\uE031 Planification CI → CM2'], ['reg', '\uE030 Règlement intérieur']];
+    if (!cibleDocs) r.append(h('div', { class: 'page-title' }, '\uE031 Documents de référence'),
       h('div', { class: 'tabs' }, ...TABSD.map(([k, l]) => h('div', { class: 'tab' + (k === dtab ? ' active' : ''), onclick: () => { dtab = k; renderDocs(); } }, l))));
     const c = h('div'); r.append(c);
     if (dtab === 'pdf') {
-      c.append(...(REF.documents || []).map(d => h('div', { class: 'xcard' }, h('h3', null, '📄 ' + d.titre), h('p', null, d.description), h('p', { class: 'xnote' }, d.cycle + ' · ' + d.pages + ' pages · PDF'),
-        h('a', { class: 'btn btn-primary', href: d.fichier, target: '_blank', rel: 'noopener' }, '👁 Ouvrir'), ' ', h('a', { class: 'btn btn-info', href: d.fichier, download: d.fichier.split('/').pop() }, '⬇ Télécharger'))),
+      c.append(...(REF.documents || []).map(d => h('div', { class: 'xcard' }, h('h3', null, '\uE00D ' + d.titre), h('p', null, d.description), h('p', { class: 'xnote' }, d.cycle + ' · ' + d.pages + ' pages · PDF'),
+        h('a', { class: 'btn btn-primary', href: d.fichier, target: '_blank', rel: 'noopener' }, '\uE043 Ouvrir'), ' ', h('a', { class: 'btn btn-info', href: d.fichier, download: d.fichier.split('/').pop() }, '\uE009 Télécharger'))),
         h('p', { class: 'xnote' }, 'Pour ajouter un document : déposez le PDF dans le dossier « docs » puis ajoutez une ligne dans data/ref.js.'));
     } else if (dtab === 'themes') {
       const T = REF.themes; if (!T) return;
@@ -422,7 +422,7 @@
           return h('tr', null, h('td', null, t.n), h('td', null, h('b', null, t.theme), t.axes && t.axes.length ? h('ul', { class: 'axes' }, ...t.axes.map(a => h('li', null, a))) : null),
             h('td', null, dfmt(t.date), late ? h('div', null, h('span', { class: 'badge badge-danger' }, 'En retard')) : null), h('td', null, t.obs || ''),
             h('td', null, h('input', { type: 'checkbox', checked: ok, onchange: (ev) => { const l = doneSet(); if (ev.target.checked) l.push({ id: key, date: now() }); else l.splice(l.findIndex(x => x.id === key), 1); persist(); renderDocs(); } })));
-        })))), h('div', { class: 'text-center mt-15' }, h('button', { class: 'btn btn-primary', onclick: () => window.print() }, '🖨️ Imprimer'))));
+        })))), h('div', { class: 'text-center mt-15' }, h('button', { class: 'btn btn-primary', onclick: () => window.print() }, '\uE008 Imprimer'))));
     } else if (dtab === 'planif') {
       const pages = REF.planification || [];
       const res = h('div'); const draw = () => {
@@ -440,7 +440,7 @@
       const N = 8; let i = 1; const img = h('img', { class: 'xreg', alt: '' }), lab = h('b');
       const go = (k) => { i = Math.min(N, Math.max(1, k)); img.src = 'data/reglement/page-' + i + '.jpg'; img.alt = 'Règlement intérieur, page ' + i; lab.textContent = 'Page ' + i + ' / ' + N; };
       c.append(h('p', { class: 'xnote' }, 'Règlement intérieur des écoles primaires (révisé) — document officiel numérisé.'),
-        h('div', { class: 'xbar' }, h('button', { class: 'btn', onclick: () => go(i - 1) }, '◀'), lab, h('button', { class: 'btn', onclick: () => go(i + 1) }, '▶'), h('a', { class: 'btn btn-info', href: 'data/reglement/page-1.jpg', target: '_blank', rel: 'noopener', onclick: (e) => { e.currentTarget.href = img.src; } }, '🔍 Agrandir'), h('button', { class: 'btn btn-primary', onclick: () => window.print() }, '🖨️ Imprimer')), img);
+        h('div', { class: 'xbar' }, h('button', { class: 'btn', onclick: () => go(i - 1) }, '\uE038'), lab, h('button', { class: 'btn', onclick: () => go(i + 1) }, '\uE039'), h('a', { class: 'btn btn-info', href: 'data/reglement/page-1.jpg', target: '_blank', rel: 'noopener', onclick: (e) => { e.currentTarget.href = img.src; } }, '\uE02A Agrandir'), h('button', { class: 'btn btn-primary', onclick: () => window.print() }, '\uE008 Imprimer')), img);
       go(1);
     }
   }

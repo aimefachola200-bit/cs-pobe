@@ -96,8 +96,8 @@
   }
   /** Ouvre le document dans la fenêtre : boutons Imprimer / PDF et Excel. */
   function ouvrir(titre, corps, nomFichier, paysage) {
-    A().openModal(titre, '<div class="xbar no-print rg-barre"><button class="btn btn-primary" type="button" id="rgImprimer">🖨️ Imprimer / PDF</button> '
-      + '<button class="btn btn-info" type="button" id="rgExcel">📊 Excel</button></div>'
+    A().openModal(titre, '<div class="xbar no-print rg-barre"><button class="btn btn-primary" type="button" id="rgImprimer">\uE008 Imprimer / PDF</button> '
+      + '<button class="btn btn-info" type="button" id="rgExcel">\uE015 Excel</button></div>'
       + '<div class="page-a4 rg-doc' + (paysage ? ' rg-paysage' : '') + '" id="rgDoc">' + corps + '</div>');
     document.getElementById('rgImprimer').onclick = () => {
       document.body.classList.toggle('rg-impression-paysage', !!paysage);
@@ -389,28 +389,28 @@
     const page = document.getElementById('registres'); if (!page) return;
     if (!etat.mois) etat.mois = isoJ(new Date()).slice(0, 7);
     const e = ecoleDe(etat.ecole), tit = e && etat.cours ? titulaire(e.id, etat.cours) : null;
-    page.innerHTML = '<div class="page-title">📋 Registres, statistiques et synthèse</div>'
+    page.innerHTML = '<div class="page-title">\uE00F Registres, statistiques et synthèse</div>'
       + '<div class="alert alert-info">Documents au format de SCOLARIS et GESCOL : en-tête officiel, signature digitale du titulaire et du directeur, cachet de l’école '
       + 'et code QR de vérification. Imprimez-les ou enregistrez-les en PDF ; chacun s’exporte aussi en Excel.</div>'
       + '<div class="search-bar rg-choix">' + selectEcole('rgEcole') + selectCours('rgCours')
       + '<input type="month" id="rgMois" value="' + esc(etat.mois) + '" aria-label="Mois du registre">' + selectPeriode('rgPeriode') + '</div>'
       + '<div class="rg-titulaire">' + (e && etat.cours ? (tit ? 'Titulaire : <b>' + esc(tit.nom) + '</b> — signature digitale : ' + (tit.signature_image ? '<img src="' + tit.signature_image + '" alt="Signature" style="height:28px;vertical-align:middle"> ' : '<i>non enregistrée</i> ')
-        + '<button class="btn btn-sm" type="button" id="rgSigner">✍️ ' + (tit.signature_image ? 'Modifier' : 'Enregistrer') + ' la signature du titulaire</button>'
+        + '<button class="btn btn-sm" type="button" id="rgSigner">\uE029 ' + (tit.signature_image ? 'Modifier' : 'Enregistrer') + ' la signature du titulaire</button>'
         : 'Aucun titulaire attribué à ce cours (rubrique « Attribution des classes ») : la signature du titulaire restera à apposer à la main.')
         + (e.signature_image ? '' : ' · <span class="muet">Signature du directeur : à enregistrer dans « Cachets et signatures ».</span>') : 'Choisissez l’école et le cours.') + '</div>'
       + '<div class="rg-cartes">'
-      + carteDoc('🗓️', "Registre d'appel du mois", 'Demi-journées M / S, absences marquées A, totaux par jour et par élève.', 'registre')
-      + carteDoc('📊', 'Relevés mensuels de l’année', 'Tableau officiel : demi-jours, présences possibles et effectives, pourcentages, élèves > 4 absences.', 'releve')
-      + carteDoc('📌', "Tableau d'affichage", 'Liste de classe, répartition par sexe, scolarité et âge par sexe, graphiques.', 'affichage')
-      + carteDoc('📈', 'Statistiques et courbes de présence', 'Taux de présence par mois (filles, garçons), absences, comparaison des cours.', 'statpres')
-      + carteDoc('📝', 'Statistiques et courbes des évaluations', 'Réussite au seuil sur l’année, résultats et maîtrise par matière.', 'stateval')
-      + carteDoc('🗂️', "Synthèse de l'évaluation (école)", 'Par cours et par matière, G / F / T, écarts de genre et analyse.', 'synthese')
+      + carteDoc('\uE017', "Registre d'appel du mois", 'Demi-journées M / S, absences marquées A, totaux par jour et par élève.', 'registre')
+      + carteDoc('\uE015', 'Relevés mensuels de l’année', 'Tableau officiel : demi-jours, présences possibles et effectives, pourcentages, élèves > 4 absences.', 'releve')
+      + carteDoc('\uE02D', "Tableau d'affichage", 'Liste de classe, répartition par sexe, scolarité et âge par sexe, graphiques.', 'affichage')
+      + carteDoc('\uE016', 'Statistiques et courbes de présence', 'Taux de présence par mois (filles, garçons), absences, comparaison des cours.', 'statpres')
+      + carteDoc('\uE00E', 'Statistiques et courbes des évaluations', 'Réussite au seuil sur l’année, résultats et maîtrise par matière.', 'stateval')
+      + carteDoc('\uE011', "Synthèse de l'évaluation (école)", 'Par cours et par matière, G / F / T, écarts de genre et analyse.', 'synthese')
       + '</div>'
       + (e && etat.cours ? '<div class="form-section mt-15"><h4>Tableau d’affichage — scolarité et contacts</h4><p class="petit muet">Corrigez au besoin la scolarité (années de scolarité) et le contact des parents, puis enregistrez.</p>'
         + '<div class="table-container"><div class="table-scroll"><table><thead><tr><th>N°</th><th>Nom et prénoms</th><th>Sexe</th><th>Scolarité (ans)</th><th>Contact parents</th></tr></thead><tbody>'
         + eleves(e.id, etat.cours).map((a, i) => '<tr><td>' + (i + 1) + '</td><td>' + esc(nomC(a)) + '</td><td>' + (sexeF(a) ? 'F' : 'G') + '</td><td><input type="number" min="0" max="12" style="width:70px" data-sco="' + esc(a.id) + '" value="' + esc(scolariteDe(a) || '') + '"></td>'
           + '<td><input type="tel" style="width:150px" data-tel="' + esc(a.id) + '" value="' + esc(a.telParent || '') + '"></td></tr>').join('')
-        + '</tbody></table></div></div><div class="text-center mt-15"><button class="btn btn-success" type="button" id="rgSauver">💾 Enregistrer</button></div></div>' : '');
+        + '</tbody></table></div></div><div class="text-center mt-15"><button class="btn btn-success" type="button" id="rgSauver">\uE007 Enregistrer</button></div></div>' : '');
     const lier = (id, cle, apres) => { const x = document.getElementById(id); if (x) x.onchange = () => { etat[cle] = x.value; if (apres) apres(); }; };
     lier('rgEcole', 'ecole', rendre); lier('rgCours', 'cours', rendre); lier('rgMois', 'mois'); lier('rgPeriode', 'periode');
     page.querySelectorAll('[data-rg]').forEach(b => { b.onclick = () => ({ registre, releve, affichage: affichageDoc, statpres: statsPresence, stateval: statsEval, synthese })[b.dataset.rg](); });

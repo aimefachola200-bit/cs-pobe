@@ -24,15 +24,15 @@
 
   function divisions() {
     const base = [
-      { id: 'ccs', icone: '🏛️', titre: 'Chef de la Circonscription Scolaire (C/CS)', role: 'Direction et pilotage de la circonscription : validation des bilans, supervision des divisions, relations avec la DDEMP et les partenaires.',
+      { id: 'ccs', icone: '\uE023', titre: 'Chef de la Circonscription Scolaire (C/CS)', role: 'Direction et pilotage de la circonscription : validation des bilans, supervision des divisions, relations avec la DDEMP et les partenaires.',
         pages: [['synoptique', 'Tableau synoptique'], ['effectifsZone', 'Effectifs par âge'], ['infraZone', 'Infrastructures et mobilier'], ['ecolesZone', 'Écoles : structure et équipements'], ['cepZone', 'CEP : candidats et réussite'], ['bilans', 'Bilans'], ['analyses', 'Analyses et écarts'], ['courriers', 'Courriers'], ['identite', 'Cachets et signatures']] },
-      { id: 'secretariat', icone: '🗄️', titre: 'Secrétariat', role: "Réception et enregistrement du courrier, archives, tenue des dossiers du personnel et des écoles, préparation des documents à signer.",
+      { id: 'secretariat', icone: '\uE011', titre: 'Secrétariat', role: "Réception et enregistrement du courrier, archives, tenue des dossiers du personnel et des écoles, préparation des documents à signer.",
         pages: [['courriers', 'Archive courriers'], ['ecoles', 'Écoles'], ['administratif', 'Personnel administratif'], ['fiches', 'Fiches officielles'], ['certificats', 'Certificats'], ['identite', 'Cachets et signatures']] },
-      { id: 'cdosp', icone: '🧭', titre: 'Division C/DOSP', role: "Organisation et suivi pédagogique : planification des activités, visites, évaluations, examens blancs et suivi des résultats.",
+      { id: 'cdosp', icone: '\uE042', titre: 'Division C/DOSP', role: "Organisation et suivi pédagogique : planification des activités, visites, évaluations, examens blancs et suivi des résultats.",
         pages: [['visites', 'Visites et inspections'], ['evaluations', 'Évaluations'], ['examen', 'Examen blanc'], ['bilans', 'Bilans'], ['synoptique', 'Tableau synoptique'], ['docsref', 'Documents de référence']] },
     ];
     const zones = [...new Set([...global.Donnees.ZONES, ...App().data.ecoles.map(e => e.zone_ped).filter(Boolean)])];
-    zones.forEach(z => base.push({ id: 'cp-' + norm(z).replace(/ /g, ''), cp: true, zone: z, icone: '👥', titre: 'Conseiller pédagogique — ' + z, role: `Animation pédagogique de la ${z} : visites de classe, suivi des unités pédagogiques, effectifs et bilans de la zone.`,
+    zones.forEach(z => base.push({ id: 'cp-' + norm(z).replace(/ /g, ''), cp: true, zone: z, icone: '\uE01C', titre: 'Conseiller pédagogique — ' + z, role: `Animation pédagogique de la ${z} : visites de classe, suivi des unités pédagogiques, effectifs et bilans de la zone.`,
       pages: [['effectifsZone', 'Effectifs de la zone'], ['infraZone', 'Infrastructures et mobilier'], ['ecolesZone', 'Écoles : structure et équipements'], ['cepZone', 'CEP : candidats et réussite'], ['visites', 'Visites'], ['bilans', 'Bilans'], ['synoptique', 'Synoptique'], ['rapports', 'Rapports de rentrée'], ['fiches', 'Fiches officielles']] }));
     return base;
   }
@@ -79,10 +79,10 @@
       const cartes = divs.map(d => {
         const nb = fichiers.filter(f => f.division === d.id).length, nbo = DOCS.filter(x => x.pour.indexOf(typeDe(d)) >= 0).length;
         return h('div', { class: 'esp-carte', onclick: () => { vue.id = d.id; rendu(); } }, h('div', { class: 'esp-ico' }, d.icone), h('h3', null, d.titre),
-          h('div', { class: 'esp-tit' }, (m[d.id] && m[d.id].titulaire) ? '👤 ' + m[d.id].titulaire : '👤 titulaire à renseigner'),
+          h('div', { class: 'esp-tit' }, (m[d.id] && m[d.id].titulaire) ? '\uE01D ' + m[d.id].titulaire : '\uE01D titulaire à renseigner'),
           h('p', null, d.role), h('div', { class: 'esp-pied' }, `${nbo} document(s) officiel(s) · ${nb} document(s) de la division`));
       });
-      page.replaceChildren(h('div', { class: 'page-title' }, '🏢 Espaces des divisions de la CS de Pobè'),
+      page.replaceChildren(h('div', { class: 'page-title' }, '\uE024 Espaces des divisions de la CS de Pobè'),
         h('p', { class: 'xnote' }, estEc ? "Les divisions de la circonscription et les documents officiels qu'elles diffusent. Vous pouvez conserver ici les documents reçus de chaque division (stockés sur cet appareil)."
           : "Chaque division dispose de son espace : titulaire, documents officiels, documents propres à la division et accès rapides à ses modules. Les fichiers sont stockés sur cet appareil."),
         h('div', { class: 'esp-grille' }, cartes), h('p', { class: 'xnote' }, CREDIT));
@@ -95,8 +95,8 @@
 
     const liste = h('div');
     docsOff.forEach(x => liste.append(h('div', { class: 'esp-doc' }, h('div', null, h('b', null, x.titre), h('div', { class: 'esp-sous' }, x.cat + (x.fichier ? ' · PDF' : ' · consultation dans l\'application'))),
-      h('div', { class: 'esp-btns' }, x.fichier ? [h('a', { class: 'btn btn-primary btn-sm', href: x.fichier, target: '_blank', rel: 'noopener' }, '📄 Ouvrir'), h('a', { class: 'btn btn-sm', href: x.fichier, download: x.fichier.split('/').pop() }, '⬇')]
-        : h('button', { class: 'btn btn-primary btn-sm', onclick: () => allerPage(x.page) }, '📚 Consulter')))));
+      h('div', { class: 'esp-btns' }, x.fichier ? [h('a', { class: 'btn btn-primary btn-sm', href: x.fichier, target: '_blank', rel: 'noopener' }, '\uE00D Ouvrir'), h('a', { class: 'btn btn-sm', href: x.fichier, download: x.fichier.split('/').pop() }, '\uE009')]
+        : h('button', { class: 'btn btn-primary btn-sm', onclick: () => allerPage(x.page) }, '\uE031 Consulter')))));
 
     const sel = h('select', { style: { padding: '8px', border: '1px solid #cbd5e1', borderRadius: '6px' } }, CATEGORIES.map(c => h('option', null, c)));
     const entree = h('input', { type: 'file', multiple: true, class: 'no-print', onchange: async () => {
@@ -108,9 +108,9 @@
     const mine = h('div');
     if (!mesFichiers.length) mine.append(h('p', { class: 'xnote' }, 'Aucun document dans cet espace pour le moment.'));
     mesFichiers.forEach(f => mine.append(h('div', { class: 'esp-doc' }, h('div', null, h('b', null, f.nom), h('div', { class: 'esp-sous' }, `${f.categorie} · ${taille(f.taille)} · ${new Date(f.date).toLocaleDateString('fr-FR')}`)),
-      h('div', { class: 'esp-btns' }, h('button', { class: 'btn btn-primary btn-sm', onclick: () => { const u = URL.createObjectURL(f.blob); window.open(u, '_blank'); setTimeout(() => URL.revokeObjectURL(u), 60000); } }, '👁 Ouvrir'),
-        h('button', { class: 'btn btn-sm', onclick: () => { const a = h('a', { href: URL.createObjectURL(f.blob), download: f.nom }); document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500); } }, '⬇'),
-        h('button', { class: 'btn btn-danger btn-sm', onclick: async () => { if (!confirm('Supprimer « ' + f.nom + ' » de cet espace ?')) return; await supprimerFichier(f.id); rendu(); } }, '🗑')))));
+      h('div', { class: 'esp-btns' }, h('button', { class: 'btn btn-primary btn-sm', onclick: () => { const u = URL.createObjectURL(f.blob); window.open(u, '_blank'); setTimeout(() => URL.revokeObjectURL(u), 60000); } }, '\uE043 Ouvrir'),
+        h('button', { class: 'btn btn-sm', onclick: () => { const a = h('a', { href: URL.createObjectURL(f.blob), download: f.nom }); document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500); } }, '\uE009'),
+        h('button', { class: 'btn btn-danger btn-sm', onclick: async () => { if (!confirm('Supprimer « ' + f.nom + ' » de cet espace ?')) return; await supprimerFichier(f.id); rendu(); } }, '\uE005')))));
 
     page.replaceChildren(
       h('div', { class: 'page-title' }, h('button', { class: 'btn btn-sm', onclick: () => { vue.id = null; rendu(); } }, '← Les divisions'), ' ' + d.icone + ' ' + d.titre),
@@ -120,8 +120,8 @@
         h('div', { class: 'form-group' }, h('label', null, 'Téléphone'), h('input', { value: mm.tel || '', onchange: (e) => sauver('tel', e.target.value.trim()) })))),
       ...(ind ? [h('div', { class: 'stats-grid' }, ind.map(([l, v, c]) => h('div', { class: 'stat-card ' + (c || '') }, h('h4', null, l), h('div', { class: 'value' }, v))))] : []),
       ...(d.cp && global.ZonesCP ? [
-        Object.assign(h('div', { class: 'esp-bloc' }, h('h3', null, '🏫 Écoles de la ' + d.zone)), { id: 'espEcolesZone' }),
-        Object.assign(h('div', { class: 'esp-bloc' }, h('h3', null, '👥 Personnel enseignant de la ' + d.zone + ' par section et par cours')), { id: 'espPersZone' })] : []),
+        Object.assign(h('div', { class: 'esp-bloc' }, h('h3', null, '\uE022 Écoles de la ' + d.zone)), { id: 'espEcolesZone' }),
+        Object.assign(h('div', { class: 'esp-bloc' }, h('h3', null, '\uE01C Personnel enseignant de la ' + d.zone + ' par section et par cours')), { id: 'espPersZone' })] : []),
       h('div', { class: 'esp-bloc' }, h('h3', null, 'Accès rapides'), h('div', { class: 'xbar' }, d.pages.map(([p, l]) => h('button', { class: 'btn btn-info btn-sm', onclick: () => allerPage(p) }, l)))),
       h('div', { class: 'esp-bloc' }, h('h3', null, 'Documents officiels'), h('label', { class: 'xnote' }, h('input', { type: 'checkbox', checked: vue.tous, onchange: (e) => { vue.tous = e.target.checked; rendu(); } }), ' Afficher tous les documents officiels (pas seulement ceux de cette division)'), liste),
       h('div', { class: 'esp-bloc' }, h('h3', null, 'Documents de la division'), h('div', { class: 'xbar no-print' }, 'Catégorie : ', sel, entree), mine),

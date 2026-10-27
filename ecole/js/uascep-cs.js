@@ -154,7 +154,7 @@
 
   async function imprimer(titre, corps) {
     if (typeof corps === 'function') corps = await corps();
-    A().openModal(titre, '<div class="xbar no-print"><button class="btn btn-primary" type="button" id="uasImprimer">🖨️ Imprimer / PDF</button></div>'
+    A().openModal(titre, '<div class="xbar no-print"><button class="btn btn-primary" type="button" id="uasImprimer">\uE008 Imprimer / PDF</button></div>'
       + '<div class="page-a4">' + A().enteteDocument({}) + corps + '</div>');
     document.getElementById('uasImprimer').onclick = () => { document.body.classList.add('bilan-print'); window.print(); setTimeout(() => document.body.classList.remove('bilan-print'), 1500); };
   }

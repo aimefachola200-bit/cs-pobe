@@ -69,11 +69,11 @@
 
   /* ---------------- Messages prêts à l'emploi ---------------- */
   const MODELES = {
-    convocation: { l: 'Convocation à une réunion', t: '📢 *CONVOCATION — Circonscription Scolaire de Pobè*\n\n{salut}Les directeurs et directrices sont convoqués à {objet} le *{date}* à *{heure}* à {lieu}.\n{precisions}\nPrésence obligatoire.\n\nLe Chef de la Circonscription Scolaire' },
-    rappel: { l: 'Rappel de rapport ou de document', t: '⏰ *RAPPEL — CS Pobè*\n\n{salut}{objet} est attendu au plus tard le *{date}*.\n{precisions}\nMerci d’envoyer aussi le paquet de données de l’application École Pobè (menu « Échanges »).' },
-    paquet: { l: 'Demande du paquet de données', t: '🔄 *CS Pobè — Données des écoles*\n\n{salut}Merci d’envoyer avant le *{date}* le paquet de données de votre école : application École Pobè → « Échanges » → « Envoyer le paquet », puis choisir WhatsApp et ce numéro.\n{precisions}' },
-    resultats: { l: 'Résultats / statistiques', t: '📊 *RÉSULTATS — CS Pobè*\n\n{salut}{objet}\n{precisions}' },
-    information: { l: 'Information générale', t: 'ℹ️ *INFORMATION — CS Pobè*\n\n{salut}{objet}\n{precisions}' },
+    convocation: { l: 'Convocation à une réunion', t: '\uE050 *CONVOCATION — Circonscription Scolaire de Pobè*\n\n{salut}Les directeurs et directrices sont convoqués à {objet} le *{date}* à *{heure}* à {lieu}.\n{precisions}\nPrésence obligatoire.\n\nLe Chef de la Circonscription Scolaire' },
+    rappel: { l: 'Rappel de rapport ou de document', t: '\uE01A *RAPPEL — CS Pobè*\n\n{salut}{objet} est attendu au plus tard le *{date}*.\n{precisions}\nMerci d’envoyer aussi le paquet de données de l’application École Pobè (menu « Échanges »).' },
+    paquet: { l: 'Demande du paquet de données', t: '\uE058 *CS Pobè — Données des écoles*\n\n{salut}Merci d’envoyer avant le *{date}* le paquet de données de votre école : application École Pobè → « Échanges » → « Envoyer le paquet », puis choisir WhatsApp et ce numéro.\n{precisions}' },
+    resultats: { l: 'Résultats / statistiques', t: '\uE015 *RÉSULTATS — CS Pobè*\n\n{salut}{objet}\n{precisions}' },
+    information: { l: 'Information générale', t: '\uE07B *INFORMATION — CS Pobè*\n\n{salut}{objet}\n{precisions}' },
     libre: { l: 'Message libre', t: '{salut}{precisions}' }
   };
   function texteModele(x) {
@@ -111,14 +111,14 @@
   function blocMessages() {
     const m = etat().modele || {};
     const champ = (k, l, type) => '<div class="form-group"><label>' + l + '</label><input id="waM_' + k + '" type="' + (type || 'text') + '" value="' + esc(m[k] || '') + '" oninput="WhatsApp.lireModele()"></div>';
-    return '<div class="card wa-carte"><h3 style="color:#006633;margin:0 0 8px;">📨 Messages prêts à l’emploi</h3>'
+    return '<div class="card wa-carte"><h3 style="color:#006633;margin:0 0 8px;">\uE04F Messages prêts à l’emploi</h3>'
       + '<div class="form-grid"><div class="form-group"><label>Modèle</label><select id="waM_type" onchange="WhatsApp.lireModele()">'
       + Object.keys(MODELES).map(k => '<option value="' + k + '"' + ((m.type || 'convocation') === k ? ' selected' : '') + '>' + MODELES[k].l + '</option>').join('') + '</select></div>'
       + champ('objet', 'Objet (réunion, document, résultat…)') + champ('date', 'Date', 'date') + champ('heure', 'Heure', 'time') + champ('lieu', 'Lieu')
       + '<div class="form-group" style="grid-column:1/-1;"><label>Précisions</label><textarea id="waM_precisions" rows="2" oninput="WhatsApp.lireModele()">' + esc(m.precisions || '') + '</textarea></div></div>'
       + '<pre id="waApercu" class="wa-apercu">' + esc(texteModele(null)) + '</pre>'
-      + '<div class="xbar"><button class="btn btn-success" onclick="WhatsApp.messageAuGroupe()">👥 Envoyer au groupe</button>'
-      + '<button class="btn btn-info" onclick="WhatsApp.messageSuivant()">👤 À chaque directeur — au suivant</button></div>'
+      + '<div class="xbar"><button class="btn btn-success" onclick="WhatsApp.messageAuGroupe()">\uE01C Envoyer au groupe</button>'
+      + '<button class="btn btn-info" onclick="WhatsApp.messageSuivant()">\uE01D À chaque directeur — au suivant</button></div>'
       + '<p class="petit muet">« Envoyer au groupe » ouvre WhatsApp avec le message : choisissez le groupe des directeurs. « À chaque directeur » ouvre une conversation personnalisée par directeur, l’un après l’autre.</p></div>';
   }
 
@@ -128,18 +128,18 @@
     const g = etat(), tous = directeurs();
     const zones = [...new Set(tous.map(x => x.zone).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'fr'));
     const valides = tous.filter(x => x.num), retenus = valides.filter(x => x.wa), invites = retenus.filter(x => x.envoye);
-    page.innerHTML = '<div class="page-title">💬 Groupe WhatsApp des directeurs</div>'
+    page.innerHTML = '<div class="page-title">\uE035 Groupe WhatsApp des directeurs</div>'
       + '<div class="card wa-carte">'
       + '<div class="wa-chiffres"><div><b>' + tous.length + '</b><span>écoles</span></div><div><b>' + valides.length
       + '</b><span>numéros valides</span></div><div><b>' + retenus.length + '</b><span>avec WhatsApp</span></div><div><b>'
       + invites.length + '</b><span>invités</span></div></div>'
       + '<ol class="wa-etapes">'
-      + '<li><b>Contacts :</b> touchez « 📇 Contacts pour WhatsApp » sur le téléphone qui administrera le groupe, puis ouvrez le fichier'
+      + '<li><b>Contacts :</b> touchez « \uE012 Contacts pour WhatsApp » sur le téléphone qui administrera le groupe, puis ouvrez le fichier'
       + ' et importez les contacts. Ils s’appellent tous « ' + PREFIXE + ' … ».</li>'
       + '<li><b>Créer le groupe :</b> WhatsApp → ⋮ → Nouveau groupe → tapez « ' + PREFIXE + ' » et cochez tout. WhatsApp ne propose'
       + ' que les directeurs qui ont un compte WhatsApp : les autres sont écartés d’eux-mêmes.</li>'
       + '<li><b>Lien d’invitation :</b> dans le groupe → Infos → Inviter via un lien → Copier, puis collez-le ci-dessous.'
-      + ' Envoyez-le aux directeurs absents du groupe (💬), un toucher par directeur ; l’envoi est noté.</li></ol>'
+      + ' Envoyez-le aux directeurs absents du groupe (\uE035), un toucher par directeur ; l’envoi est noté.</li></ol>'
       + '<p class="petit muet">WhatsApp n’autorise aucune application à créer un groupe ou à y ajouter quelqu’un à votre place ;'
       + ' ces trois étapes sont le moyen le plus rapide. Les numéros restent sur cet appareil.</p>'
       + '<div class="form-grid">'
@@ -149,11 +149,11 @@
       + '<div class="form-group" style="grid-column:1/-1;"><label>Message d’invitation ({directeur}, {ecole}, {groupe}, {lien})</label>'
       + '<textarea id="waMessage" rows="3">' + esc(g.message) + '</textarea></div></div>'
       + '<div class="xbar">'
-      + '<button class="btn btn-primary" onclick="WhatsApp.enregistrer()">💾 Enregistrer</button>'
-      + '<button class="btn btn-success" onclick="WhatsApp.vcf()">📇 Contacts pour WhatsApp (.vcf)</button>'
-      + '<button class="btn btn-info" onclick="WhatsApp.copier()">📋 Copier les numéros</button>'
-      + '<button class="btn btn-warning" onclick="WhatsApp.suivant()">▶️ Inviter le suivant</button>'
-      + '<button class="btn btn-info" onclick="WhatsApp.partager()">📤 Partager le lien</button>'
+      + '<button class="btn btn-primary" onclick="WhatsApp.enregistrer()">\uE007 Enregistrer</button>'
+      + '<button class="btn btn-success" onclick="WhatsApp.vcf()">\uE012 Contacts pour WhatsApp (.vcf)</button>'
+      + '<button class="btn btn-info" onclick="WhatsApp.copier()">\uE00F Copier les numéros</button>'
+      + '<button class="btn btn-warning" onclick="WhatsApp.suivant()">\uE039 Inviter le suivant</button>'
+      + '<button class="btn btn-info" onclick="WhatsApp.partager()">\uE00C Partager le lien</button>'
       + '</div></div>'
       + blocMessages()
       + '<div class="xbar"><select id="waZone" onchange="WhatsApp.tableau()"><option value="">Toutes les zones / arrondissements</option>'
@@ -177,7 +177,7 @@
       + ' onchange="WhatsApp.numero(\'' + x.e.id + '\', this.value)">'
       + (x.brut && !x.num ? '<br><span class="badge badge-danger">numéro invalide</span>' : '') + '</td>'
       + '<td>' + (x.envoye ? '<span class="badge badge-success">envoyée le ' + esc(new Date(x.envoye).toLocaleDateString('fr-FR')) + '</span>' : '—') + '</td>'
-      + '<td>' + (x.num && x.wa ? '<button class="btn btn-success btn-sm" onclick="WhatsApp.inviter(\'' + x.e.id + '\')">💬</button>' : '') + '</td></tr>').join('')
+      + '<td>' + (x.num && x.wa ? '<button class="btn btn-success btn-sm" onclick="WhatsApp.inviter(\'' + x.e.id + '\')">\uE035</button>' : '') + '</td></tr>').join('')
       || '<tr><td colspan="6" class="text-center">Aucune école</td></tr>';
   }
 

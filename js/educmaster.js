@@ -176,7 +176,7 @@
       const nouveaux = res.ops.filter(o => !o.ex).length, parNiveau = {};
       res.ops.forEach(o => { parNiveau[o.v.cours] = (parNiveau[o.v.cours] || 0) + 1; });
       rapport('Importation EducMaster — élèves — ' + e.nom, ['<b>' + res.ops.length + '</b> élève(s) lu(s) : <b>' + nouveaux + '</b> nouveau(x), <b>' + (res.ops.length - nouveaux) + '</b> déjà connu(s) (fiche mise à jour).',
-        'Par cours : ' + Object.keys(parNiveau).map(k => esc(k) + ' ' + parNiveau[k]).join(' · ')], res.rejets, '💾 Enregistrer ces élèves');
+        'Par cours : ' + Object.keys(parNiveau).map(k => esc(k) + ' ' + parNiveau[k]).join(' · ')], res.rejets, '\uE007 Enregistrer ces élèves');
       document.getElementById('emValider').onclick = () => { const r = appliquerEleves(res, e.id); A().closeModal(); alert(r.crees + ' élève(s) créé(s), ' + r.maj + ' mis à jour.'); rendre(); };
     });
   }
@@ -187,7 +187,7 @@
       if (!res.ops.length) return rapport('Importation EducMaster — notes', ['Aucune note reprise (modèle « notes du primaire » attendu).'].concat(res.infos), res.rejets);
       const parF = {}; res.ops.forEach(o => { parF[o.feuille] = (parF[o.feuille] || 0) + 1; });
       rapport('Importation EducMaster — notes — ' + e.nom, ['<b>' + res.ops.length + '</b> élève(s) avec des notes : ' + Object.keys(parF).map(k => esc(k) + ' (' + parF[k] + ')').join(' · ') + '.',
-        'Les notes reprises remplacent celles déjà saisies pour les mêmes matières.'].concat(res.infos), res.rejets, '💾 Enregistrer ces notes');
+        'Les notes reprises remplacent celles déjà saisies pour les mêmes matières.'].concat(res.infos), res.rejets, '\uE007 Enregistrer ces notes');
       document.getElementById('emValider').onclick = () => { const n = appliquerNotes(res); A().closeModal(); alert(n + ' note(s) enregistrée(s).'); };
     });
   }
@@ -198,16 +198,16 @@
     const l = ecoles();
     if (!etat.ecole || !ecoleChoisie()) etat.ecole = (A().ecoleDuPoste() || l[0] || {}).id || '';
     const e = ecoleChoisie(), nbE = e ? eleves(e.id).length : 0;
-    page.innerHTML = '<div class="page-title">🔄 EducMaster : élèves et notes</div>'
+    page.innerHTML = '<div class="page-title">\uE058 EducMaster : élèves et notes</div>'
       + '<div class="alert alert-info">Les fichiers suivent exactement les modèles officiels EducMaster (les mêmes que SCOLARIS et GESCOL) : feuilles, rubriques et cellules fusionnées. '
       + 'Téléchargez, vérifiez, puis déposez-les sur la plateforme ; ou importez ici un modèle rempli. Rien n’est enregistré avant que vous ayez vu le résultat.</div>'
       + '<div class="search-bar"><select id="emEcole">' + (l.length > 1 ? '<option value="">— École —</option>' : '') + l.map(x => '<option value="' + esc(x.id) + '"' + (String(x.id) === String(etat.ecole) ? ' selected' : '') + '>' + esc(x.nom) + '</option>').join('') + '</select>'
       + '<select id="emCours"><option value="">— Cours (notes) —</option>' + V().COURS.map(c => '<option' + (c === etat.cours ? ' selected' : '') + '>' + c + '</option>').join('') + '</select></div>'
       + '<div class="rg-cartes">'
-      + '<div class="rg-carte"><div class="rg-ic">🧒</div><b>Élèves — modèle « classe »</b><span>Une feuille par niveau (CM2 … CI, Marternelle 2 / 1) : Nom, Prénom(s), Sexe, Date de naissance (jj/mm/aaaa), Lieu, Téléphone des parents, Nationalité, Npi. '
-      + (e ? nbE + ' élève(s) dans ' + esc(e.nom) + '.' : '') + '</span><div><button class="btn btn-primary btn-sm" type="button" id="emExpE">📤 Exporter (modèle rempli)</button> <button class="btn btn-warning btn-sm" type="button" id="emImpE">📥 Importer</button></div></div>'
-      + '<div class="rg-carte"><div class="rg-ic">🗒️</div><b>Notes — modèle « notes du primaire »</b><span>Feuilles Évaluation formative 1, sommatives 1 à 3 ; par matière « Note obtenue » et « Note perf. » (barème 20). '
-      + 'Communication orale et Anglais ne figurent pas dans le modèle EducMaster.</span><div><button class="btn btn-primary btn-sm" type="button" id="emExpN">📤 Exporter le cours choisi</button> <button class="btn btn-warning btn-sm" type="button" id="emImpN">📥 Importer</button></div></div>'
+      + '<div class="rg-carte"><div class="rg-ic">\uE01F</div><b>Élèves — modèle « classe »</b><span>Une feuille par niveau (CM2 … CI, Marternelle 2 / 1) : Nom, Prénom(s), Sexe, Date de naissance (jj/mm/aaaa), Lieu, Téléphone des parents, Nationalité, Npi. '
+      + (e ? nbE + ' élève(s) dans ' + esc(e.nom) + '.' : '') + '</span><div><button class="btn btn-primary btn-sm" type="button" id="emExpE">\uE00C Exporter (modèle rempli)</button> <button class="btn btn-warning btn-sm" type="button" id="emImpE">\uE00B Importer</button></div></div>'
+      + '<div class="rg-carte"><div class="rg-ic">\uE010</div><b>Notes — modèle « notes du primaire »</b><span>Feuilles Évaluation formative 1, sommatives 1 à 3 ; par matière « Note obtenue » et « Note perf. » (barème 20). '
+      + 'Communication orale et Anglais ne figurent pas dans le modèle EducMaster.</span><div><button class="btn btn-primary btn-sm" type="button" id="emExpN">\uE00C Exporter le cours choisi</button> <button class="btn btn-warning btn-sm" type="button" id="emImpN">\uE00B Importer</button></div></div>'
       + '</div>';
     document.getElementById('emEcole').onchange = (ev) => { etat.ecole = ev.target.value; rendre(); };
     document.getElementById('emCours').onchange = (ev) => { etat.cours = ev.target.value; };

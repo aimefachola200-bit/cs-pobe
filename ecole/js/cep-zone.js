@@ -114,11 +114,11 @@
     if (!etat.zone || zones.indexOf(etat.zone) < 0) etat.zone = zones[0] || '';
     const c = calcul(); derniere = c;
     const opt = (cle, opts) => `<select data-cle="${cle}">${opts.map(([v, l]) => `<option value="${esc(v)}"${String(etat[cle]) === String(v) ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
-    const niv = estEc ? '' : [['cs', '🏛️ Par zone pédagogique'], ['arr', '🗺️ Par arrondissement'], ['ecoles', '🏫 Par école (toute la CS)'], ['zone', '📍 Une zone (par école)']]
+    const niv = estEc ? '' : [['cs', '\uE023 Par zone pédagogique'], ['arr', '\uE048 Par arrondissement'], ['ecoles', '\uE022 Par école (toute la CS)'], ['zone', '\uE02C Une zone (par école)']]
       .map(([k, l]) => `<button class="btn btn-sm ${etat.niveau === k ? 'btn-primary' : ''}" data-niv="${k}">${l}</button>`).join(' ');
-    let html = `<div class="page-title">🎓 Candidats présentés au CEP dans la circonscription, par sexe</div><div class="xbar no-print">${niv} ${opt('annee', annees.map(a => [a, 'Année ' + a]))}`
+    let html = `<div class="page-title">\uE020 Candidats présentés au CEP dans la circonscription, par sexe</div><div class="xbar no-print">${niv} ${opt('annee', annees.map(a => [a, 'Année ' + a]))}`
       + (!estEc && etat.niveau === 'zone' ? opt('zone', zones.map(z => [z, z])) : '')
-      + '</div><div class="xbar no-print"><button class="btn btn-primary" data-act="print">🖨️ Imprimer / PDF</button> <button class="btn btn-info" data-act="xls">⬇ Excel</button></div>'
+      + '</div><div class="xbar no-print"><button class="btn btn-primary" data-act="print">\uE008 Imprimer / PDF</button> <button class="btn btn-info" data-act="xls">\uE009 Excel</button></div>'
       + '<div class="text-center" style="font-size:13px;margin:8px 0"><b>RÉPUBLIQUE DU BÉNIN</b><br>MINISTÈRE DES ENSEIGNEMENTS MATERNEL ET PRIMAIRE<br>CIRCONSCRIPTION SCOLAIRE DE POBÈ<h3 style="margin:6px 0 0">CANDIDATS PRÉSENTÉS AU CEP, PAR SEXE — INSCRITS, PRÉSENTS, ADMIS</h3>Année scolaire ' + esc(etat.annee) + '</div>'
       + '<p class="xnote">Source : rubrique « Résultats aux examens » des fiches officielles (compléments : inscrits, ont composé, admis par sexe, dont enfants handicapés) ; à défaut, inscrits tirés de la liste des candidats au CEP. Taux de réussite = admis ÷ ont composé (à défaut ÷ inscrits) ; parité F/G = filles ÷ garçons ; écart type de la population.</p>';
     html += synthese(c);

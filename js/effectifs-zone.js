@@ -255,17 +255,17 @@
 
     const sel = (cle, opts, w) => h('select', { style: { maxWidth: w || '230px', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '6px' }, onchange: (e) => { etat[cle] = e.target.value; rendu(); } },
       opts.map(([v, l]) => h('option', { value: v, selected: String(etat[cle]) === String(v) }, l)));
-    const niv = [['ecole', '🏫 École'], ['zone', '📍 Zone pédagogique'], ['cs', '🏛️ Circonscription']];
+    const niv = [['ecole', '\uE022 École'], ['zone', '\uE02C Zone pédagogique'], ['cs', '\uE023 Circonscription']];
     const barre = h('div', { class: 'xbar no-print' },
       ...(estEc ? [] : niv.map(([k, l]) => h('button', { class: 'btn btn-sm ' + (etat.niveau === k ? 'btn-primary' : ''), onclick: () => { etat.niveau = k; rendu(); } }, l))),
       sel('annee', annees.map(a => [a, 'Année ' + a]), '170px'),
       ...(!estEc && etat.niveau === 'ecole' ? [sel('ecole', prim.map(e => [String(e.id), e.nom]), '320px')] : []),
       ...(!estEc && etat.niveau === 'zone' ? [sel('zone', zones.map(z => [z, z]))] : []));
     const actions = h('div', { class: 'xbar no-print' },
-      h('button', { class: 'btn btn-primary', onclick: imprimer }, '🖨️ Imprimer / PDF'),
-      h('button', { class: 'btn btn-info', onclick: exporterExcel }, '⬇ Excel'),
-      h('button', { class: 'btn', onclick: exporterSaisie }, '📤 Exporter (Excel réimportable)'),
-      h('button', { class: 'btn btn-warning', onclick: importer }, '📥 Importer Excel / CSV'));
+      h('button', { class: 'btn btn-primary', onclick: imprimer }, '\uE008 Imprimer / PDF'),
+      h('button', { class: 'btn btn-info', onclick: exporterExcel }, '\uE009 Excel'),
+      h('button', { class: 'btn', onclick: exporterSaisie }, '\uE00C Exporter (Excel réimportable)'),
+      h('button', { class: 'btn btn-warning', onclick: importer }, '\uE00B Importer Excel / CSV'));
 
     const carte = (v, l, cl) => h('div', { class: 'stat-card ' + (cl || '') }, h('h4', null, l), h('div', { class: 'value' }, v));
     const pctF = T.T ? Math.round(T.F / T.T * 100) : 0;
@@ -300,7 +300,7 @@
       const lignes = [...c.parEcole.values()].map(o => ({ e: o.ecole, t: totaux(o.agg), nb: o.agg.nb, agg: o.agg })).sort((a, b) => (a.e.nom || '').localeCompare(b.e.nom || '', 'fr'));
       const det = h('div', { class: 'eff-scroll' });
       det.innerHTML = '<table class="eff-t"><thead><tr><th class="eff-l">École</th><th>Zone</th><th>Garçons</th><th>Filles</th><th>Total</th><th>Âge moyen G</th><th>Âge moyen F</th><th>Âge moyen</th><th>Écart type</th><th>Relevé</th></tr></thead><tbody>'
-        + lignes.map(l => `<tr><td class="eff-l">${esc(l.e.nom)}</td><td>${esc(l.e.zone_ped || '—')}</td><td>${l.t.G}</td><td>${l.t.F}</td><td><b>${l.t.T}</b></td>${['G', 'F', 'T'].map(x => `<td>${f2(statsAge(l.agg, 'ENS', x).moy)}</td>`).join('')}<td>${f2(statsAge(l.agg, 'ENS', 'T').et)}</td><td>${l.nb ? '✔' : '— absent'}</td></tr>`).join('')
+        + lignes.map(l => `<tr><td class="eff-l">${esc(l.e.nom)}</td><td>${esc(l.e.zone_ped || '—')}</td><td>${l.t.G}</td><td>${l.t.F}</td><td><b>${l.t.T}</b></td>${['G', 'F', 'T'].map(x => `<td>${f2(statsAge(l.agg, 'ENS', x).moy)}</td>`).join('')}<td>${f2(statsAge(l.agg, 'ENS', 'T').et)}</td><td>${l.nb ? '\uE003' : '— absent'}</td></tr>`).join('')
         + `<tr class="tot"><td class="eff-l">TOTAL</td><td></td><td>${T.G}</td><td>${T.F}</td><td>${T.T}</td>${['G', 'F', 'T'].map(x => `<td>${f2(statsAge(c.agg, 'ENS', x).moy)}</td>`).join('')}<td>${f2(statsAge(c.agg, 'ENS', 'T').et)}</td><td>${c.agg.nb}/${lignes.length}</td></tr></tbody></table>`;
       blocs.push(h('h3', { class: 'eff-h' }, etat.niveau === 'zone' ? 'Détail par école de la zone' : 'Détail par école'), det);
     }
@@ -311,9 +311,9 @@
       bloc.innerHTML = htmlMat(o.m, o.ecoles, !estEc && etat.niveau !== 'ecole');
       blocs.push(h('h3', { class: 'eff-h', style: { color: coul } }, `Écoles maternelles ${lib} : effectifs par section (SP, SG) — ${o.ecoles.length} école(s)`), bloc);
     }
-    if (c.agg.ecarts.length) blocs.push(h('div', { class: 'xnote' }, h('b', null, '⚠ Contrôles de cohérence : '), h('ul', null, c.agg.ecarts.slice(0, 15).map(x => h('li', null, x)))));
+    if (c.agg.ecarts.length) blocs.push(h('div', { class: 'xnote' }, h('b', null, '\uE041 Contrôles de cohérence : '), h('ul', null, c.agg.ecarts.slice(0, 15).map(x => h('li', null, x)))));
     blocs.push(h('p', { class: 'xnote' }, CREDIT));
-    page.replaceChildren(h('div', { class: 'page-title' }, '📈 Effectifs par âge, classe et sexe'), barre, actions, ...blocs);
+    page.replaceChildren(h('div', { class: 'page-title' }, '\uE016 Effectifs par âge, classe et sexe'), barre, actions, ...blocs);
   }
 
   /* ---------------- Impression, Excel, saisie ---------------- */

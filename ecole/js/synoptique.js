@@ -100,12 +100,12 @@
     const ecoles = filtrer(); derniere = ecoles;
     const sel = (cle, opts, w) => h('select', { style: { maxWidth: w || '230px', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '6px' }, onchange: (e) => { etat[cle] = e.target.value; rendu(); } },
       opts.map(([v, l]) => h('option', { value: v, selected: String(etat[cle]) === String(v) }, l)));
-    const niv = [['cs', '🏛️ Circonscription'], ['zone', '📍 Zone'], ['up', '👥 Unité pédagogique'], ['ecole', '🏫 École']];
+    const niv = [['cs', '\uE023 Circonscription'], ['zone', '\uE02C Zone'], ['up', '\uE01C Unité pédagogique'], ['ecole', '\uE022 École']];
     const barre = h('div', { class: 'xbar no-print' }, ...(estEc ? [] : niv.map(([k, l]) => h('button', { class: 'btn btn-sm ' + (etat.niveau === k ? 'btn-primary' : ''), onclick: () => { etat.niveau = k; rendu(); } }, l))),
       sel('annee', annees.map(a => [a, 'Année ' + a]), '170px'),
       ...(!estEc && etat.niveau === 'zone' ? [sel('zone', zones.map(z => [z, z]))] : []), ...(!estEc && etat.niveau === 'up' ? [sel('up', ups.map(u => [u, u]))] : []),
       ...(!estEc && etat.niveau === 'ecole' ? [sel('ecole', noms.map(e => [String(e.id), e.nom]), '320px')] : []));
-    const actions = h('div', { class: 'xbar no-print' }, h('button', { class: 'btn btn-primary', onclick: imprimer }, '🖨️ Imprimer / PDF'), h('button', { class: 'btn btn-info', onclick: excel }, '⬇ Excel'));
+    const actions = h('div', { class: 'xbar no-print' }, h('button', { class: 'btn btn-primary', onclick: imprimer }, '\uE008 Imprimer / PDF'), h('button', { class: 'btn btn-info', onclick: excel }, '\uE009 Excel'));
     const entete = h('div', { class: 'text-center syn-entete' }, h('b', null, 'RÉPUBLIQUE DU BÉNIN'), h('div', null, 'MINISTÈRE DES ENSEIGNEMENTS MATERNEL ET PRIMAIRE'), h('div', null, 'CIRCONSCRIPTION SCOLAIRE DE POBÈ'),
       h('h3', { style: { margin: '6px 0 0' } }, 'TABLEAU SYNOPTIQUE'), h('div', null, titreNiveau() + ' — Année scolaire ' + etat.annee));
     const t1 = h('div', { class: 'syn-scroll' }); t1.innerHTML = tableSynoptique(ecoles);
@@ -114,7 +114,7 @@
     if (!estEc && (etat.niveau === 'cs' || etat.niveau === 'zone')) { const t = h('div', { class: 'syn-scroll' }); t.innerHTML = tableRepartition(ecoles, 'unite_ped', 'Unité pédagogique'); blocs.push(h('h3', { class: 'syn-h' }, 'Répartition par unité pédagogique'), t); }
     if (!estEc && etat.niveau === 'cs') { const t = h('div', { class: 'syn-scroll' }); t.innerHTML = tableRepartition(ecoles, 'arrondissement', 'Arrondissement'); blocs.push(h('h3', { class: 'syn-h' }, 'Répartition par arrondissement'), t); }
     blocs.push(h('p', { class: 'xnote' }, 'Calcul automatique à partir des fiches des écoles, du personnel et des relevés d\'effectifs de l\'année choisie. EM : écoles maternelles ; EP : écoles primaires. ' + CREDIT));
-    page.replaceChildren(h('div', { class: 'page-title' }, '🗂️ Tableau synoptique'), barre, actions, ...blocs);
+    page.replaceChildren(h('div', { class: 'page-title' }, '\uE011 Tableau synoptique'), barre, actions, ...blocs);
   }
   function imprimer() {
     if (!document.getElementById('xpageSyn')) document.head.append(h('style', { id: 'xpageSyn' }, '@page { size: A4 landscape; margin: 8mm; } @media print { #synoptique .xbar, #synoptique select { display: none !important; } }'));

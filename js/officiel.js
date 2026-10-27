@@ -48,13 +48,13 @@
   }
   const barre = (...boutons) => h('div', { class: 'doc-actions no-print' }, ...boutons);
   const bouton = (libelle, action, classe) => h('button', { class: 'btn ' + (classe || 'btn-secondary'), type: 'button', onclick: action }, libelle);
-  const imprimer = () => bouton('🖨️ Imprimer / PDF', () => global.print(), 'btn-primary');
+  const imprimer = () => bouton('\uE008 Imprimer / PDF', () => global.print(), 'btn-primary');
   const ajuster = t => { t.style.height = 'auto'; t.style.height = (t.scrollHeight + 2) + 'px'; };
 
   /* ---------- onglets ---------- */
   const ONGLETS = [
-    ['fichiers', '📄 Fichiers officiels'], ['calendrier', '📅 Calendrier scolaire'], ['emploi', '🕘 Emplois du temps'],
-    ['planif', '🗓️ Planification annuelle'], ['projet', '📚 Projet de planification'], ['themes', '🧭 Thèmes'], ['reglement', '📕 Règlement intérieur']
+    ['fichiers', '\uE00D Fichiers officiels'], ['calendrier', '\uE017 Calendrier scolaire'], ['emploi', '\uE018 Emplois du temps'],
+    ['planif', '\uE017 Planification annuelle'], ['projet', '\uE031 Projet de planification'], ['themes', '\uE042 Thèmes'], ['reglement', '\uE030 Règlement intérieur']
   ];
   let onglet = 'fichiers', edtNiv = 'ci_cp', planNiv = 'em_petits';
 
@@ -62,7 +62,7 @@
     const r = document.getElementById('docsref'); if (!r) return;
     const corps = h('div', { class: 'doc-corps' });
     r.replaceChildren(
-      h('div', { class: 'entete' }, h('h1', null, '📚 Documents officiels'),
+      h('div', { class: 'entete' }, h('h1', null, '\uE031 Documents officiels'),
         h('div', { class: 'sous' }, 'Calendrier scolaire, emplois du temps, planifications, règlement intérieur, fiches et canevas — les mêmes textes que dans SCOLARIS et GESCOL, consultables hors ligne.')),
       h('div', { class: 'tabs', role: 'tablist' }, ...ONGLETS.map(([k, l]) => h('div', {
         class: 'tab' + (k === onglet ? ' active' : ''), role: 'tab', tabindex: '0', 'aria-selected': String(k === onglet),
@@ -81,7 +81,7 @@
     c.append(h('p', { class: 'sous' }, 'Choisissez « Ouvrir » pour lire le document, « Télécharger » pour le garder sur l’appareil ou l’imprimer.'));
     groupes.forEach(g => {
       c.append(h('h2', { class: 'sec-h' }, g), h('div', { class: 'doc-grille' }, ...docs.filter(d => d.groupe === g).map(d => {
-        const ext = (d.format || d.fichier.split('.').pop()).toUpperCase(), icone = /XLS/.test(ext) ? '📊' : '📄';
+        const ext = (d.format || d.fichier.split('.').pop()).toUpperCase(), icone = /XLS/.test(ext) ? '\uE015' : '\uE00D';
         return h('div', { class: 'doc-carte' },
           h('div', { class: 'doc-ic', 'aria-hidden': 'true' }, icone),
           h('div', { class: 'doc-txt' }, h('b', null, d.titre), d.description ? h('p', null, d.description) : null,
@@ -93,7 +93,7 @@
     });
     c.append(h('h2', { class: 'sec-h' }, 'Documents intégrés à l’application'), h('div', { class: 'doc-grille' }, ...(DOCS.integres || []).map(d => {
       const cible = { emploi: 'emploi', calendrier: 'calendrier', reglement: 'reglement', planif: 'planif', themes: 'themes', planification: 'projet' }[d.route];
-      return h('div', { class: 'doc-carte' }, h('div', { class: 'doc-ic', 'aria-hidden': 'true' }, '🧾'),
+      return h('div', { class: 'doc-carte' }, h('div', { class: 'doc-ic', 'aria-hidden': 'true' }, '\uE04B'),
         h('div', { class: 'doc-txt' }, h('b', null, d.titre), h('p', null, d.description)),
         h('div', { class: 'doc-btns' }, bouton('Afficher', () => { onglet = cible; rendre(); }, 'btn-primary btn-sm')));
     })));
@@ -108,9 +108,9 @@
     const pdf = DOCS.documents.find(d => /calendrier/i.test(d.fichier));
     c.append(
       h('div', { class: 'carte' }, h('h2', null, 'Calendrier de l’année scolaire ' + annees[0]), h('p', { class: 'sous' }, A.arrete), A.signe ? h('p', { class: 'sous' }, A.signe) : null,
-        barre(imprimer(), bouton('⬇ Excel', () => exporterExcel('Calendrier_scolaire_' + annees[0], 'CALENDRIER SCOLAIRE ' + annees[0], A.arrete,
+        barre(imprimer(), bouton('\uE009 Excel', () => exporterExcel('Calendrier_scolaire_' + annees[0], 'CALENDRIER SCOLAIRE ' + annees[0], A.arrete,
           ['Période', 'Type', 'Début', 'Fin', 'Précision', 'Durée', 'Observations'], A.lignes.map(l => [l.libelle, T[l.type] || l.type, dateFr(l.debut), dateFr(l.fin), l.precision, l.duree, l.obs]))),
-          pdf ? h('a', { class: 'btn btn-secondary', href: pdf.fichier, target: '_blank', rel: 'noopener' }, '📄 Arrêté (PDF)') : null)),
+          pdf ? h('a', { class: 'btn btn-secondary', href: pdf.fichier, target: '_blank', rel: 'noopener' }, '\uE00D Arrêté (PDF)') : null)),
       h('div', { class: 'tw' }, h('table', { class: 't' },
         h('thead', null, h('tr', null, ...['Période', 'Début', 'Fin', 'Durée', 'Observations'].map(x => h('th', null, x)))),
         h('tbody', null, ...A.lignes.map(l => {
@@ -131,9 +131,9 @@
     c.append(
       h('div', { class: 'tabs tabs-2' }, ...E.map(x => h('div', { class: 'tab' + (x.id === ref.id ? ' active' : ''), onclick: () => { if (modifie && !confirm('Quitter sans enregistrer les modifications ?')) return; edtNiv = x.id; rendre(); } }, x.libelle))),
       h('div', { class: 'carte' }, h('h2', null, 'Emploi du temps officiel — ' + ref.libelle), ref.source ? h('p', { class: 'sous' }, ref.source) : null, etat,
-        barre(bouton('💾 Enregistrer', () => { enregistrer('edt:' + ref.id, lignes); modifie = false; rendre(); }, 'btn-success'),
+        barre(bouton('\uE007 Enregistrer', () => { enregistrer('edt:' + ref.id, lignes); modifie = false; rendre(); }, 'btn-success'),
           bouton('↺ Version officielle', () => { if (confirm('Revenir à l’emploi du temps officiel ? Vos modifications seront perdues.')) { enregistrer('edt:' + ref.id, null); rendre(); } }),
-          imprimer(), bouton('⬇ Excel', () => exporterExcel('Emploi_du_temps_' + ref.id, 'EMPLOI DU TEMPS — ' + ref.libelle.toUpperCase(), ref.source,
+          imprimer(), bouton('\uE009 Excel', () => exporterExcel('Emploi_du_temps_' + ref.id, 'EMPLOI DU TEMPS — ' + ref.libelle.toUpperCase(), ref.source,
             ['Horaire', ...J.map(j => j[1])], lignes.map(l => [l.horaire, ...J.map(j => l[j[0]] || '')]))))),
       h('div', { class: 'tw' }, h('table', { class: 'edt' },
         h('thead', null, h('tr', null, h('th', null, 'Horaire'), ...J.map(j => h('th', null, j[1])))),
@@ -169,9 +169,9 @@
       h('div', { class: 'carte' }, h('h2', null, 'Planification annuelle — ' + lib),
         h('p', { class: 'sous' }, em ? 'Grille par domaines d’activités de la maternelle (D1 à D5), à compléter par l’école.' : (P.source || 'Planification de référence.')),
         h('p', { class: 'sous' }, perso('plan:' + planNiv) ? 'Version adaptée sur cet appareil.' : (em ? 'Grille vierge.' : 'Version de référence.')),
-        barre(bouton('💾 Enregistrer', () => { enregistrer('plan:' + planNiv, lignes); modifie = false; rendre(); }, 'btn-success'),
+        barre(bouton('\uE007 Enregistrer', () => { enregistrer('plan:' + planNiv, lignes); modifie = false; rendre(); }, 'btn-success'),
           bouton('↺ Rétablir', () => { if (confirm('Revenir à la version de départ ? Vos modifications de ce niveau seront perdues.')) { enregistrer('plan:' + planNiv, null); rendre(); } }),
-          imprimer(), bouton('⬇ Excel', () => exporterExcel('Planification_' + planNiv, 'PLANIFICATION ANNUELLE — ' + lib.toUpperCase(), em ? 'Domaines d’activités de la maternelle' : P.source,
+          imprimer(), bouton('\uE009 Excel', () => exporterExcel('Planification_' + planNiv, 'PLANIFICATION ANNUELLE — ' + lib.toUpperCase(), em ? 'Domaines d’activités de la maternelle' : P.source,
             C.map(([, l, g]) => g && !em ? g + ' — ' + l : l), lignes.map(l => C.map(([k]) => k === 'trimestre' ? 'T' + (l[k] || '') : (l[k] || ''))))))),
       h('div', { class: 'tw' }, h('table', { class: 'edt edt-plan' },
         h('thead', null, h('tr', null, ...groupes), ligne2.length ? h('tr', null, ...ligne2) : null),
@@ -188,12 +188,12 @@
   };
   const projet = c => {
     const pdf = DOCS.documents.find(d => /projet/i.test(d.fichier));
-    if (pdf) c.append(barre(h('a', { class: 'btn btn-secondary', href: pdf.fichier, target: '_blank', rel: 'noopener' }, '📄 Document complet (PDF)')));
+    if (pdf) c.append(barre(h('a', { class: 'btn btn-secondary', href: pdf.fichier, target: '_blank', rel: 'noopener' }, '\uE00D Document complet (PDF)')));
     viaExtra('planif')(c);
   };
   const themes = c => {
     const pdf = DOCS.documents.find(d => /th[eè]me/i.test(d.fichier));
-    if (pdf) c.append(barre(h('a', { class: 'btn btn-secondary', href: pdf.fichier, target: '_blank', rel: 'noopener' }, '📄 Thèmes (PDF)')));
+    if (pdf) c.append(barre(h('a', { class: 'btn btn-secondary', href: pdf.fichier, target: '_blank', rel: 'noopener' }, '\uE00D Thèmes (PDF)')));
     viaExtra('themes')(c);
   };
 
@@ -205,8 +205,8 @@
     c.append(h('div', { class: 'tabs tabs-2' }, ...[['texte', 'Texte'], ['scan', 'Document numérisé']].map(([k, l]) => h('div', { class: 'tab' + (k === regVue ? ' active' : ''), onclick: () => { regVue = k; rendre(); } }, l))));
     if (regVue === 'scan') { viaExtra('reg')(c); return; }
     c.append(h('div', { class: 'carte' }, h('h2', null, 'Règlement intérieur des écoles primaires'), O.reglement_source ? h('p', { class: 'sous' }, O.reglement_source) : null,
-      barre(imprimer(), bouton('⬇ Excel', () => exporterExcel('Reglement_interieur', 'RÈGLEMENT INTÉRIEUR DES ÉCOLES PRIMAIRES', O.reglement_source, ['Type', 'N°', 'Titre', 'Texte'], R.map(a => [a.type, a.numero, a.titre, a.texte]))),
-        pdf ? h('a', { class: 'btn btn-secondary', href: pdf.fichier, target: '_blank', rel: 'noopener' }, '📄 PDF officiel') : null),
+      barre(imprimer(), bouton('\uE009 Excel', () => exporterExcel('Reglement_interieur', 'RÈGLEMENT INTÉRIEUR DES ÉCOLES PRIMAIRES', O.reglement_source, ['Type', 'N°', 'Titre', 'Texte'], R.map(a => [a.type, a.numero, a.titre, a.texte]))),
+        pdf ? h('a', { class: 'btn btn-secondary', href: pdf.fichier, target: '_blank', rel: 'noopener' }, '\uE00D PDF officiel') : null),
       h('div', { class: 'reg-texte' }, ...R.map(a => a.type === 'titre'
         ? h('h3', { class: 'reg-titre' }, 'Titre ' + a.numero + ' — ' + a.titre)
         : h('div', { class: 'reg-art' }, h('b', null, a.type === 'preambule' ? a.titre : 'Article ' + a.numero + (a.titre ? ' — ' + a.titre : '')),
@@ -218,7 +218,7 @@
     global.Extra.pages = global.Extra.pages || {};
     global.Extra.pages.docsref = rendre;
     const m = document.querySelector('.menu-item[data-page="docsref"]');
-    if (m) m.innerHTML = '<span class="icon">📚</span> Documents officiels';
+    if (m) m.innerHTML = '<span class="icon">\uE031</span> Documents officiels';
     const p = document.getElementById('docsref');
     if (p && !p.classList.contains('hidden')) rendre();
   }

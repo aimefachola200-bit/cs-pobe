@@ -149,11 +149,11 @@
     if (!etat.ecole || !ecs.some(e => String(e.id) === String(etat.ecole))) etat.ecole = ecs[0] ? String(ecs[0].id) : '';
     const c = calcul(); derniere = c;
     const opt = (cle, opts) => `<select data-cle="${cle}">${opts.map(([v, l]) => `<option value="${esc(v)}"${String(etat[cle]) === String(v) ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
-    const niv = estEc ? '' : [['cs', '🏛️ Circonscription (par zone)'], ['zone', '📍 Zone pédagogique (par école)'], ['ecole', '🏫 École']]
+    const niv = estEc ? '' : [['cs', '\uE023 Circonscription (par zone)'], ['zone', '\uE02C Zone pédagogique (par école)'], ['ecole', '\uE022 École']]
       .map(([k, l]) => `<button class="btn btn-sm ${etat.niveau === k ? 'btn-primary' : ''}" data-niv="${k}">${l}</button>`).join(' ');
-    let html = `<div class="page-title">🏗️ Infrastructures et mobilier</div><div class="xbar no-print">${niv} ${opt('annee', annees.map(a => [a, 'Année ' + a]))}`
+    let html = `<div class="page-title">\uE026 Infrastructures et mobilier</div><div class="xbar no-print">${niv} ${opt('annee', annees.map(a => [a, 'Année ' + a]))}`
       + (!estEc && etat.niveau === 'zone' ? opt('zone', zones.map(z => [z, z])) : '') + (!estEc && etat.niveau === 'ecole' ? opt('ecole', ecs.map(e => [String(e.id), e.nom])) : '')
-      + `</div><div class="xbar no-print"><button class="btn btn-primary" data-act="print">🖨️ Imprimer / PDF</button> <button class="btn btn-info" data-act="xls">⬇ Excel</button></div>`
+      + `</div><div class="xbar no-print"><button class="btn btn-primary" data-act="print">\uE008 Imprimer / PDF</button> <button class="btn btn-info" data-act="xls">\uE009 Excel</button></div>`
       + '<div class="text-center" style="font-size:13px;margin:8px 0"><b>RÉPUBLIQUE DU BÉNIN</b><br>MINISTÈRE DES ENSEIGNEMENTS MATERNEL ET PRIMAIRE<br>CIRCONSCRIPTION SCOLAIRE DE POBÈ<h3 style="margin:6px 0 0">INFRASTRUCTURES ET MOBILIER</h3>Année scolaire ' + esc(etat.annee) + '</div>'
       + '<p class="xnote">Sources : modules « Infrastructures » (une ligne par local) et « Mobilier &amp; matériel » (désignation et quantité), compléments des fiches officielles (eau, électricité, latrines, lavage des mains, clôture), relevés d\'effectifs. Places assises = tables + chaises × 1 + table-bancs 2 places × 2 + table-bancs 3 places et plus × 3.</p>';
     for (const [s, lib, coul] of [['pub', 'Secteur public', '#006633'], ['prv', 'Secteur privé (à part)', '#8e44ad']]) {

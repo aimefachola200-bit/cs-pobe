@@ -123,7 +123,7 @@
     b = document.createElement('div');
     b.id = 'barre-retour'; b.className = 'barre-retour no-print';
     b.innerHTML = '<button type="button" class="btn-retour" title="Revenir à la page précédente" aria-label="Revenir à la page précédente">← Retour</button>'
-      + '<button type="button" class="btn-retour sec" title="Tableau de bord" aria-label="Tableau de bord">🏠 Tableau de bord</button>';
+      + '<button type="button" class="btn-retour sec" title="Tableau de bord" aria-label="Tableau de bord">\uE000 Tableau de bord</button>';
     b.children[0].addEventListener('click', retourPage);
     b.children[1].addEventListener('click', () => showPage('dashboard', document.querySelector('.menu-item[data-page="dashboard"]')));
     main.insertBefore(b, main.firstChild);
@@ -341,10 +341,10 @@
       + '<td>' + echapper(e.unite_ped || '—') + '</td>'
       + '<td>' + echapper(e.annee_creation) + '</td><td>' + (e.classes_existantes || 0) + '</td>'
       + '<td class="actions">'
-      + '<button class="btn btn-info btn-sm" onclick="viewEcole(\'' + e.id + '\')">👁️</button>'
-      + '<button class="btn btn-warning btn-sm" onclick="editEcole(\'' + e.id + '\')">✏️</button>'
-      + (global.Config.estEcole() ? '' : '<button class="btn btn-secondary btn-sm" title="Ne fonctionne plus" onclick="ecoleNeFonctionnePlus(\'' + e.id + '\')">⛔</button>')
-      + '<button class="btn btn-danger btn-sm" onclick="deleteEcole(\'' + e.id + '\')">🗑️</button>'
+      + '<button class="btn btn-info btn-sm" onclick="viewEcole(\'' + e.id + '\')">\uE043</button>'
+      + '<button class="btn btn-warning btn-sm" onclick="editEcole(\'' + e.id + '\')">\uE006</button>'
+      + (global.Config.estEcole() ? '' : '<button class="btn btn-secondary btn-sm" title="Ne fonctionne plus" onclick="ecoleNeFonctionnePlus(\'' + e.id + '\')">\uE036</button>')
+      + '<button class="btn btn-danger btn-sm" onclick="deleteEcole(\'' + e.id + '\')">\uE005</button>'
       + '</td></tr>').join('')
       || '<tr><td colspan="10" class="text-center">Aucune école trouvée</td></tr>';
   }
@@ -395,9 +395,9 @@
       + '</tbody></table></div></div>'
       + '<div class="text-center mt-15">'
       + '<button class="btn btn-primary" onclick="editEcole(\'' + ecole.id
-      + '\')">✏️ Modifier ces renseignements</button></div>'
+      + '\')">\uE006 Modifier ces renseignements</button></div>'
 
-      + '<h4 class="mt-15">👥 Personnel (' + actifs.length + ' en poste sur '
+      + '<h4 class="mt-15">\uE01C Personnel (' + actifs.length + ' en poste sur '
       + personnel.length + ' enregistré(s))</h4>'
       + (personnel.length
         ? '<div class="table-container"><div class="table-scroll"><table>'
@@ -415,7 +415,7 @@
         : '<div class="alert alert-warning">Aucun agent enregistré pour cette école — '
           + 'à compléter dans le module Personnel.</div>')
 
-      + '<h4 class="mt-15">🎒 Effectif des apprenants — ' + echapper(anneeActive()) + '</h4>'
+      + '<h4 class="mt-15">\uE021 Effectif des apprenants — ' + echapper(anneeActive()) + '</h4>'
       + (releve
         ? '<div class="stats-grid">'
           + carte(U(releve.totalG || 0) + ' / ' + U(releve.totalF || 0), 'Garçons / filles', 'blue')
@@ -521,8 +521,8 @@
         champ(l, 'pf_' + k, (e.personnel_fichier || {})[k] ?? '', 'number')).join('')
       + '</div></div>'
       + '<div class="text-center mt-15">'
-      + (id && UPO && UPO.officielEcole(e.nom) ? '<button type="button" class="btn btn-info" onclick="reinitialiserEcole(\'' + id + '\')">♻ Réinitialiser (fichiers de la CS)</button> ' : '')
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + (id && UPO && UPO.officielEcole(e.nom) ? '<button type="button" class="btn btn-info" onclick="reinitialiserEcole(\'' + id + '\')">\uE058 Réinitialiser (fichiers de la CS)</button> ' : '')
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -638,7 +638,7 @@
       + selecteur('Type', 'type', [['EPP', 'Primaire publique'], ['EPPRIV', 'Primaire privée'],
         ['EM', 'Maternelle publique'], ['EMPRIV', 'Maternelle privée']], e.type || 'EPP')
       + '</div><div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -692,7 +692,7 @@
         + echapper(e[k] || '—') + '</td></tr>').join('')
       + '<tr><td style="padding:8px;background:#f8fafc;font-weight:500;">Personnel enregistré</td>'
       + '<td style="padding:8px;">' + agents + ' agent(s)</td></tr></table>'
-      + '<div class="text-center mt-15"><button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer</button></div>');
+      + '<div class="text-center mt-15"><button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer</button></div>');
   }
 
   function deleteEcole(id) {
@@ -750,9 +750,9 @@
       + '<td>' + formatDate(calcDateRetraite(p.dateNaissance, p.grade, p.statut)) + '</td>'
       + '<td class="actions">'
       + '<button class="btn btn-info btn-sm" title="Changer la situation" '
-      + 'onclick="changerSituation(\'' + p.id + '\')">🔀</button>'
-      + '<button class="btn btn-warning btn-sm" onclick="editPersonnel(\'' + p.id + '\')">✏️</button>'
-      + '<button class="btn btn-danger btn-sm" onclick="deletePersonnel(\'' + p.id + '\')">🗑️</button>'
+      + 'onclick="changerSituation(\'' + p.id + '\')">\uE059</button>'
+      + '<button class="btn btn-warning btn-sm" onclick="editPersonnel(\'' + p.id + '\')">\uE006</button>'
+      + '<button class="btn btn-danger btn-sm" onclick="deletePersonnel(\'' + p.id + '\')">\uE005</button>'
       + '</td></tr>';
     }).join('')
       || '<tr><td colspan="10" class="text-center">Aucun agent pour ce filtre</td></tr>';
@@ -821,7 +821,7 @@
         + '" value="' + echapper(p['note' + a2] || '') + '" oninput="majApercuAgent()"></div>').join('')
       + '</div></div>'
       + '<div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
     majApercuAgent();
@@ -877,9 +877,9 @@
 
     const boutons = p => '<td class="actions">'
       + '<button class="btn btn-info btn-sm" title="Changer la situation" '
-      + 'onclick="changerSituation(\'' + p.id + '\')">🔀</button>'
-      + '<button class="btn btn-warning btn-sm" onclick="editPersonnel(\'' + p.id + '\')">✏️</button>'
-      + '<button class="btn btn-danger btn-sm" onclick="deletePersonnel(\'' + p.id + '\')">🗑️</button>'
+      + 'onclick="changerSituation(\'' + p.id + '\')">\uE059</button>'
+      + '<button class="btn btn-warning btn-sm" onclick="editPersonnel(\'' + p.id + '\')">\uE006</button>'
+      + '<button class="btn btn-danger btn-sm" onclick="deletePersonnel(\'' + p.id + '\')">\uE005</button>'
       + '</td>';
 
     document.getElementById(cible).innerHTML = liste.map(p => {
@@ -1023,8 +1023,8 @@
         : '<span class="badge badge-' + (x.admis ? 'success' : 'danger') + '">'
         + (x.admis ? 'atteint' : 'non atteint') + '</span>') + '</td>'
       + '<td class="actions">'
-      + '<button class="btn btn-warning btn-sm" onclick="openCandidatModal(\'' + x.candidat.id + '\')">✏️</button>'
-      + '<button class="btn btn-danger btn-sm" onclick="supprimerCandidat(\'' + x.candidat.id + '\')">🗑️</button>'
+      + '<button class="btn btn-warning btn-sm" onclick="openCandidatModal(\'' + x.candidat.id + '\')">\uE006</button>'
+      + '<button class="btn btn-danger btn-sm" onclick="supprimerCandidat(\'' + x.candidat.id + '\')">\uE005</button>'
       + '</td></tr>').join('')
       || '<tr><td colspan="' + (E().MATIERES.length + 9) + '" class="text-center">'
         + 'Aucun candidat dans ce centre.</td></tr>';
@@ -1077,7 +1077,7 @@
       + '<input type="date" name="dateComposition" value="' + echapper(c.dateComposition || '') + '"></div>'
       + champ('Session', 'session', c.session || anneeActive())
       + '</div><div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -1112,7 +1112,7 @@
         + '<input type="number" step="0.25" min="0" max="20" name="' + m.cle + '" value="'
         + echapper(c[m.cle] === undefined ? '' : c[m.cle]) + '"></div>').join('')
       + '</div></div><div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -1193,7 +1193,7 @@
       + piedDocument(null, 'PV-EXAMEN', c.id, 'Le Chef de la Circonscription Scolaire')
       + '</div>'
       + '<div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer</button></div>');
+      + '<button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer</button></div>');
   }
 
   /* ---------------- Cachets et signatures ---------------- */
@@ -1333,11 +1333,11 @@
       + '<div style="min-width:190px;"><b>' + echapper(cs.nom) + '</b></div>'
       + global.Pieces.blocSignature(cs, cs.libelleSignature || cs.nom)
       + '<div><button class="btn btn-warning" onclick="reglerCachet(\'' + cs.code
-      + '\')">✏️ Régler le cachet</button> '
-      + '<button class="btn btn-info" onclick="signer(\'' + cs.code + '\')">✍️ '
+      + '\')">\uE006 Régler le cachet</button> '
+      + '<button class="btn btn-info" onclick="signer(\'' + cs.code + '\')">\uE029 '
       + (cs.signature_image ? 'Modifier la signature' : 'Signer') + '</button> '
       + '<button class="btn btn-primary" onclick="apercuCachetCS(\'' + cs.code
-      + '\')">👁️</button></div></div>').join('');
+      + '\')">\uE043</button></div></div>').join('');
     }
 
     const rech = (document.getElementById('searchIdentite').value || '').toLowerCase();
@@ -1358,10 +1358,10 @@
           ? '<img src="' + p.signature_image + '" style="max-height:40px;">'
           : '<span class="badge badge-warning">à enregistrer</span>') + '</td>'
         + '<td class="actions">'
-        + '<button class="btn btn-info btn-sm" onclick="signerAgent(\'' + p.id + '\')">✍️</button>'
+        + '<button class="btn btn-info btn-sm" onclick="signerAgent(\'' + p.id + '\')">\uE029</button>'
         + (p.signature_image
           ? '<button class="btn btn-danger btn-sm" onclick="effacerSignatureAgent(\''
-            + p.id + '\')">🗑️</button>' : '')
+            + p.id + '\')">\uE005</button>' : '')
         + '</td></tr>').join('')
         || '<tr><td colspan="3" class="text-center">Aucun agent enregistré</td></tr>';
     }
@@ -1373,9 +1373,9 @@
         ? '<img src="' + e.signature_image + '" style="max-height:38px;">'
         : '<span class="badge badge-warning">à enregistrer</span>') + '</td>'
       + '<td class="actions">'
-      + '<button class="btn btn-warning btn-sm" onclick="reglerCachet(\'' + e.id + '\')">✏️</button>'
-      + '<button class="btn btn-info btn-sm" onclick="signer(\'' + e.id + '\')">✍️</button>'
-      + '<button class="btn btn-primary btn-sm" onclick="apercuPiece(\'' + e.id + '\')">👁️</button>'
+      + '<button class="btn btn-warning btn-sm" onclick="reglerCachet(\'' + e.id + '\')">\uE006</button>'
+      + '<button class="btn btn-info btn-sm" onclick="signer(\'' + e.id + '\')">\uE029</button>'
+      + '<button class="btn btn-primary btn-sm" onclick="apercuPiece(\'' + e.id + '\')">\uE043</button>'
       + '</td></tr>').join('')
       || '<tr><td colspan="5" class="text-center">Aucune école</td></tr>';
   }
@@ -1446,7 +1446,7 @@
         + c.slice(1).toLowerCase() + '</option>').join('')
       + '</select></div></div>'
       + '<div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -1499,7 +1499,7 @@
       + global.Pieces.blocSignature(cs, cs.libelleSignature || cs.nom)
       + '</div></div>'
       + '<div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer</button></div>');
+      + '<button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer</button></div>');
   }
 
   /** Montre ce que donneront les pièces sur un document réel. */
@@ -1516,7 +1516,7 @@
       + 'directeur et un code QR qui permet d’en vérifier l’origine.</p>'
       + piedDocument(e, 'APERCU', e.id, 'Le Directeur') + '</div>'
       + '<div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer</button></div>');
+      + '<button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer</button></div>');
   }
 
   /**
@@ -1939,7 +1939,7 @@
       + (a.active ? '' : '<button class="btn btn-primary btn-sm" onclick="activerAnnee(\''
         + a.id + '\')">Activer</button> ')
       + (a.active ? '' : '<button class="btn btn-danger btn-sm" onclick="supprimerAnnee(\''
-        + a.id + '\')">🗑️</button>')
+        + a.id + '\')">\uE005</button>')
       + '</td></tr>').join('');
   }
 
@@ -1953,7 +1953,7 @@
       + '</div><p class="alert alert-info mt-15">Format attendu : deux millésimes séparés '
       + "d'un tiret, par exemple 2027-2028.</p>"
       + '<div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Ajouter</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Ajouter</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -2078,7 +2078,7 @@
       + '<textarea name="observationSituation" rows="2">'
       + echapper(p.observationSituation || '') + '</textarea></div>'
       + '<div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
     majChampsSituation();
@@ -2214,9 +2214,9 @@
       + '<td>' + echapper(v.matiere || v.discipline || '—') + '</td>'
       + '<td>' + (v.note ? '<b>' + echapper(v.note) + '/20</b>' : '—') + '</td>'
       + '<td class="actions">'
-      + '<button class="btn btn-primary btn-sm" onclick="editerRapportVisite(\'' + v.id + '\')">📄</button>'
-      + '<button class="btn btn-warning btn-sm" onclick="openVisiteModal(\'' + v.id + '\')">✏️</button>'
-      + '<button class="btn btn-danger btn-sm" onclick="supprimerVisite(\'' + v.id + '\')">🗑️</button>'
+      + '<button class="btn btn-primary btn-sm" onclick="editerRapportVisite(\'' + v.id + '\')">\uE00D</button>'
+      + '<button class="btn btn-warning btn-sm" onclick="openVisiteModal(\'' + v.id + '\')">\uE006</button>'
+      + '<button class="btn btn-danger btn-sm" onclick="supprimerVisite(\'' + v.id + '\')">\uE005</button>'
       + '</td></tr>').join('')
       || '<tr><td colspan="9" class="text-center">Aucune visite enregistrée</td></tr>';
 
@@ -2303,7 +2303,7 @@
       + aire('Recommandations', 'recommandations', v.recommandations, 4)
       + '</div>'
       + '<div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
     majEnseignantsVisite(v.enseignantId);
@@ -2407,7 +2407,7 @@
           + 'identifié.</div>')
       + '</div>'
       + '<div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer ou enregistrer en PDF</button></div>');
+      + '<button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer ou enregistrer en PDF</button></div>');
   }
 
   /** Les pièces examinées et leur état, telles que constatées. */
@@ -2579,9 +2579,9 @@
         : '<p class="muet">Aucune étape datée : renseignez les prises de service dans la '
           + 'fiche de l’agent.</p>')
       + '<div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="ajouterAvancement(\'' + p.id + '\')">➕ Avancement</button> '
-      + '<button class="btn btn-info" onclick="editerFicheCarriere(\'' + p.id + '\')">📄 Fiche de carrière</button> '
-      + '<button class="btn btn-warning" onclick="editPersonnel(\'' + p.id + '\')">✏️ Modifier l’agent</button>'
+      + '<button class="btn btn-primary" onclick="ajouterAvancement(\'' + p.id + '\')">\uE001 Avancement</button> '
+      + '<button class="btn btn-info" onclick="editerFicheCarriere(\'' + p.id + '\')">\uE00D Fiche de carrière</button> '
+      + '<button class="btn btn-warning" onclick="editPersonnel(\'' + p.id + '\')">\uE006 Modifier l’agent</button>'
       + '</div></div>';
   }
 
@@ -2602,7 +2602,7 @@
       + 'et l’ancien conservé dans le déroulé de carrière. La date de retraite est '
       + 'recalculée en conséquence.</p>'
       + '<div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -2673,7 +2673,7 @@
       + piedDocument(null, 'CARRIERE', p.id,
         'Le Chef de la Division de l’Organisation Scolaire et de la Prévision', 'DOSP')
       + '</div><div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer</button></div>');
+      + '<button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer</button></div>');
   }
 
   /* ---------------- Retraite ---------------- */
@@ -2698,7 +2698,7 @@
         : getAgeRetraite(p.grade, p.statut) + ' ans') + '</td><td><b>' + formatDate(dr) + '</b></td>'
         + '<td><span class="badge badge-' + ton + '">' + mois + ' mois</span></td>'
         + '<td><button class="btn btn-info btn-sm" onclick="genererActeRetraite(\'' + p.id
-        + '\')">📄 Acte</button></td></tr>';
+        + '\')">\uE00D Acte</button></td></tr>';
     }).join('') || '<tr><td colspan="8" class="text-center">Aucune prévision</td></tr>';
 
     document.getElementById('retraiteActuTable').innerHTML = actu.map(({ p, dr }) =>
@@ -2706,14 +2706,14 @@
       + '<td>' + echapper(p.grade || '—') + '</td><td><b>' + formatDate(dr) + '</b></td>'
       + '<td>' + echapper(nomEcole(p.ecoleId)) + '</td>'
       + '<td><button class="btn btn-info btn-sm" onclick="genererActeRetraite(\'' + p.id
-      + '\')">📄 Acte</button></td></tr>').join('')
+      + '\')">\uE00D Acte</button></td></tr>').join('')
       || '<tr><td colspan="6" class="text-center">Aucune retraite cette année</td></tr>';
 
     document.getElementById('retraitePartisTable').innerHTML = partis.map(({ p, dr }) =>
       '<tr><td>' + echapper(p.matricule || '—') + '</td><td>' + echapper(p.nom) + '</td>'
       + '<td>' + echapper(p.grade || '—') + '</td><td>' + formatDate(dr) + '</td>'
       + '<td><button class="btn btn-info btn-sm" onclick="genererActeRetraite(\'' + p.id
-      + '\')">📄</button></td></tr>').join('')
+      + '\')">\uE00D</button></td></tr>').join('')
       || '<tr><td colspan="5" class="text-center">Aucun</td></tr>';
   }
 
@@ -2741,7 +2741,7 @@
       + '<p class="text-center">Fait à Pobè, le ' + new Date().toLocaleDateString('fr-FR') + '</p>'
       + piedDocument(null, 'RETRAITE', p.id, 'Le Chef de la Circonscription Scolaire')
       + '</div>'
-      + '<div class="text-center mt-15"><button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer</button></div>');
+      + '<div class="text-center mt-15"><button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer</button></div>');
   }
 
   /* ---------------- Effectifs ---------------- */
@@ -2774,10 +2774,10 @@
       + '<td>' + (e.totalG || 0) + '</td><td>' + (e.totalF || 0) + '</td>'
       + '<td><b>' + (e.total || 0) + '</b></td><td>' + (e.handicapes || 0) + '</td>'
       + '<td class="actions">'
-      + '<button class="btn btn-warning btn-sm" title="Modifier" onclick="editEffectif(\'' + e.id + '\')">✏️</button>'
+      + '<button class="btn btn-warning btn-sm" title="Modifier" onclick="editEffectif(\'' + e.id + '\')">\uE006</button>'
       + (UPO && (UPO.officielEcole(nomEcole(e.ecoleId)) || {}).effectifs
-        ? '<button class="btn btn-info btn-sm" title="Réinitialiser : effectifs du fichier de la CS" onclick="reinitialiserEffectifs(\'' + e.ecoleId + '\')">♻</button>' : '')
-      + '<button class="btn btn-danger btn-sm" title="Supprimer" onclick="deleteEffectif(\'' + e.id + '\')">🗑️</button>'
+        ? '<button class="btn btn-info btn-sm" title="Réinitialiser : effectifs du fichier de la CS" onclick="reinitialiserEffectifs(\'' + e.ecoleId + '\')">\uE058</button>' : '')
+      + '<button class="btn btn-danger btn-sm" title="Supprimer" onclick="deleteEffectif(\'' + e.id + '\')">\uE005</button>'
       + (e.source ? '<div class="petit muet" style="font-size:11px">' + echapper(e.source) + '</div>' : '')
       + '</td></tr>').join('')
       || '<tr><td colspan="7" class="text-center">Aucun effectif enregistré</td></tr>';
@@ -2837,7 +2837,7 @@
       + '<thead><tr><th>Âge</th>' + CLASSES.map(c => '<th>' + c + '</th>').join('') + '</tr></thead>'
       + '<tbody>' + lignes + '</tbody></table></div></div>'
       + '<div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
     const selEc = document.querySelector('#modalBody form [name="ecoleId"]');
@@ -2941,8 +2941,8 @@
         + '<td><span class="badge badge-' + ton + '">' + echapper(i.etat || '—') + '</span></td>'
         + '<td>' + echapper(i.anneeService || '—') + '</td>'
         + '<td class="actions">'
-        + '<button class="btn btn-warning btn-sm" onclick="editInfra(\'' + i.id + '\')">✏️</button>'
-        + '<button class="btn btn-danger btn-sm" onclick="deleteInfra(\'' + i.id + '\')">🗑️</button>'
+        + '<button class="btn btn-warning btn-sm" onclick="editInfra(\'' + i.id + '\')">\uE006</button>'
+        + '<button class="btn btn-danger btn-sm" onclick="deleteInfra(\'' + i.id + '\')">\uE005</button>'
         + '</td></tr>';
     }).join('') || '<tr><td colspan="6" class="text-center">Aucune infrastructure</td></tr>';
   }
@@ -2965,7 +2965,7 @@
       + selecteur('Financeur', 'financeur', ['État', 'Collectivités locales', 'APE',
         'Aide extérieure', 'Autres'], i.financeur)
       + '</div><div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -2988,8 +2988,8 @@
       + '<td><span class="badge badge-' + (m.etat === 'Bon' ? 'success' : 'warning') + '">'
       + echapper(m.etat || '—') + '</span></td>'
       + '<td class="actions">'
-      + '<button class="btn btn-warning btn-sm" onclick="editMobilier(\'' + m.id + '\')">✏️</button>'
-      + '<button class="btn btn-danger btn-sm" onclick="deleteMobilier(\'' + m.id + '\')">🗑️</button>'
+      + '<button class="btn btn-warning btn-sm" onclick="editMobilier(\'' + m.id + '\')">\uE006</button>'
+      + '<button class="btn btn-danger btn-sm" onclick="deleteMobilier(\'' + m.id + '\')">\uE005</button>'
       + '</td></tr>').join('')
       || '<tr><td colspan="6" class="text-center">Aucun mobilier</td></tr>';
   }
@@ -3010,7 +3010,7 @@
       + selecteur('Classe concernée', 'classe', [''].concat(CLASSES)
         .concat(['Petits', 'Grands', 'Toutes']), m.classe)
       + '</div><div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -3262,8 +3262,8 @@
         + '<td>' + echapper(m.contact || '—') + '</td>'
         + '<td>' + formatDate(m.depuis) + '</td>'
         + '<td class="actions">'
-        + '<button class="btn btn-warning btn-sm" onclick="openMembreModal(\'' + m.id + '\')">✏️</button>'
-        + '<button class="btn btn-danger btn-sm" onclick="supprimerMembre(\'' + m.id + '\')">🗑️</button>'
+        + '<button class="btn btn-warning btn-sm" onclick="openMembreModal(\'' + m.id + '\')">\uE006</button>'
+        + '<button class="btn btn-danger btn-sm" onclick="supprimerMembre(\'' + m.id + '\')">\uE005</button>'
         + '</td></tr>').join('')
       || '<tr><td colspan="7" class="text-center">Aucun membre enregistré</td></tr>';
 
@@ -3317,8 +3317,8 @@
         + '<td>' + echapper(m.contact || '—') + '</td>'
         + '<td>' + formatDate(m.depuis) + '</td>'
         + '<td class="actions">'
-        + '<button class="btn btn-warning btn-sm" onclick="openMembreUASCEPModal(\'' + m.id + '\')">✏️</button>'
-        + '<button class="btn btn-danger btn-sm" onclick="supprimerMembreUASCEP(\'' + m.id + '\')">🗑️</button>'
+        + '<button class="btn btn-warning btn-sm" onclick="openMembreUASCEPModal(\'' + m.id + '\')">\uE006</button>'
+        + '<button class="btn btn-danger btn-sm" onclick="supprimerMembreUASCEP(\'' + m.id + '\')">\uE005</button>'
         + '</td></tr>').join('');
   }
 
@@ -3343,7 +3343,7 @@
       + 'name="depuis" value="' + echapper(m.depuis || '') + '"></div>'
       + champ('Observation', 'observation', m.observation)
       + '</div><div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -3395,7 +3395,7 @@
       + 'name="depuis" value="' + echapper(m.depuis || '') + '"></div>'
       + champ('Observation', 'observation', m.observation)
       + '</div><div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -3485,7 +3485,7 @@
       + '<td>' + echapper(e.contact_directeur || e.telephone || '—') + '</td>'
       + '<td class="actions">'
       + '<button class="btn btn-warning btn-sm" onclick="modifierDirecteur(\'' + e.id
-      + '\')">✏️</button></td></tr>').join('')
+      + '\')">\uE006</button></td></tr>').join('')
       || '<tr><td colspan="8" class="text-center">Aucune école</td></tr>';
   }
 
@@ -3497,7 +3497,7 @@
       + champ('Nom et prénoms du directeur', 'directeur', e.directeur)
       + champ('Contact téléphonique', 'contact_directeur', e.contact_directeur)
       + '</div><div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -3523,7 +3523,7 @@
           + '<td>' + ecoles + '</td>'
           + '<td class="actions">'
           + '<button class="btn btn-warning btn-sm" onclick="modifierCP(\'' + cp.code
-          + '\')">✏️</button></td></tr>';
+          + '\')">\uE006</button></td></tr>';
       }).join('') || '<tr><td colspan="5" class="text-center">Aucune zone</td></tr>';
   }
 
@@ -3535,7 +3535,7 @@
       + champ('Nom et prénoms', 'responsable', cp.responsable)
       + champ('Contact téléphonique', 'contact', cp.contact)
       + '</div><div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -3593,9 +3593,9 @@
         + '<td>' + echapper(u.fiche.corup || '—') + '</td>'
         + '<td>' + echapper(u.fiche.contact_corup || '—') + '</td>'
         + '<td class="actions">'
-        + '<button class="btn btn-warning btn-sm" title="Modifier" onclick="modifierUP(' + jsNom(u.nom) + ')">✏️</button>'
-        + (officielle ? '<button class="btn btn-info btn-sm" title="Réinitialiser (valeurs du document de la CS)" onclick="reinitialiserUP(' + jsNom(u.nom) + ')">♻</button>' : '')
-        + '<button class="btn btn-danger btn-sm" title="Supprimer" onclick="supprimerUP(' + jsNom(u.nom) + ')">🗑️</button></td></tr>';
+        + '<button class="btn btn-warning btn-sm" title="Modifier" onclick="modifierUP(' + jsNom(u.nom) + ')">\uE006</button>'
+        + (officielle ? '<button class="btn btn-info btn-sm" title="Réinitialiser (valeurs du document de la CS)" onclick="reinitialiserUP(' + jsNom(u.nom) + ')">\uE058</button>' : '')
+        + '<button class="btn btn-danger btn-sm" title="Supprimer" onclick="supprimerUP(' + jsNom(u.nom) + ')">\uE005</button></td></tr>';
     }).join('') || '<tr><td colspan="10" class="text-center">Aucune unité pédagogique</td></tr>';
     renderRubriquesEcoles();
   }
@@ -3610,8 +3610,8 @@
       if (t) t.textContent = ((R.en_attente_up || {}).titre || 'Écoles en attente d’UP') + ' (' + sans.length + ')';
       att.innerHTML = sans.map(e => '<tr><td><b>' + echapper(e.nom) + '</b></td><td>' + echapper(e.type) + '</td><td>' + echapper(e.statut || '') + '</td>'
         + '<td>' + echapper(e.arrondissement || '—') + '</td><td>' + echapper(e.zone_ped || '—') + '</td>'
-        + '<td class="actions"><button class="btn btn-primary btn-sm" onclick="rattacherEcoleUP(\'' + e.id + '\')">🔗 Donner une UP</button>'
-        + '<button class="btn btn-secondary btn-sm" onclick="ecoleNeFonctionnePlus(\'' + e.id + '\')">⛔ Ne fonctionne plus</button></td></tr>').join('')
+        + '<td class="actions"><button class="btn btn-primary btn-sm" onclick="rattacherEcoleUP(\'' + e.id + '\')">\uE053 Donner une UP</button>'
+        + '<button class="btn btn-secondary btn-sm" onclick="ecoleNeFonctionnePlus(\'' + e.id + '\')">\uE036 Ne fonctionne plus</button></td></tr>').join('')
         || '<tr><td colspan="6" class="text-center">Toutes les écoles en activité ont une unité pédagogique.</td></tr>';
     }
     const ina = document.getElementById('inactivesTable');
@@ -3623,7 +3623,7 @@
         + '<td>' + echapper(a.ecole.arrondissement || '—') + '</td><td>' + echapper(a.ecole.zone_ped || '—') + '</td>'
         + '<td>' + echapper(formatDate(a.depuis)) + (a.motif ? ' <small>(' + echapper(a.motif) + ')</small>' : '') + '</td>'
         + '<td>' + ((a.effectifs || []).length) + ' relevé(s) conservé(s)</td>'
-        + '<td class="actions"><button class="btn btn-success btn-sm" onclick="remettreEnActivite(\'' + a.id + '\')">♻ Remettre en activité</button></td></tr>').join('')
+        + '<td class="actions"><button class="btn btn-success btn-sm" onclick="remettreEnActivite(\'' + a.id + '\')">\uE058 Remettre en activité</button></td></tr>').join('')
         || '<tr><td colspan="7" class="text-center">Aucune école dans cette rubrique.</td></tr>';
     }
   }
@@ -3650,7 +3650,7 @@
       + selecteur('Unité pédagogique', 'unite_ped', [''].concat(ups.map(u => u.nom)), e.unite_ped)
       + selecteur('Zone pédagogique (appartenance)', 'zone_ped', [''].concat(global.Donnees.ZONES), e.zone_ped)
       + '</div><p class="petit muet">La zone des activités est celle de l’unité choisie ; sans zone d’appartenance, l’école prend aussi celle-ci.</p>'
-      + '<div class="text-center mt-15"><button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<div class="text-center mt-15"><button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button></div></form>');
   }
   function saveRattachement(ev, id) {
@@ -3699,7 +3699,7 @@
       + champ('Co-responsable (co-RUP)', 'corup', u.corup)
       + champ('Contact du co-RUP', 'contact_corup', u.contact_corup)
       + '</div><div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -3747,8 +3747,8 @@
       + '<td>' + echapper(m.nom) + '</td><td>' + echapper(m.fonction || '—') + '</td>'
       + '<td>' + echapper(m.contact || '—') + '</td>'
       + '<td class="actions">'
-      + '<button class="btn btn-warning btn-sm" onclick="modifierComite(\'' + m.id + '\')">✏️</button>'
-      + '<button class="btn btn-danger btn-sm" onclick="supprimerComite(\'' + m.id + '\')">🗑️</button>'
+      + '<button class="btn btn-warning btn-sm" onclick="modifierComite(\'' + m.id + '\')">\uE006</button>'
+      + '<button class="btn btn-danger btn-sm" onclick="supprimerComite(\'' + m.id + '\')">\uE005</button>'
       + '</td></tr>').join('')
       || '<tr><td colspan="5" class="text-center">Aucun membre enregistré</td></tr>';
   }
@@ -3763,7 +3763,7 @@
       + champ('Fonction exercée', 'fonction', m.fonction)
       + champ('Contact téléphonique', 'contact', m.contact)
       + '</div><div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -3883,9 +3883,9 @@
         + V().appreciation(b.total.taux) + '</span></td>'
         + '<td class="actions">'
         + (ecarts.length ? '<span class="badge badge-danger" title="' + echapper(ecarts.join(' '))
-          + '">⚠</span>' : '')
-        + '<button class="btn btn-warning btn-sm" onclick="openEvalModal(\'' + e.id + '\')">✏️</button>'
-        + '<button class="btn btn-danger btn-sm" onclick="deleteEval(\'' + e.id + '\')">🗑️</button>'
+          + '">\uE041</span>' : '')
+        + '<button class="btn btn-warning btn-sm" onclick="openEvalModal(\'' + e.id + '\')">\uE006</button>'
+        + '<button class="btn btn-danger btn-sm" onclick="deleteEval(\'' + e.id + '\')">\uE005</button>'
         + '</td></tr>';
     }).join('') || '<tr><td colspan="13" class="text-center">Aucun relevé pour cette '
       + 'période.</td></tr>';
@@ -3981,7 +3981,7 @@
       + '</tbody></table></div>'
       + '<div id="apercuEval" class="alert alert-info mt-15"></div></div>'
       + '<div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
     majApercuEval();
@@ -4074,7 +4074,7 @@
       + piedDocument(null, 'PV-EVAL', clePeriode(periode),
         'Le Chef de la Circonscription Scolaire')
       + '</div><div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer</button></div>');
+      + '<button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer</button></div>');
   }
 
   /* ---------------- Apprenants ---------------- */
@@ -4110,7 +4110,7 @@
     document.getElementById('apprenantsTable').innerHTML = liste.slice(0, 400).map(a2 =>
       '<tr><td>' + (a2.photo
         ? '<img class="photo-apprenant" src="' + a2.photo + '" alt="">'
-        : '<div class="photo-absente">👤</div>') + '</td>'
+        : '<div class="photo-absente">\uE01D</div>') + '</td>'
       + '<td><b>' + echapper(nomComplet(a2)) + '</b></td>'
       + '<td>' + echapper(a2.sexe || '—') + '</td>'
       + '<td>' + formatDate(a2.dateNaiss) + '</td>'
@@ -4122,9 +4122,9 @@
       + '<td>' + (a2.redoublant === 'Oui'
         ? '<span class="badge badge-warning">redoublant</span>' : '—') + '</td>'
       + '<td class="actions">'
-      + '<button class="btn btn-warning btn-sm" onclick="openApprenantModal(\'' + a2.id + '\')">✏️</button>'
-      + '<button class="btn btn-info btn-sm" onclick="inscrireAuCEP(\'' + a2.id + '\')">📋</button>'
-      + '<button class="btn btn-danger btn-sm" onclick="supprimerApprenant(\'' + a2.id + '\')">🗑️</button>'
+      + '<button class="btn btn-warning btn-sm" onclick="openApprenantModal(\'' + a2.id + '\')">\uE006</button>'
+      + '<button class="btn btn-info btn-sm" onclick="inscrireAuCEP(\'' + a2.id + '\')">\uE00F</button>'
+      + '<button class="btn btn-danger btn-sm" onclick="supprimerApprenant(\'' + a2.id + '\')">\uE005</button>'
       + '</td></tr>').join('')
       || '<tr><td colspan="11" class="text-center">Aucun apprenant enregistré</td></tr>';
   }
@@ -4167,7 +4167,7 @@
       + '</div><input type="hidden" name="photo" value="' + echapper(a2.photo || '') + '">'
       + '</div>'
       + '<div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -4269,7 +4269,7 @@
       + '</tbody></table>'
       + (global.Registres ? global.Registres.pied(ecole, cours, 'LISTE', ecoleId + '-' + cours, 'Liste ' + cours + ' ' + (ecole ? ecole.nom : '')) : piedDocument(ecole, 'LISTE', ecoleId + '-' + cours, 'Le Directeur'))
       + '</div><div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer</button></div>');
+      + '<button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer</button></div>');
   }
 
   /** Classeur au format attendu par EDUCMaster, apprenants puis enseignants. */
@@ -4323,7 +4323,7 @@
       .slice().sort((a, b) => (a.date || '').localeCompare(b.date || '')).map(f =>
         '<tr><td>' + formatDate(f.date) + '</td><td>' + echapper(f.libelle || '—') + '</td>'
         + '<td class="actions"><button class="btn btn-danger btn-sm" '
-        + 'onclick="deleteJourFerie(\'' + f.id + '\')">🗑️</button></td></tr>').join('')
+        + 'onclick="deleteJourFerie(\'' + f.id + '\')">\uE005</button></td></tr>').join('')
       || '<tr><td colspan="3" class="text-center">Aucun jour férié ajouté à la main</td></tr>';
 
     const zone = document.getElementById('joursFeriesCalcules');
@@ -4348,7 +4348,7 @@
       + '<div class="form-group"><label>Libellé *</label>'
       + '<input name="libelle" placeholder="Tabaski, Maouloud…" required></div>'
       + '</div><div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -4456,7 +4456,7 @@
       + (rec.absentsApresMidi.indexOf(a2.id) >= 0 ? ' checked' : '') + '></td></tr>').join('');
 
     actions.innerHTML = '<button class="btn btn-primary" onclick="enregistrerPresenceApprenants(\''
-      + ecole.id + '\',\'' + cours + '\',\'' + date + '\')">💾 Enregistrer la présence du jour</button>';
+      + ecole.id + '\',\'' + cours + '\',\'' + date + '\')">\uE007 Enregistrer la présence du jour</button>';
   }
 
   function enregistrerPresenceApprenants(ecoleId, cours, date) {
@@ -4619,9 +4619,9 @@
     }).join('');
 
     actions.innerHTML = '<button class="btn btn-primary" onclick="enregistrerPresencePersonnel(\''
-      + ecole.id + '\',\'' + date + '\')">💾 Enregistrer la présence du jour</button> '
+      + ecole.id + '\',\'' + date + '\')">\uE007 Enregistrer la présence du jour</button> '
       + '<button class="btn btn-warning" onclick="imprimerRegistrePresence(\''
-      + ecole.id + '\',\'' + date + '\')">🖨️ Imprimer le registre</button>';
+      + ecole.id + '\',\'' + date + '\')">\uE008 Imprimer le registre</button>';
   }
 
   /* Une case Absent cochée efface et verrouille l'heure d'arrivée ; décochée,
@@ -4715,7 +4715,7 @@
       + '</tbody></table>'
       + piedDocument(ecole, 'PRESENCE', ecoleId + '-' + date, 'Le Directeur')
       + '</div><div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer</button></div>');
+      + '<button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer</button></div>');
   }
 
   /* ---------------- Notes et bulletins ---------------- */
@@ -4831,7 +4831,7 @@
         : '<span class="badge badge-' + (x.admis ? 'success' : 'danger') + '">'
         + (x.admis ? 'atteint' : 'non atteint') + '</span>') + '</td>'
       + '<td><button class="btn btn-primary btn-sm" onclick="editerBulletin(\''
-      + x.apprenant.id + '\')">📄</button></td></tr>').join('');
+      + x.apprenant.id + '\')">\uE00D</button></td></tr>').join('');
   }
 
   function majNote(apprenantId, matiere, valeur) {
@@ -4904,7 +4904,7 @@
       + 'les deux tiers lorsque les onze le sont. Une matière non composée sort du calcul.</p>'
       + (global.Registres ? global.Registres.pied(ecole, a2.cours, 'BULLETIN', a2.id + '-' + cle, 'Bulletin ' + nomComplet(a2) + ' ' + cle) : piedDocument(ecole, 'BULLETIN', a2.id + '-' + cle, 'Le Directeur'))
       + '</div><div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer</button></div>');
+      + '<button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer</button></div>');
   }
 
   function appreciationNote(n) {
@@ -4957,7 +4957,7 @@
       + (global.Registres ? global.Registres.pied(ecole, cours, 'RELEVE', ecoleId + '-' + cours + '-' + clePeriodeNotes(), 'Releve de notes ' + cours + ' ' + clePeriodeNotes() + ' ' + (ecole ? ecole.nom : ''))
         : piedDocument(ecole, 'RELEVE', ecoleId + '-' + cours + '-' + clePeriodeNotes(), 'Le Directeur'))
       + '</div><div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer</button></div>');
+      + '<button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer</button></div>');
   }
 
   /* ---------------- CEP ---------------- */
@@ -4972,10 +4972,10 @@
       + '<td>' + echapper(c.lieuNaiss || '—') + '</td><td>' + echapper(nomEcole(c.ecoleId)) + '</td>'
       + '<td>' + echapper(c.session || '—') + '</td>'
       + '<td class="actions">'
-      + '<button class="btn btn-info btn-sm" title="Fiche d’inscription" onclick="printFicheCEP(\'' + c.id + '\')">🖨️</button>'
-      + '<button class="btn btn-success btn-sm" title="Carte scolaire du candidat" onclick="carteCandidat(\'' + c.id + '\')">🪪</button>'
-      + '<button class="btn btn-warning btn-sm" onclick="editCep(\'' + c.id + '\')">✏️</button>'
-      + '<button class="btn btn-danger btn-sm" onclick="deleteCep(\'' + c.id + '\')">🗑️</button>'
+      + '<button class="btn btn-info btn-sm" title="Fiche d’inscription" onclick="printFicheCEP(\'' + c.id + '\')">\uE008</button>'
+      + '<button class="btn btn-success btn-sm" title="Carte scolaire du candidat" onclick="carteCandidat(\'' + c.id + '\')">\uE02B</button>'
+      + '<button class="btn btn-warning btn-sm" onclick="editCep(\'' + c.id + '\')">\uE006</button>'
+      + '<button class="btn btn-danger btn-sm" onclick="deleteCep(\'' + c.id + '\')">\uE005</button>'
       + '</td></tr>').join('')
       || '<tr><td colspan="8" class="text-center">Aucune inscription</td></tr>';
   }
@@ -5044,7 +5044,7 @@
       + champ('Contact téléphonique du parent', 'telParent', c.telParent)
       + '</div></div>'
       + '<div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -5106,10 +5106,10 @@
       !e.signature_image && 'signature du directeur (Cachets et signatures)'].filter(Boolean);
     openModal('Fiche d’inscription au CEP — ' + nomComplet(c),
       barreDoc([
-        '<button class="btn btn-primary" onclick="DocScol.imprimer()">🖨️ Imprimer / PDF</button>',
-        '<button class="btn btn-info" onclick="signerCEP(\'' + c.id + '\', \'sig_candidat\')">✍️ Signature du candidat</button>',
-        '<button class="btn btn-info" onclick="signerCEP(\'' + c.id + '\', \'sig_parent\')">✍️ Signature du parent</button>',
-        '<button class="btn btn-success" onclick="carteCandidat(\'' + c.id + '\')">🪪 Carte du candidat</button>'])
+        '<button class="btn btn-primary" onclick="DocScol.imprimer()">\uE008 Imprimer / PDF</button>',
+        '<button class="btn btn-info" onclick="signerCEP(\'' + c.id + '\', \'sig_candidat\')">\uE029 Signature du candidat</button>',
+        '<button class="btn btn-info" onclick="signerCEP(\'' + c.id + '\', \'sig_parent\')">\uE029 Signature du parent</button>',
+        '<button class="btn btn-success" onclick="carteCandidat(\'' + c.id + '\')">\uE02B Carte du candidat</button>'])
       + (manque.length ? '<p class="petit muet">À compléter : ' + manque.join(', ') + '.</p>' : '')
       + '<div class="zone-feuilles">' + D().ficheCEP(donneesFicheCEP(c)) + '</div>');
   }
@@ -5161,9 +5161,9 @@
     const k = carteDuCandidat(c);
     openModal('Carte scolaire du candidat — ' + nomComplet(c),
       barreDoc([
-        '<button class="btn btn-primary" onclick="DocScol.imprimer()">🖨️ Imprimer / PDF</button>',
-        '<button class="btn btn-info" onclick="signerCarteCEP(\'' + c.id + '\')">✍️ Signature de l’élève</button>',
-        '<button class="btn btn-warning" onclick="printFicheCEP(\'' + c.id + '\')">📋 Fiche d’inscription</button>'])
+        '<button class="btn btn-primary" onclick="DocScol.imprimer()">\uE008 Imprimer / PDF</button>',
+        '<button class="btn btn-info" onclick="signerCarteCEP(\'' + c.id + '\')">\uE029 Signature de l’élève</button>',
+        '<button class="btn btn-warning" onclick="printFicheCEP(\'' + c.id + '\')">\uE00F Fiche d’inscription</button>'])
       + '<div class="zone-feuilles">' + D().apercuCarte(k) + '<div class="planche-cachee">'
       + D().planche([k], 'Carte scolaire du candidat') + '</div></div>'
       + '<p class="petit muet">À l’impression, le recto et le verso tombent l’un derrière l’autre en recto-verso (bord long), à 100 %.</p>');
@@ -5189,14 +5189,14 @@
       '<div class="form-group"><label>École</label><select id="choixPlanche">'
       + ids.map(i => '<option value="' + i + '">' + echapper(nomEcole(i)) + ' (' + parEcole[i] + ')</option>').join('')
       + '</select></div><div class="text-center mt-15"><button class="btn btn-primary" onclick="plancheEcole(\'' + quoi
-      + '\', document.getElementById(\'choixPlanche\').value)">🪪 Préparer la planche</button></div>');
+      + '\', document.getElementById(\'choixPlanche\').value)">\uE02B Préparer la planche</button></div>');
   }
   function plancheEcole(quoi, ecoleId) {
     const cartes = quoi === 'cni'
       ? data.cni.filter(x => x.ecoleId == ecoleId).map(carteIdentite)
       : data.cep.filter(x => x.ecoleId == ecoleId).sort((a, b) => nomComplet(a).localeCompare(nomComplet(b), 'fr')).map(carteDuCandidat);
     const titre = (quoi === 'cni' ? 'Cartes d’identité scolaires' : 'Cartes scolaires des candidats') + ' — ' + nomEcole(ecoleId);
-    openModal(titre, barreDoc(['<button class="btn btn-primary" onclick="DocScol.imprimer()">🖨️ Imprimer / PDF</button>'])
+    openModal(titre, barreDoc(['<button class="btn btn-primary" onclick="DocScol.imprimer()">\uE008 Imprimer / PDF</button>'])
       + '<p class="petit muet">' + cartes.length + ' carte(s), 10 par page A4. Imprimez en recto-verso (bord long) à 100 %, puis découpez le long des repères.</p>'
       + '<div class="zone-feuilles planche-visible">' + D().planche(cartes, titre) + '</div>');
   }
@@ -5210,10 +5210,10 @@
       + '<td>' + echapper(c.pere || '—') + '</td><td>' + echapper(c.mere || '—') + '</td>'
       + '<td>' + echapper(nomEcole(c.ecoleId)) + '</td>'
       + '<td class="actions">'
-      + '<button class="btn btn-success btn-sm" title="Carte d’identité scolaire" onclick="printCNI(\'' + c.id + '\')">🪪</button>'
-      + '<button class="btn btn-info btn-sm" title="Fiche de demande" onclick="printDemandeCNI(\'' + c.id + '\')">🖨️</button>'
-      + '<button class="btn btn-warning btn-sm" onclick="editCni(\'' + c.id + '\')">✏️</button>'
-      + '<button class="btn btn-danger btn-sm" onclick="deleteCni(\'' + c.id + '\')">🗑️</button>'
+      + '<button class="btn btn-success btn-sm" title="Carte d’identité scolaire" onclick="printCNI(\'' + c.id + '\')">\uE02B</button>'
+      + '<button class="btn btn-info btn-sm" title="Fiche de demande" onclick="printDemandeCNI(\'' + c.id + '\')">\uE008</button>'
+      + '<button class="btn btn-warning btn-sm" onclick="editCni(\'' + c.id + '\')">\uE006</button>'
+      + '<button class="btn btn-danger btn-sm" onclick="deleteCni(\'' + c.id + '\')">\uE005</button>'
       + '</td></tr>').join('')
       || '<tr><td colspan="8" class="text-center">Aucune fiche</td></tr>';
   }
@@ -5248,7 +5248,7 @@
       + '</div><input type="hidden" name="photo" value="' + echapper(c.photo || '') + '">'
       + '</div>'
       + '<div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -5281,9 +5281,9 @@
     const k = carteIdentite(c);
     openModal('Carte d’identité scolaire — ' + (c.nom || ''),
       barreDoc([
-        '<button class="btn btn-primary" onclick="DocScol.imprimer()">🖨️ Imprimer / PDF</button>',
-        '<button class="btn btn-info" onclick="signerCNI(\'' + c.id + '\')">✍️ Signature de l’élève</button>',
-        '<button class="btn btn-warning" onclick="printDemandeCNI(\'' + c.id + '\')">📋 Fiche de demande</button>'])
+        '<button class="btn btn-primary" onclick="DocScol.imprimer()">\uE008 Imprimer / PDF</button>',
+        '<button class="btn btn-info" onclick="signerCNI(\'' + c.id + '\')">\uE029 Signature de l’élève</button>',
+        '<button class="btn btn-warning" onclick="printDemandeCNI(\'' + c.id + '\')">\uE00F Fiche de demande</button>'])
       + '<div class="zone-feuilles">' + D().apercuCarte(k) + '<div class="planche-cachee">'
       + D().planche([k], 'Carte d’identité scolaire') + '</div></div>'
       + '<p class="petit muet">À l’impression, le recto et le verso tombent l’un derrière l’autre en recto-verso (bord long), à 100 %.</p>');
@@ -5341,7 +5341,7 @@
       + piedDocument(ecole.id ? ecole : null, 'CNI', c.id, 'Le Directeur')
       + '</div>'
       + '<div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer ou enregistrer en PDF</button></div>');
+      + '<button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer ou enregistrer en PDF</button></div>');
   }
 
   /* ---------------- Fiches officielles ---------------- */
@@ -5627,8 +5627,8 @@
       + piedDocument(ecole, 'FICHE-' + type, ecole.id + '-' + anneeActive(), 'Le Directeur')
       + '</div>'
       + '<div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer ou enregistrer en PDF</button> '
-      + '<button class="btn btn-warning" onclick="exporterModule(\'fiches\')">📤 Excel</button>'
+      + '<button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer ou enregistrer en PDF</button> '
+      + '<button class="btn btn-warning" onclick="exporterModule(\'fiches\')">\uE00C Excel</button>'
       + '</div>');
   }
 
@@ -5972,7 +5972,7 @@
       + (modele.contreSeing ? blocContreSeing(modele.contreSeing, ecoleSujet) : '')
       + '</div>'
       + '<div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer ou enregistrer en PDF</button>'
+      + '<button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer ou enregistrer en PDF</button>'
       + '</div>');
   }
 
@@ -6038,9 +6038,9 @@
       '<tr><td>' + echapper(nomEcole(r.ecoleId)) + '</td><td>' + echapper(r.anneeScolaire || '—')
       + '</td><td>' + formatDate(r.date) + '</td><td>' + echapper(r.auteur || '—') + '</td>'
       + '<td class="actions">'
-      + '<button class="btn btn-info btn-sm" onclick="viewRapport(\'' + r.id + '\')">👁️</button>'
-      + '<button class="btn btn-warning btn-sm" onclick="editRapport(\'' + r.id + '\')">✏️</button>'
-      + '<button class="btn btn-danger btn-sm" onclick="deleteRapport(\'' + r.id + '\')">🗑️</button>'
+      + '<button class="btn btn-info btn-sm" onclick="viewRapport(\'' + r.id + '\')">\uE043</button>'
+      + '<button class="btn btn-warning btn-sm" onclick="editRapport(\'' + r.id + '\')">\uE006</button>'
+      + '<button class="btn btn-danger btn-sm" onclick="deleteRapport(\'' + r.id + '\')">\uE005</button>'
       + '</td></tr>').join('')
       || '<tr><td colspan="5" class="text-center">Aucun rapport</td></tr>';
   }
@@ -6065,7 +6065,7 @@
       + aire('Difficultés rencontrées', 'difficultes', r.difficultes, 3)
       + aire('Suggestions', 'suggestions', r.suggestions, 3)
       + '<div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -6093,7 +6093,7 @@
       + echapper(r.difficultes || '—') + '</p>'
       + '<h4 style="margin-top:15px;color:#0369a1;">Suggestions</h4><p>'
       + echapper(r.suggestions || '—') + '</p></div>'
-      + '<div class="text-center"><button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer</button></div>');
+      + '<div class="text-center"><button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer</button></div>');
   }
 
   /* ---------------- Courriers ---------------- */
@@ -6104,8 +6104,8 @@
       + '<td>' + echapper((type === 'arr' ? c.expediteur : c.destinataire) || '—') + '</td>'
       + '<td>' + echapper(c.objet || '—') + '</td><td>' + echapper(c.reference || '—') + '</td>'
       + '<td class="actions">'
-      + '<button class="btn btn-warning btn-sm" onclick="editCourrier(\'' + c.id + '\',\'' + type + '\')">✏️</button>'
-      + '<button class="btn btn-danger btn-sm" onclick="deleteCourrier(\'' + c.id + '\',\'' + type + '\')">🗑️</button>'
+      + '<button class="btn btn-warning btn-sm" onclick="editCourrier(\'' + c.id + '\',\'' + type + '\')">\uE006</button>'
+      + '<button class="btn btn-danger btn-sm" onclick="deleteCourrier(\'' + c.id + '\',\'' + type + '\')">\uE005</button>'
       + '</td></tr>';
 
     document.getElementById('courriersArrTable').innerHTML =
@@ -6144,7 +6144,7 @@
       + '<div class="form-group mt-15"><label>Observations et suivi</label>'
       + '<textarea name="observations" rows="3">' + echapper(c.observations || '') + '</textarea></div>'
       + '<div class="text-center mt-15">'
-      + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
   }
@@ -6256,7 +6256,7 @@
         '<td>' + echapper(l[i] || '') + '</td>').join('') + '</tr>').join('')
       + '</tbody></table></div>'
       + '<div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="validerImport()">✅ Enregistrer ces données</button> '
+      + '<button class="btn btn-primary" onclick="validerImport()">\uE004 Enregistrer ces données</button> '
       + '<button class="btn btn-danger" onclick="preparerImport()">Annuler</button></div>';
   }
 
@@ -6937,7 +6937,7 @@
   }
 
   function resetData() {
-    if (!confirm('⚠️ Toutes les données seront supprimées. Continuer ?')) return;
+    if (!confirm('\uE041 Toutes les données seront supprimées. Continuer ?')) return;
     if (!confirm('Êtes-vous vraiment sûr ? Exportez d\'abord vos données si besoin.')) return;
     localStorage.removeItem(CLE_STOCKAGE);
     (global.Stockage ? global.Stockage.effacer() : Promise.resolve()).then(() => location.reload());

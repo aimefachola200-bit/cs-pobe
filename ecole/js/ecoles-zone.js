@@ -143,11 +143,11 @@
     if (!etat.zone || zones.indexOf(etat.zone) < 0) etat.zone = zones[0] || '';
     const c = calcul(); derniere = c;
     const opt = (cle, opts) => `<select data-cle="${cle}">${opts.map(([v, l]) => `<option value="${esc(v)}"${String(etat[cle]) === String(v) ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
-    const niv = estEc ? '' : [['cs', '🏛️ Circonscription (par zone)'], ['zone', '📍 Zone pédagogique (par école)']]
+    const niv = estEc ? '' : [['cs', '\uE023 Circonscription (par zone)'], ['zone', '\uE02C Zone pédagogique (par école)']]
       .map(([k, l]) => `<button class="btn btn-sm ${etat.niveau === k ? 'btn-primary' : ''}" data-niv="${k}">${l}</button>`).join(' ');
-    let html = `<div class="page-title">🏫 Écoles : structure pédagogique et équipements</div><div class="xbar no-print">${niv} ${opt('annee', annees.map(a => [a, 'Année ' + a]))}`
+    let html = `<div class="page-title">\uE022 Écoles : structure pédagogique et équipements</div><div class="xbar no-print">${niv} ${opt('annee', annees.map(a => [a, 'Année ' + a]))}`
       + (!estEc && etat.niveau === 'zone' ? opt('zone', zones.map(z => [z, z])) : '')
-      + '</div><div class="xbar no-print"><button class="btn btn-primary" data-act="print">🖨️ Imprimer / PDF</button> <button class="btn btn-info" data-act="xls">⬇ Excel</button></div>'
+      + '</div><div class="xbar no-print"><button class="btn btn-primary" data-act="print">\uE008 Imprimer / PDF</button> <button class="btn btn-info" data-act="xls">\uE009 Excel</button></div>'
       + '<div class="text-center" style="font-size:13px;margin:8px 0"><b>RÉPUBLIQUE DU BÉNIN</b><br>MINISTÈRE DES ENSEIGNEMENTS MATERNEL ET PRIMAIRE<br>CIRCONSCRIPTION SCOLAIRE DE POBÈ<h3 style="margin:6px 0 0">ÉCOLES : STRUCTURE PÉDAGOGIQUE ET ÉQUIPEMENTS</h3>Année scolaire ' + esc(etat.annee) + '</div>'
       + '<p class="xnote">Sources : fiche de chaque école (classes autorisées, existantes, salles), attribution des classes (structure pédagogique), relevés d\'effectifs (élèves), compléments des fiches officielles (eau et sa source, électricité et sa source, cantine, latrines, clôture…). Écart type de la population.</p>';
     for (const [s, lib, coul] of [['pub', 'Secteur public', '#006633'], ['prv', 'Secteur privé (à part)', '#8e44ad']]) {

@@ -286,7 +286,7 @@
     global.openModal('Signature — ' + nom, corps.innerHTML
       + '<div class="text-center mt-15">'
       + '<button class="btn btn-danger" onclick="effacerSignature()">Effacer</button> '
-      + '<button class="btn btn-primary" onclick="validerSignature()">💾 Enregistrer</button> '
+      + '<button class="btn btn-primary" onclick="validerSignature()">\uE007 Enregistrer</button> '
       + '<button class="btn btn-info" onclick="closeModal()">Annuler</button></div>');
 
     const toile = document.getElementById('toileSignature');

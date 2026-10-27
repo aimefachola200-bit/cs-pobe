@@ -351,7 +351,7 @@ table.g textarea { resize: vertical; }
 
 /* ======================================================================
    v2.0 — Présentation commune avec SCOLARIS et GESCOL
-   Menu latéral fixe (tiroir ☰ sur téléphone et tablette), barre du haut blanche,
+   Menu latéral fixe (tiroir [menu] sur téléphone et tablette), barre du haut blanche,
    zone de travail claire, indicateurs, raccourcis et cartes comme dans SCOLARIS / GESCOL.
    ====================================================================== */
 :root { --bleu: #1F4E79; --bleu2: #2E6DA4; --fond: #F4F6F9; --bord: #D0D5DD; --txt: #1D2939; --gris: #667085;

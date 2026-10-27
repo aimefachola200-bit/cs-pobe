@@ -129,9 +129,9 @@
       if (!f) { finir(); return; }
       f.text().then(t => {
         let p = null; try { p = JSON.parse(t); } catch (e) { p = null; }
-        if (!p || p.format !== 'POBE-PAQUET-ECOLE') { bilan.push('✖ ' + f.name + ' : ce n’est pas un paquet d’école.'); suivant(); return; }
+        if (!p || p.format !== 'POBE-PAQUET-ECOLE') { bilan.push('\uE002 ' + f.name + ' : ce n’est pas un paquet d’école.'); suivant(); return; }
         const cible = trouverCible(p);
-        if (cible) { const r = integrer(p, cible); bilan.push('✔ ' + cible.nom + ' : ' + r.n + ' enregistrement(s) intégrés' + (r.retires ? ', ' + r.retires + ' retiré(s)' : '') + ' (envoi du ' + dateFr(p.cree) + ').'); suivant(); return; }
+        if (cible) { const r = integrer(p, cible); bilan.push('\uE003 ' + cible.nom + ' : ' + r.n + ' enregistrement(s) intégrés' + (r.retires ? ', ' + r.retires + ' retiré(s)' : '') + ' (envoi du ' + dateFr(p.cree) + ').'); suivant(); return; }
         App().openModal('À quelle école correspond ce paquet ?',
           '<p>Le paquet « ' + esc(f.name) + ' » vient de <b>' + esc((p.ecole || {}).nom || '?') + '</b>, que l’application ne retrouve pas dans la liste.</p>'
           + '<div class="form-group"><label>École de la circonscription</label><select id="cibleSync"><option value="">— Ignorer ce paquet —</option>'
@@ -139,7 +139,7 @@
           + '</select></div><div class="text-center mt-15"><button class="btn btn-primary" id="okSync">Continuer</button></div>');
         document.getElementById('okSync').onclick = () => {
           const id = document.getElementById('cibleSync').value, c = D().ecoles.find(x => x.id == id);
-          if (c) { const r = integrer(p, c); bilan.push('✔ ' + c.nom + ' : ' + r.n + ' enregistrement(s) intégrés.'); } else bilan.push('— ' + f.name + ' ignoré.');
+          if (c) { const r = integrer(p, c); bilan.push('\uE003 ' + c.nom + ' : ' + r.n + ' enregistrement(s) intégrés.'); } else bilan.push('— ' + f.name + ' ignoré.');
           App().closeModal(); suivant();
         };
       });
@@ -154,21 +154,21 @@
     if (estEcole()) {
       const p = paquetEcole(), dernier = lsGet(CLE_ENVOI());
       const n = p ? Object.values(p.collections).reduce((s, l) => s + l.length, 0) : 0;
-      page.innerHTML = '<div class="page-title">🔄 Envoyer mes données à la circonscription</div><div class="form-container">'
+      page.innerHTML = '<div class="page-title">\uE058 Envoyer mes données à la circonscription</div><div class="form-container">'
         + '<p>Votre application prépare un <b>paquet</b> avec la fiche de l’école, le personnel, les effectifs, les candidats au CEP, les cartes, '
         + 'les présences et les notes. Envoyez-le à la circonscription par <b>WhatsApp</b>, Bluetooth ou clé USB : elle l’intègre en un clic, sans rien ressaisir.</p>'
         + '<p class="alert alert-info">' + (p ? n + ' enregistrement(s) prêts.' : 'Inscrivez d’abord votre école.') + ' Dernier envoi : <b>'
         + (dernier ? dateFr(dernier) + ' (il y a ' + jours(dernier) + ' jour(s))' : 'jamais') + '</b>.</p>'
-        + '<button class="btn btn-primary" onclick="Ameliorations.envoyerPaquet()">📤 ' + (peutPartager() ? 'Envoyer le paquet (WhatsApp, Bluetooth…)' : 'Télécharger le paquet') + '</button>'
+        + '<button class="btn btn-primary" onclick="Ameliorations.envoyerPaquet()">\uE00C ' + (peutPartager() ? 'Envoyer le paquet (WhatsApp, Bluetooth…)' : 'Télécharger le paquet') + '</button>'
         + '<p class="petit muet mt-15">Conseil : envoyez un paquet chaque fin de mois et après chaque inscription au CEP. Chaque envoi remplace le précédent à la circonscription.</p></div>';
       return;
     }
     const ecoles = D().ecoles;
     const recus = ecoles.filter(e => e._derniereSync).sort((a, b) => String(b._derniereSync).localeCompare(String(a._derniereSync)));
-    page.innerHTML = '<div class="page-title">🔄 Paquets reçus des écoles</div><div class="form-container">'
+    page.innerHTML = '<div class="page-title">\uE058 Paquets reçus des écoles</div><div class="form-container">'
       + '<p>Chaque école envoie son paquet (fichier <code>paquet_….json</code>) par WhatsApp ou clé USB. Enregistrez les fichiers reçus, puis '
       + 'sélectionnez-les ici (plusieurs à la fois) : fiches, personnel, effectifs, candidats au CEP, cartes, présences et notes sont intégrés à leur école.</p>'
-      + '<button class="btn btn-primary" onclick="document.getElementById(\'fichiersPaquets\').click()">📥 Recevoir des paquets</button>'
+      + '<button class="btn btn-primary" onclick="document.getElementById(\'fichiersPaquets\').click()">\uE00B Recevoir des paquets</button>'
       + '<input type="file" id="fichiersPaquets" hidden multiple accept=".json,application/json" onchange="Ameliorations.recevoirPaquets(this.files); this.value=\'\'">'
       + '<p class="alert alert-info mt-15"><b>' + recus.length + '</b> école(s) sur ' + ecoles.length + ' ont déjà envoyé un paquet.</p></div>'
       + '<div class="table-container"><div class="table-scroll"><table><thead><tr><th>École</th><th>Dernier paquet</th><th>Ancienneté</th></tr></thead><tbody>'
@@ -222,12 +222,12 @@
       z.innerHTML = '<h3 style="color:#006633;margin-bottom:10px;">Sauvegarde régulière</h3>'
         + '<p>Dernière sauvegarde : <b>' + (der ? dateFr(der) + ' (il y a ' + jours(der) + ' jour(s))' : 'jamais') + '</b>. Un rappel s’affiche chaque semaine.</p>'
         + (global.showDirectoryPicker
-          ? '<p>' + (h ? '📁 Sauvegarde automatique active dans le dossier « <b>' + esc(h.name) + '</b> » (une fois par semaine, à l’ouverture).'
+          ? '<p>' + (h ? '\uE013 Sauvegarde automatique active dans le dossier « <b>' + esc(h.name) + '</b> » (une fois par semaine, à l’ouverture).'
             : 'Sur ordinateur, choisissez un dossier (clé USB, Google Drive pour ordinateur…) : l’application y écrira seule une sauvegarde chaque semaine.') + '</p>'
-            + '<button class="btn btn-primary" onclick="Ameliorations.choisirDossier()">📁 ' + (h ? 'Changer de dossier' : 'Choisir le dossier de sauvegarde') + '</button> '
+            + '<button class="btn btn-primary" onclick="Ameliorations.choisirDossier()">\uE013 ' + (h ? 'Changer de dossier' : 'Choisir le dossier de sauvegarde') + '</button> '
           : '')
-        + '<button class="btn btn-info" onclick="Ameliorations.sauvegarderMaintenant(false)">💾 Sauvegarder maintenant</button> '
-        + (peutPartager() ? '<button class="btn btn-success" onclick="Ameliorations.sauvegarderMaintenant(true)">📤 Envoyer vers Drive, WhatsApp…</button>' : '');
+        + '<button class="btn btn-info" onclick="Ameliorations.sauvegarderMaintenant(false)">\uE007 Sauvegarder maintenant</button> '
+        + (peutPartager() ? '<button class="btn btn-success" onclick="Ameliorations.sauvegarderMaintenant(true)">\uE00C Envoyer vers Drive, WhatsApp…</button>' : '');
     });
   }
 
@@ -246,7 +246,7 @@
     fermerRappel();
     const b = document.createElement('div');
     b.id = 'rappelSauvegarde'; b.className = 'rappel-sauvegarde';
-    b.innerHTML = '<span>💾 ' + (der ? 'Dernière sauvegarde il y a ' + j + ' jours.' : 'Aucune sauvegarde de vos données pour l’instant.')
+    b.innerHTML = '<span>\uE007 ' + (der ? 'Dernière sauvegarde il y a ' + j + ' jours.' : 'Aucune sauvegarde de vos données pour l’instant.')
       + ' Sauvegardez pour ne rien perdre en cas de panne ou de perte de l’appareil.</span>'
       + '<button class="btn btn-sm btn-primary" onclick="Ameliorations.sauvegarderMaintenant(' + (peutPartager() ? 'true' : 'false') + ')">Sauvegarder</button>'
       + '<button class="btn btn-sm" onclick="Ameliorations.reporter()">Plus tard</button>';
@@ -302,13 +302,13 @@
     if (est && est.quota && est.usage / est.quota > 0.8) l.unshift({ niveau: 'danger', titre: 'Espace de stockage presque plein (' + Math.round(100 * est.usage / est.quota) + ' %)', details: ['Faites une sauvegarde, puis supprimez les photos et documents inutiles.'] });
     const ordre = { danger: 0, warning: 1, info: 2 };
     l.sort((a, b) => ordre[a.niveau] - ordre[b.niveau]);
-    page.innerHTML = '<div class="page-title">🚨 Alertes et points à compléter</div>'
+    page.innerHTML = '<div class="page-title">\uE041 Alertes et points à compléter</div>'
       + (l.length ? l.map((a, i) => '<div class="alerte alerte-' + a.niveau + '"><div class="alerte-tete"><b>' + esc(a.titre) + '</b>'
         + (a.action ? '<button class="btn btn-sm btn-primary" onclick="' + a.action + '">' + esc(a.libelle) + '</button>' : '') + '</div>'
         + (a.details.length ? '<details' + (i < 2 ? ' open' : '') + '><summary>Détail (' + a.details.length + ')</summary><ul>'
           + a.details.slice(0, 60).map(x => '<li>' + esc(x) + '</li>').join('') + (a.details.length > 60 ? '<li>… et ' + (a.details.length - 60) + ' autre(s)</li>' : '') + '</ul></details>' : '')
         + '</div>').join('')
-        : '<p class="alert alert-success">✔ Rien à signaler : tout est à jour.</p>');
+        : '<p class="alert alert-success">\uE003 Rien à signaler : tout est à jour.</p>');
     majBadge(l.length);
   }
 
