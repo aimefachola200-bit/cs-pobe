@@ -534,3 +534,22 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
 /* v2.3 : unités pédagogiques par zone */
 #upTable tr.ligne-zone td{background:#EEF4FA;color:#12324F;border-top:2px solid #1F4E79}
 @media print{#rep-up .toolbar,#upTable .actions{display:none}}
+
+/* ===== v2.4.0 : en-têtes de tableaux fixes (rubriques toujours visibles au défilement — js/entetes-fixes.js) ===== */
+:root { --tb-top: var(--hauteur-barres, 56px); }
+.modal-content { --tb-top: 0px; }
+table.ef thead { position: relative; z-index: 4; will-change: transform; }
+table.ef thead.ef-cale th { box-shadow: 0 2px 4px rgba(16,24,40,.18); }
+table.ef thead th { background-clip: padding-box; }
+/* parties d'un long formulaire : le titre en cours reste en haut */
+.form-section > h4 { position: sticky; top: var(--tb-top); z-index: 5; background: #f8fafc; padding: 6px 0; margin-top: -6px; }
+/* téléphone : la 1re colonne reste visible quand on glisse le tableau vers la droite */
+@media (max-width: 700px) {
+  .table-scroll table:not(.no-col-fixe) tbody td:first-child, .gridwrap table:not(.no-col-fixe) tbody td:first-child { position: sticky; left: 0; z-index: 2; background: #fff; box-shadow: 2px 0 3px rgba(16,24,40,.08); }
+  .table-scroll table:not(.no-col-fixe) tbody tr.sel td:first-child { background: #fff7cc; }
+  .table-scroll table:not(.no-col-fixe) thead tr:first-child th:first-child { position: sticky; left: 0; z-index: 5; }
+}
+@media print {
+  table.ef thead { transform: none !important; }
+  .form-section > h4 { position: static; }
+}

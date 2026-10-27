@@ -795,6 +795,8 @@
       + '<div class="form-group"><label>École</label><select name="ecoleId">'
       + '<option value="">— Service CS (bureau de la circonscription) —</option>'
       + optionsEcoles(p.ecoleId) + '</select></div>'
+      + selecteur('Zone pédagogique (si l’agent n’a pas d’école rattachée à une zone)', 'zone',
+        [['', '— Personnel de la CS (zone à attribuer) —']].concat(global.Donnees.ZONES), p.zone)
       + selecteur('Diplôme académique', 'diplomeAca', [''].concat(DIPLOMES_ACADEMIQUES),
         p.diplomeAca)
       + selecteur('Diplôme professionnel', 'diplomePro', [''].concat(DIPLOMES_PROFESSIONNELS),

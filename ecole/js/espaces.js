@@ -119,12 +119,19 @@
         h('div', { class: 'form-group' }, h('label', null, 'Nom et prénoms'), h('input', { value: mm.titulaire || '', onchange: (e) => sauver('titulaire', e.target.value.trim()) })),
         h('div', { class: 'form-group' }, h('label', null, 'Téléphone'), h('input', { value: mm.tel || '', onchange: (e) => sauver('tel', e.target.value.trim()) })))),
       ...(ind ? [h('div', { class: 'stats-grid' }, ind.map(([l, v, c]) => h('div', { class: 'stat-card ' + (c || '') }, h('h4', null, l), h('div', { class: 'value' }, v))))] : []),
+      ...(d.cp && global.ZonesCP ? [
+        Object.assign(h('div', { class: 'esp-bloc' }, h('h3', null, '🏫 Écoles de la ' + d.zone)), { id: 'espEcolesZone' }),
+        Object.assign(h('div', { class: 'esp-bloc' }, h('h3', null, '👥 Personnel enseignant de la ' + d.zone + ' par section et par cours')), { id: 'espPersZone' })] : []),
       h('div', { class: 'esp-bloc' }, h('h3', null, 'Accès rapides'), h('div', { class: 'xbar' }, d.pages.map(([p, l]) => h('button', { class: 'btn btn-info btn-sm', onclick: () => allerPage(p) }, l)))),
       h('div', { class: 'esp-bloc' }, h('h3', null, 'Documents officiels'), h('label', { class: 'xnote' }, h('input', { type: 'checkbox', checked: vue.tous, onchange: (e) => { vue.tous = e.target.checked; rendu(); } }), ' Afficher tous les documents officiels (pas seulement ceux de cette division)'), liste),
       h('div', { class: 'esp-bloc' }, h('h3', null, 'Documents de la division'), h('div', { class: 'xbar no-print' }, 'Catégorie : ', sel, entree), mine),
       h('div', { class: 'esp-bloc' }, h('h3', null, 'Notes'), h('textarea', { rows: 4, style: { width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '6px' }, placeholder: 'Instructions, rappels, échéances…', onchange: (e) => sauver('notes', e.target.value) }, mm.notes || '')),
       h('p', { class: 'xnote' }, CREDIT));
     const ta = page.querySelector('textarea'); if (ta) ta.value = mm.notes || '';
+    if (d.cp && global.ZonesCP) {
+      page.querySelector('#espEcolesZone').insertAdjacentHTML('beforeend', global.ZonesCP.blocEcoles(d.zone));
+      page.querySelector('#espPersZone').insertAdjacentHTML('beforeend', global.ZonesCP.blocPersonnel(d.zone));
+    }
   }
   function indicateursDivision(d) {
     if (!global.Synoptique) return null;
@@ -147,5 +154,6 @@
     #espaces .esp-sous{font-size:11px;color:#64748b}
     #espaces .esp-btns{display:flex;gap:6px;flex-shrink:0}`));
   global.Extra = global.Extra || { pages: {} }; global.Extra.pages.espaces = () => { vue.id = null; rendu(); };
+  global.Extra.pages.espacesRafraichir = () => { const p = document.getElementById('espaces'); if (p && !p.classList.contains('hidden') && vue.id) rendu(); };
   global.Espaces = { DOCS, divisions };
 })(window);
