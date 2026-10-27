@@ -56,7 +56,7 @@ const ecoles = P.ecoles.map(p => {
 });
 const sansUP = ecoles.filter(e => !e.up).map(e => e.nom);
 const sortie = {
-  version: '2026-10-27.3', source: P.source, annee_fichier: P.annee,
+  version: '2026-10-27.4', source: P.source, annee_fichier: P.annee,
   note: 'Effectifs ' + P.annee + ' du fichier de la CS ; zones et unités pédagogiques du document du 1er décembre 2023.',
   zones: P.zones.map(z => ({ nom: 'Zone ' + z.numero, libelle: z.nom, code: z.code, ecoles: z.ecoles })), ups, ecoles, sansUP, rubriques: P.rubriques
 };
