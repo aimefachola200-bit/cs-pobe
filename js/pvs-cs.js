@@ -76,6 +76,12 @@
       if (e.cantine !== undefined && e.cantine !== '') v.cantine = /oui|true|1/i.test(String(e.cantine)) ? 'Oui' : 'Non';
       out[cle] = v;
     });
+    /* examen blanc : candidats ayant composé et seuil atteint, par école de provenance (centres de la session) */
+    if (global.ExamenBlanc) {
+      const ids = new Set((d.centres || []).filter(c => !c.session || String(c.session) === annee || String(c.session).includes(String(annee).slice(-4))).map(c => String(c.id)));
+      (d.compositions || []).filter(c => ids.has(String(c.centreId)) && c.ecoleId && out[String(c.ecoleId)]).forEach(c => { const r = global.ExamenBlanc.resultat(c), o = out[String(c.ecoleId)];
+        o.ebComposes = (o.ebComposes || 0) + (r.aCompose ? 1 : 0); o.ebAdmis = (o.ebAdmis || 0) + (r.admis ? 1 : 0); });
+    }
     return Promise.resolve(out);
   }
   /** Élèves d'une école (listes des apprenants) pour les licences */
@@ -110,7 +116,7 @@
         inspection: [{ l: I('inspection') + 'Visites et inspections (CS)', route: 'visites' }],
         patrimoine: [{ l: I('chantier') + 'Infrastructures', route: 'infrastructures' }, { l: I('chaise') + 'Mobilier et matériel', route: 'mobilier' }, { l: I('chantier') + 'Infrastructures et mobilier (consolidé)', route: 'infraZone' }],
         examens: [{ l: I('inscription') + 'Inscription CEP', route: 'cep' }, { l: I('stade') + 'Examen blanc', route: 'examen' }, { l: I('diplome') + 'Candidats au CEP par sexe', route: 'cepZone' }],
-        pilotage: [{ l: '\uE016 Effectifs par âge, zone et CS', route: 'effectifsZone' }, { l: '\uE020 Candidats au CEP', route: 'cepZone' }, { l: '\uE026 Infrastructures (consolidé)', route: 'infraZone' }] }
+        pilotage: [{ l: I('stade') + 'Examen blanc', route: 'examen' }, { l: '\uE016 Effectifs par âge, zone et CS', route: 'effectifsZone' }, { l: '\uE020 Candidats au CEP', route: 'cepZone' }, { l: '\uE026 Infrastructures (consolidé)', route: 'infraZone' }] }
     };
   }
 
