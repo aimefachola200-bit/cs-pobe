@@ -10,7 +10,7 @@
   const U = () => global.UascepCS && global.UascepCS.adaptateur;
   const ecoleMode = () => !!(global.Config && global.Config.estEcole && global.Config.estEcole());
   const I = (n) => (global.Icones ? global.Icones.code(n) + ' ' : '');
-  const PAGES = { pvsSport: 'sport', pvsPilotage: 'pilotage', pvsCommunication: 'communication', pvsSante: 'sante' };
+  const PAGES = { pvsSport: 'sport', pvsPilotage: 'pilotage', pvsCommunication: 'communication', pvsSante: 'sante', pvsInspection: 'inspection', pvsPatrimoine: 'patrimoine', pvsExamens: 'examens' };
 
   function charger() { return Promise.resolve(((D().reglages || []).find(x => x.id === 'pvs') || {}).valeur || null); }
   function enregistrer(etat) {
@@ -99,6 +99,7 @@
     const u = U() || {};
     return {
       app: ecoleMode() ? 'Mon école' : 'CS Pobè', charger, enregistrer, signer, indicateurs, eleves, absences, cepCandidats,
+      exclure: ['patrimoine.batiments', 'patrimoine.tables'],
       utilisateur: () => { const p = ecoleMode() && A().ecoleDuPoste ? A().ecoleDuPoste() : null; return p ? (p.directeur || p.nom) : 'Circonscription scolaire de Pobè'; },
       contexte: u.contexte, cachet: u.cachet, visa: u.visa, imprimer: u.imprimer, toast: u.toast, xlsxEcrire: u.xlsxEcrire, xlsxLire: u.xlsxLire, telecharger: u.telecharger,
       memo: { get: (k) => { try { return localStorage.getItem('pvs.' + k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem('pvs.' + k, v); } catch (e) { /* stockage indisponible */ } } },
@@ -106,6 +107,9 @@
       ouvrir: (route) => global.showPage && global.showPage(route),
       liens: { sport: [{ l: '\uE047 Bureaux UASCEP', route: 'uascep' }], communication: [{ l: I('alerte') + 'Alertes de l’application', route: 'alertes' }, { l: I('message') + 'Groupe WhatsApp des directeurs', route: 'whatsapp' }, { l: I('courrier') + 'Archive courriers', route: 'courriers' }],
         sante: [{ l: I('calendrier') + 'Présence des apprenants', route: 'presenceApprenants' }, { l: I('eleve') + 'Listes des apprenants', route: 'apprenants' }],
+        inspection: [{ l: I('inspection') + 'Visites et inspections (CS)', route: 'visites' }],
+        patrimoine: [{ l: I('chantier') + 'Infrastructures', route: 'infrastructures' }, { l: I('chaise') + 'Mobilier et matériel', route: 'mobilier' }, { l: I('chantier') + 'Infrastructures et mobilier (consolidé)', route: 'infraZone' }],
+        examens: [{ l: I('inscription') + 'Inscription CEP', route: 'cep' }, { l: I('stade') + 'Examen blanc', route: 'examen' }, { l: I('diplome') + 'Candidats au CEP par sexe', route: 'cepZone' }],
         pilotage: [{ l: '\uE016 Effectifs par âge, zone et CS', route: 'effectifsZone' }, { l: '\uE020 Candidats au CEP', route: 'cepZone' }, { l: '\uE026 Infrastructures (consolidé)', route: 'infraZone' }] }
     };
   }
