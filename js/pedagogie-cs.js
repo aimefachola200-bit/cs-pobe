@@ -33,7 +33,7 @@
       app: ecoleMode() ? 'Mon école' : 'CS Pobè', base: 'data/pedagogie/', peutAnnoter: true, auteur: auteur(),
       coursParDefaut: ecole && ecole.cycle === 'Maternelle' ? 'CI' : undefined,
       notes: { charger: () => Promise.resolve(reglage('pedagogieNotes') || {}), enregistrer: (o) => ecrireReglage('pedagogieNotes', o) },
-      imprimer: U && U.imprimer ? (titre, html) => U.imprimer(titre, html) : undefined,
+      imprimer: U && U.imprimer ? (titre, html, o) => ((o && o.epreuve) ? global.Pedagogie.imprimerSimple(titre, html) : U.imprimer(titre, html)) : undefined,
       memo: { get: (k) => { try { return localStorage.getItem('ped.' + k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem('ped.' + k, v); } catch (e) { /* stockage indisponible */ } } },
       liens, ouvrir: (route) => A().showPage(route, document.querySelector('.menu-item[data-page="' + route + '"]')),
       examenBlanc: ecoleMode() ? undefined : { lire: () => Promise.resolve(reglage('examenBlancSujets') || null), retenir: (s) => ecrireReglage('examenBlancSujets', s) }
