@@ -83,7 +83,7 @@
   function styles() {
     if (document.getElementById('uas-styles')) return;
     document.head.append(h('style', { id: 'uas-styles', text: `
-      .uas{--uas-bleu:#1F4E79;--uas-bord:#D0D5DD;--uas-gris:#667085;color:inherit}
+      .uas,.uas-voile{--uas-bleu:#1F4E79;--uas-bord:#D0D5DD;--uas-gris:#667085}.uas{color:inherit}
       .uas h2.uas-titre{margin:0 0 4px;font-size:1.25rem}.uas .uas-sous{color:var(--uas-gris);margin:0 0 12px;font-size:.92rem}
       .uas-onglets{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
       .uas-onglet{border:1px solid var(--uas-bord);background:#fff;border-radius:999px;padding:7px 13px;cursor:pointer;font:inherit;font-size:.9rem}
@@ -117,7 +117,9 @@
       .uas-form label{display:flex;flex-direction:column;gap:4px;font-size:.8rem;font-weight:600;color:#344054}
       .uas-form label.large{grid-column:1/-1}.uas-aide{font-size:.78rem;color:var(--uas-gris);font-weight:400}
       .uas-rapport{max-height:240px;overflow:auto;font-size:.85rem;background:#F9FAFB;border:1px solid var(--uas-bord);border-radius:8px;padding:8px}
-      @media print{.uas-voile{display:none!important}}
+      .uas-apercu{border:1px solid var(--uas-bord);padding:14px;background:#fff;overflow-x:auto}
+      #uas-impression{display:none}
+      @media print{.uas-voile{display:none!important}body.uas-imprime>*:not(#uas-impression){display:none!important}body.uas-imprime #uas-impression{display:block!important}}
     ` }));
   }
 
@@ -138,6 +140,18 @@
       document.body.append(voile); window.addEventListener('keydown', echap);
       const premier = voile.querySelector('input,select,textarea'); if (premier && !('ontouchstart' in window)) setTimeout(() => premier.focus(), 30);
     });
+  }
+  /** Impression par défaut (application sans aide à l'impression) : aperçu, puis impression du seul document. */
+  function imprimerDefaut(titre, html) {
+    const doc = h('div', { class: 'uas-apercu', html });
+    dialogue(titre, doc, [{ l: 'Fermer' }, { l: '🖨️ Imprimer / PDF', p: true, action: () => {
+      let zone = document.getElementById('uas-impression');
+      if (!zone) { zone = h('div', { id: 'uas-impression' }); document.body.append(zone); }
+      zone.innerHTML = html; document.body.classList.add('uas-imprime');
+      const fin = () => { document.body.classList.remove('uas-imprime'); zone.innerHTML = ''; window.removeEventListener('afterprint', fin); };
+      window.addEventListener('afterprint', fin); setTimeout(() => { window.print(); setTimeout(fin, 1500); }, 50);
+      return false;
+    } }]);
   }
   const confirmer = (titre, texte, libelle = 'Confirmer', danger = true) => dialogue(titre, h('p', {}, texte), [{ l: 'Annuler', v: false }, { l: libelle, d: danger, p: !danger, v: true }]);
 
@@ -178,6 +192,7 @@
     const niveaux = NIVEAUX.filter(n => (ctx.niveaux || NIVEAUX.map(x => x[0])).includes(n[0]));
     const memo = A.memo || { get: () => null, set: () => {} };
     let onglet = memo.get('onglet') || (niveaux[0] || ['SYNTHESE'])[0];
+    if (!niveaux.some(n => n[0] === onglet) && onglet !== 'SYNTHESE' && onglet !== 'ARCHIVES') onglet = (niveaux[0] || ['SYNTHESE'])[0];
     const filtres = { zone: memo.get('zone') || '', up: memo.get('up') || '', entite: {} };
     const sauver = async () => { etat.maj = new Date().toISOString(); await A.enregistrer(etat); };
     const toast = (m) => (A.toast ? A.toast(m) : null);
@@ -205,7 +220,8 @@
     function dessiner() {
       racine.replaceChildren();
       const z = h('div', { class: 'uas' });
-      z.append(h('h2', { class: 'uas-titre' }, 'Bureaux UASCEP'),
+      // l'application hôte peut afficher elle-même le titre de la page (sansTitre)
+      if (!A.sansTitre) z.append(h('h2', { class: 'uas-titre' }, 'Bureaux UASCEP'),
         h('p', { class: 'uas-sous' }, "Membres et responsables des bureaux de l'UASCEP par école, unité pédagogique, zone pédagogique, circonscription et département."));
       const tabs = niveaux.map(([c, l]) => [c, l]).concat([['SYNTHESE', 'Synthèse'], ['ARCHIVES', 'Anciens bureaux']]);
       z.append(h('div', { class: 'uas-onglets', role: 'tablist' }, tabs.map(([c, l]) => h('button', {
@@ -502,7 +518,7 @@
         + `<p class="uas-ip">Élu le ${esc(fr(b && b.dateElection) || '…………')} — mandat de ${esc(b && b.duree || DUREE_DEFAUT)} an(s), jusqu'au ${esc(fr(b && b.dateFin) || '…………')}`
         + (b && b.agLieu ? ' — assemblée générale : ' + esc([fr(b.agDate), b.agLieu].filter(Boolean).join(', ')) : '') + '</p>'
         + tableHtml(membresDe(b), false) + signatures(niv);
-      A.imprimer('Bureau UASCEP — ' + e.lib, corps);
+      (A.imprimer || imprimerDefaut)('Bureau UASCEP — ' + e.lib, corps);
     }
     function imprimerListe(onglet2) {
       const niv = NIVEAUX.some(n => n[0] === onglet2) ? onglet2 : null;
@@ -510,7 +526,7 @@
       const membres = bs.flatMap(membresDe);
       if (!membres.length) { toast && toast('Aucun membre à imprimer.'); return; }
       const titre = 'Membres des bureaux UASCEP' + (niv ? ' — ' + LIB_NIVEAU[niv] : '');
-      A.imprimer(titre, CSS_IMP + (A.entete ? A.entete() : '') + `<h2 class="uas-it">${esc(titre)}</h2>` + tableHtml(membres, true) + signatures(niv || 'CS'));
+      (A.imprimer || imprimerDefaut)(titre, CSS_IMP + (A.entete ? A.entete() : '') + `<h2 class="uas-it">${esc(titre)}</h2>` + tableHtml(membres, true) + signatures(niv || 'CS'));
     }
 
     /* ---------- Excel ---------- */
