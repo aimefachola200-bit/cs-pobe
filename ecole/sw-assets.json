@@ -1,5 +1,5 @@
 {
- "version": "55cb435b1b1d",
+ "version": "3e5937d83cb1",
  "files": [
   "./",
   "css/style.css",
@@ -8,6 +8,7 @@
   "data/officiel.js",
   "data/pobe-up.js",
   "data/ref.js",
+  "data/referentiel_villages.json",
   "data/reglement/page-1.jpg",
   "data/reglement/page-2.jpg",
   "data/reglement/page-3.jpg",
@@ -54,6 +55,7 @@
   "js/carriere.js",
   "js/cep-zone.js",
   "js/certificats.js",
+  "js/choix.js",
   "js/config.js",
   "js/documents-scolaires.js",
   "js/donnees.js",
