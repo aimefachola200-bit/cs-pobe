@@ -1,8 +1,9 @@
 {
- "version": "295bfa9dd408",
+ "version": "55cb435b1b1d",
  "files": [
   "./",
   "css/style.css",
+  "data/directeurs-pobe.js",
   "data/documents-officiels.js",
   "data/officiel.js",
   "data/pobe-up.js",
@@ -60,6 +61,7 @@
   "js/educmaster.js",
   "js/effectifs-zone.js",
   "js/embleme.js",
+  "js/entetes-fixes.js",
   "js/espaces.js",
   "js/evaluations.js",
   "js/examen.js",
@@ -80,6 +82,7 @@
   "js/tableau-bord.js",
   "js/tableur.js",
   "js/whatsapp.js",
+  "js/zones-cp.js",
   "manifest.webmanifest",
   "sw.js"
  ]
