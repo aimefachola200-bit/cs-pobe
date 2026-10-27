@@ -9,7 +9,8 @@
   const D = () => A().data;
   const U = () => global.UascepCS && global.UascepCS.adaptateur;
   const ecoleMode = () => !!(global.Config && global.Config.estEcole && global.Config.estEcole());
-  const PAGES = { pvsSport: 'sport', pvsPilotage: 'pilotage' };
+  const I = (n) => (global.Icones ? global.Icones.code(n) + ' ' : '');
+  const PAGES = { pvsSport: 'sport', pvsPilotage: 'pilotage', pvsCommunication: 'communication', pvsSante: 'sante' };
 
   function charger() { return Promise.resolve(((D().reglages || []).find(x => x.id === 'pvs') || {}).valeur || null); }
   function enregistrer(etat) {
@@ -83,15 +84,29 @@
       dateNaissance: x.dateNaissance || x.date_naissance || '', lieuNaissance: x.lieuNaissance || x.lieu_naissance || '', cours: String(x.cours || x.classe || '').toUpperCase().replace(/\s+/g, '') })));
   }
 
+  /** Absences des 30 derniers jours (registre d'appel : demi-journées) par élève d'une école */
+  function absences(ecoleCle) {
+    const d = D(), lim = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10), n = {};
+    (d.presencesApprenants || []).filter(r => String(r.ecoleId) === String(ecoleCle) && String(r.date || '') >= lim)
+      .forEach(r => (r.absentsMatin || []).concat(r.absentsApresMidi || []).forEach(id => { n[id] = (n[id] || 0) + 1; }));
+    return Promise.resolve((d.apprenants || []).filter(x => n[x.id]).map(x => ({ nom: x.nom, prenoms: x.prenoms || x.prenom || '', sexe: /^f/i.test(x.sexe || '') ? 'F' : 'M', cours: x.cours || x.classe || '', absences: n[x.id] })));
+  }
+  /** Candidats inscrits au CEP dans l'application (rubrique « Inscription CEP ») */
+  function cepCandidats() {
+    return Promise.resolve((D().cep || []).map(c => ({ ecole: String(c.ecoleId), nom: c.nom, prenoms: c.prenoms, sexe: /^f/i.test(c.sexe || '') ? 'F' : 'M', dateNaissance: c.dateNaiss || '', lieuNaissance: c.lieuNaiss || '' })));
+  }
   function adaptateur() {
     const u = U() || {};
     return {
-      app: ecoleMode() ? 'Mon école' : 'CS Pobè', charger, enregistrer, signer, indicateurs, eleves,
+      app: ecoleMode() ? 'Mon école' : 'CS Pobè', charger, enregistrer, signer, indicateurs, eleves, absences, cepCandidats,
+      utilisateur: () => { const p = ecoleMode() && A().ecoleDuPoste ? A().ecoleDuPoste() : null; return p ? (p.directeur || p.nom) : 'Circonscription scolaire de Pobè'; },
       contexte: u.contexte, cachet: u.cachet, visa: u.visa, imprimer: u.imprimer, toast: u.toast, xlsxEcrire: u.xlsxEcrire, xlsxLire: u.xlsxLire, telecharger: u.telecharger,
       memo: { get: (k) => { try { return localStorage.getItem('pvs.' + k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem('pvs.' + k, v); } catch (e) { /* stockage indisponible */ } } },
       uascep: () => ({ charger: u.charger, enregistrer: u.enregistrer }),
       ouvrir: (route) => global.showPage && global.showPage(route),
-      liens: { sport: [{ l: '\uE047 Bureaux UASCEP', route: 'uascep' }], pilotage: [{ l: '\uE016 Effectifs par âge, zone et CS', route: 'effectifsZone' }, { l: '\uE020 Candidats au CEP', route: 'cepZone' }, { l: '\uE026 Infrastructures (consolidé)', route: 'infraZone' }] }
+      liens: { sport: [{ l: '\uE047 Bureaux UASCEP', route: 'uascep' }], communication: [{ l: I('alerte') + 'Alertes de l’application', route: 'alertes' }, { l: I('message') + 'Groupe WhatsApp des directeurs', route: 'whatsapp' }, { l: I('courrier') + 'Archive courriers', route: 'courriers' }],
+        sante: [{ l: I('calendrier') + 'Présence des apprenants', route: 'presenceApprenants' }, { l: I('eleve') + 'Listes des apprenants', route: 'apprenants' }],
+        pilotage: [{ l: '\uE016 Effectifs par âge, zone et CS', route: 'effectifsZone' }, { l: '\uE020 Candidats au CEP', route: 'cepZone' }, { l: '\uE026 Infrastructures (consolidé)', route: 'infraZone' }] }
     };
   }
 
