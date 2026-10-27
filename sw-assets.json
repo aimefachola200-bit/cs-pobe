@@ -1,5 +1,5 @@
 {
- "version": "46e5086195e1",
+ "version": "03ffb4844e20",
  "files": [
   "./",
   "css/style.css",
@@ -74,6 +74,8 @@
   "js/infra-zone.js",
   "js/interface.js",
   "js/officiel.js",
+  "js/pedagogie-cs.js",
+  "js/pedagogie.js",
   "js/pieces.js",
   "js/pobe-up.js",
   "js/presences.js",

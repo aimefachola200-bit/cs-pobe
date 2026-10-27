@@ -29,11 +29,11 @@
       { id: 'secretariat', icone: '\uE011', titre: 'Secrétariat', role: "Réception et enregistrement du courrier, archives, tenue des dossiers du personnel et des écoles, préparation des documents à signer.",
         pages: [['courriers', 'Archive courriers'], ['ecoles', 'Écoles'], ['administratif', 'Personnel administratif'], ['fiches', 'Fiches officielles'], ['certificats', 'Certificats'], ['identite', 'Cachets et signatures']] },
       { id: 'cdosp', icone: '\uE042', titre: 'Division C/DOSP', role: "Organisation et suivi pédagogique : planification des activités, visites, évaluations, examens blancs et suivi des résultats.",
-        pages: [['visites', 'Visites et inspections'], ['evaluations', 'Évaluations'], ['examen', 'Examen blanc'], ['bilans', 'Bilans'], ['synoptique', 'Tableau synoptique'], ['docsref', 'Documents de référence']] },
+        pages: [['visites', 'Visites et inspections'], ['evaluations', 'Évaluations'], ['pedagogie', 'Fiches, résumés et épreuves'], ['examen', 'Examen blanc'], ['bilans', 'Bilans'], ['synoptique', 'Tableau synoptique'], ['docsref', 'Documents de référence']] },
     ];
     const zones = [...new Set([...global.Donnees.ZONES, ...App().data.ecoles.map(e => e.zone_ped).filter(Boolean)])];
     zones.forEach(z => base.push({ id: 'cp-' + norm(z).replace(/ /g, ''), cp: true, zone: z, icone: '\uE01C', titre: 'Conseiller pédagogique — ' + z, role: `Animation pédagogique de la ${z} : visites de classe, suivi des unités pédagogiques, effectifs et bilans de la zone.`,
-      pages: [['effectifsZone', 'Effectifs de la zone'], ['infraZone', 'Infrastructures et mobilier'], ['ecolesZone', 'Écoles : structure et équipements'], ['cepZone', 'CEP : candidats et réussite'], ['visites', 'Visites'], ['bilans', 'Bilans'], ['synoptique', 'Synoptique'], ['rapports', 'Rapports de rentrée'], ['fiches', 'Fiches officielles']] }));
+      pages: [['effectifsZone', 'Effectifs de la zone'], ['infraZone', 'Infrastructures et mobilier'], ['ecolesZone', 'Écoles : structure et équipements'], ['cepZone', 'CEP : candidats et réussite'], ['visites', 'Visites'], ['pedagogie', 'Fiches, résumés et épreuves'], ['bilans', 'Bilans'], ['synoptique', 'Synoptique'], ['rapports', 'Rapports de rentrée'], ['fiches', 'Fiches officielles']] }));
     return base;
   }
   const norm = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();

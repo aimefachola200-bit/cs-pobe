@@ -3,7 +3,7 @@
 // Préfixe propre à chaque application (même domaine github.io pour la circonscription, l'école et les autres applications)
 const PREFIX = 'pobe-' + new URL(self.registration.scope).pathname.replace(/[^a-z0-9]+/gi, '-') + '-';
 // Empreinte de la publication (écrite par tools/gen-assets.mjs) : sw.js change à chaque mise à jour, les appareils la reçoivent.
-const BUILD = '46e5086195e1';
+const BUILD = '03ffb4844e20';
 const CACHE = PREFIX + BUILD;   // une seule version servie à la fois : jamais de mélange ancien / nouveau
 
 self.addEventListener('install', (event) => {
@@ -29,6 +29,8 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET' || u.origin !== location.origin) return;
   // « Mon école » (ecole/) a son propre service worker et ses propres mises à jour : ne pas la servir d'ici.
   if (u.pathname.startsWith(new URL('ecole/', self.registration.scope).pathname)) return;
+  // contenu pédagogique (gros fichiers par cours) : mis en cache par le module lui-même (js/pedagogie.js), version par version
+  if (u.pathname.includes('/data/pedagogie/')) return;
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
     const hit = await cache.match(req, { ignoreSearch: req.mode === 'navigate' });
