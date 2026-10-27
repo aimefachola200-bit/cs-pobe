@@ -404,8 +404,16 @@
         G: parseInt(releve['c_' + c.toLowerCase() + '_G'], 10) || 0,
         F: parseInt(releve['c_' + c.toLowerCase() + '_F'], 10) || 0
       })),
+      /* maternelle : effectif par section (SP, SG) */
+      parSection: [['sp', 'Section des petits'], ['sg', 'Section des grands']].map(([k, l]) => ({
+        section: l, G: parseInt(releve['s_eff_' + k + '_G'], 10) || 0, F: parseInt(releve['s_eff_' + k + '_F'], 10) || 0
+      })),
       personnel: {
-        enseignants: Object.assign(compteSexe(enseignants), { total: enseignants.length }),
+        /* sans agents saisis, l'effectif du personnel par statut du fichier de la CS pré-remplit la fiche */
+        fichier: e.personnel_fichier || null,
+        enseignants: enseignants.length || !(e.personnel_fichier && e.personnel_fichier.total)
+          ? Object.assign(compteSexe(enseignants), { total: enseignants.length })
+          : { H: 0, F: 0, total: e.personnel_fichier.total, dapresFichier: true },
         soutien: (function () {
           const l = agents.filter(a => a.categorie === 'Soutien');
           return Object.assign(compteSexe(l), { total: l.length });

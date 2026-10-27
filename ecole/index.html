@@ -309,6 +309,7 @@
                 <span>
                     <button class="btn btn-info" data-import="effectifs">📥 Importer</button>
                     <button class="btn btn-warning" data-export="effectifs">📊 Excel</button>
+                    <button class="btn btn-info" onclick="reinitialiserTousEffectifs()" title="Effectifs du fichier de la CS">♻ Réinitialiser</button>
                     <button class="btn btn-primary" onclick="openEffectifModal()">➕ Nouveau relevé</button>
                 </span>
             </div>
@@ -475,12 +476,19 @@
 
             <div id="rep-up" class="tab-content">
                 <div class="alert alert-info">
-                    Chaque unité pédagogique a son responsable et son co-responsable.
-                    Une unité à laquelle des écoles sont rattachées ne peut pas être
-                    supprimée.
+                    Unités pédagogiques de la circonscription par zone (document de la CS du 1er décembre 2023) : chaque unité a
+                    son responsable (RUP) et son co-responsable (co-RUP). ✏️ modifier, ♻ revenir aux valeurs du document,
+                    🗑️ supprimer (ses écoles passent « à rattacher »), ➕ Ajouter en haut de la page.
                 </div>
+                <div class="toolbar" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+                    <select id="filterZoneUP" onchange="renderUP()" aria-label="Zone pédagogique"><option value="">Toutes les zones</option><option>Zone 1</option><option>Zone 2</option><option>Zone 3</option></select>
+                    <select id="filterCycleUP" onchange="renderUP()" aria-label="Cycle"><option value="">Maternelle et primaire</option><option>Maternelle</option><option>Primaire</option></select>
+                    <button class="btn btn-info" onclick="reinitialiserToutesUP()">♻ Réinitialiser toutes les UP</button>
+                    <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimer</button>
+                </div>
+                <div id="upARattacher"></div>
                 <div class="table-container"><div class="table-scroll"><table>
-                    <thead><tr><th>Unité pédagogique</th><th>Arrondissement</th><th>Écoles</th>
+                    <thead><tr><th>Zone</th><th>Cycle</th><th>Unité pédagogique</th><th>Arrondissement</th><th>Écoles</th>
                         <th>RUP</th><th>Contact</th><th>Co-RUP</th><th>Contact</th>
                         <th>Actions</th></tr></thead>
                     <tbody id="upTable"></tbody>
@@ -1225,7 +1233,7 @@
 <script src="js/config.js"></script>
 <script src="js/embleme.js"></script>
 <script src="js/stockage.js"></script>
-<script>chargerScripts(["js/donnees.js", "js/carriere.js", "js/calendrier.js", "js/presences.js", "js/qr.js", "js/pieces.js", "js/documents-scolaires.js", "js/examen.js", "js/evaluations.js", "js/rapports.js", "js/certificats.js", "js/tableur.js", "js/import.js", "data/ref.js", "js/bilan-schema.js", "js/app.js", "js/extra.js", "js/graphiques.js", "js/effectifs-zone.js", "js/infra-zone.js", "js/ecoles-zone.js", "js/cep-zone.js", "js/synoptique.js", "js/espaces.js", "js/whatsapp.js", "js/ameliorations.js", "data/officiel.js", "data/documents-officiels.js", "js/officiel.js", "js/tableau-bord.js", "js/registres.js", "js/educmaster.js", "js/interface.js"]);</script>
+<script>chargerScripts(["data/pobe-up.js", "js/donnees.js", "js/carriere.js", "js/calendrier.js", "js/presences.js", "js/qr.js", "js/pieces.js", "js/documents-scolaires.js", "js/examen.js", "js/evaluations.js", "js/rapports.js", "js/certificats.js", "js/tableur.js", "js/import.js", "data/ref.js", "js/bilan-schema.js", "js/pobe-up.js", "js/app.js", "js/extra.js", "js/graphiques.js", "js/effectifs-zone.js", "js/infra-zone.js", "js/ecoles-zone.js", "js/cep-zone.js", "js/synoptique.js", "js/espaces.js", "js/whatsapp.js", "js/ameliorations.js", "data/officiel.js", "data/documents-officiels.js", "js/officiel.js", "js/tableau-bord.js", "js/registres.js", "js/educmaster.js", "js/interface.js"]);</script>
 <script>
 (function () {
   var img = document.querySelector("#bandeauImpression img");

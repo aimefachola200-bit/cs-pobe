@@ -10,7 +10,8 @@
     'evaluations', 'cep', 'cni', 'rapports', 'courriersArr', 'courriersDep', 'annees',
     'cepSession', 'identite', 'centres', 'compositions', 'apprenants', 'notes', 'fiches', 'certificats', 'visites', 'attributions', 'collegiale', 'unites', 'comite',
     'presencesApprenants', 'presencesPersonnel', 'joursFeries', 'bilans', 'themesDone', 'whatsapp',
-    'officielPerso'];   // v2.0 : emplois du temps et planifications modifiés sur cet appareil
+    'officielPerso',   // v2.0 : emplois du temps et planifications modifiés sur cet appareil
+    'reglages'];       // v2.3 : réglages et versions des données de référence appliquées (zones, UP, effectifs officiels)
 
   let data = charger();
   /* Cachets ronds partout (demande du 19/10/2026) : une seule fois, les cachets réglés en rectangulaire passent en rond ;
@@ -85,6 +86,10 @@
     data.annees = global.Donnees.anneesInitiales();
     saveData();
   }
+
+  /* v2.3 : zones, unités pédagogiques (RUP, co-RUP), écoles et effectifs officiels de la CS (data/pobe-up.js) —
+     posés une fois par version des données, sans écraser ce que l'utilisateur a saisi. */
+  const UPO = global.PobeUP ? global.PobeUP.installer({ data, uid, saveData, anneeActive }) : null;
 
   /** L'année scolaire de référence, celle que porte le sélecteur d'en-tête. */
   function anneeActive() {
@@ -198,8 +203,9 @@
     Object.keys(global.Donnees.UNITES).forEach(a => {
       global.Donnees.UNITES[a].forEach(u => base.push(u));
     });
+    (data.unites || []).forEach(u => { if (u.nom && base.indexOf(u.nom) < 0) base.push(u.nom); });
     data.ecoles.forEach(e => { if (e.unite_ped && base.indexOf(e.unite_ped) < 0) base.push(e.unite_ped); });
-    return base.sort();
+    return base.sort((a, b) => a.localeCompare(b, 'fr'));
   }
 
   function nomEcole(id) {
@@ -498,7 +504,13 @@
       + champ("Directeur", 'directeur', e.directeur)
       + champ("Contact du directeur", 'contact_directeur', e.contact_directeur)
       + '</div></div>'
+      + '<div class="form-section"><h4>5. Effectif du personnel (par statut)</h4>'
+      + '<p class="petit muet" style="font-size:12px">' + echapper((e.personnel_fichier || {}).source || 'Nombre d’agents par statut') + '</p><div class="form-grid">'
+      + [['fe', 'FE'], ['acdpe', 'ACDPE'], ['ame', 'AME / ACDPCTD'], ['autres', 'Autres (privé…)'], ['total', 'Total']].map(([k, l]) =>
+        champ(l, 'pf_' + k, (e.personnel_fichier || {})[k] ?? '', 'number')).join('')
+      + '</div></div>'
       + '<div class="text-center mt-15">'
+      + (id && UPO && UPO.officielEcole(e.nom) ? '<button type="button" class="btn btn-info" onclick="reinitialiserEcole(\'' + id + '\')">♻ Réinitialiser (fichiers de la CS)</button> ' : '')
       + '<button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button>'
       + '</div></form>');
@@ -520,6 +532,14 @@
   function saveEcole(ev, id) {
     ev.preventDefault();
     const obj = Object.fromEntries(new FormData(ev.target));
+    /* effectif du personnel par statut (champs pf_*) */
+    const pf = {};
+    Object.keys(obj).filter(k => k.indexOf('pf_') === 0).forEach(k => { if (obj[k] !== '') pf[k.slice(3)] = parseInt(obj[k], 10) || 0; delete obj[k]; });
+    if (Object.keys(pf).length) {
+      const avant = id ? (data.ecoles.find(x => x.id == id) || {}).personnel_fichier || {} : {};
+      if (pf.total === undefined) pf.total = ['fe', 'acdpe', 'ame', 'autres'].reduce((t, k) => t + (pf[k] || 0), 0);
+      obj.personnel_fichier = Object.assign({}, avant, pf);
+    }
     /* Les salles utilisées ne peuvent pas dépasser les salles existantes. */
     if (Number(obj.salles_utilisees) > Number(obj.salles_existantes)
         && Number(obj.salles_existantes) > 0) {
@@ -2738,8 +2758,11 @@
       + '<td>' + (e.totalG || 0) + '</td><td>' + (e.totalF || 0) + '</td>'
       + '<td><b>' + (e.total || 0) + '</b></td><td>' + (e.handicapes || 0) + '</td>'
       + '<td class="actions">'
-      + '<button class="btn btn-warning btn-sm" onclick="editEffectif(\'' + e.id + '\')">✏️</button>'
-      + '<button class="btn btn-danger btn-sm" onclick="deleteEffectif(\'' + e.id + '\')">🗑️</button>'
+      + '<button class="btn btn-warning btn-sm" title="Modifier" onclick="editEffectif(\'' + e.id + '\')">✏️</button>'
+      + (UPO && (UPO.officielEcole(nomEcole(e.ecoleId)) || {}).effectifs
+        ? '<button class="btn btn-info btn-sm" title="Réinitialiser : effectifs du fichier de la CS" onclick="reinitialiserEffectifs(\'' + e.ecoleId + '\')">♻</button>' : '')
+      + '<button class="btn btn-danger btn-sm" title="Supprimer" onclick="deleteEffectif(\'' + e.id + '\')">🗑️</button>'
+      + (e.source ? '<div class="petit muet" style="font-size:11px">' + echapper(e.source) + '</div>' : '')
       + '</td></tr>').join('')
       || '<tr><td colspan="7" class="text-center">Aucun effectif enregistré</td></tr>';
   }
@@ -2865,6 +2888,25 @@
       else obj[k] = v;
     });
     enregistrer('effectifs', obj, id, renderEffectifs);
+  }
+  function reinitialiserEffectifs(ecoleId) {
+    if (!UPO) return;
+    if (!confirm('Remettre les effectifs de ' + nomEcole(ecoleId) + ' (' + anneeActive() + ') tels que dans le fichier de la CS ?')) return;
+    UPO.reinitEffectifs(ecoleId); renderEffectifs();
+  }
+  function reinitialiserTousEffectifs() {
+    if (!UPO) return;
+    if (!confirm('Remettre les effectifs ' + anneeActive() + ' de TOUTES les écoles tels que dans le fichier de la CS ?\n'
+      + 'Les effectifs modifiés sur cet appareil seront remplacés (handicapés, redoublants et sans acte conservés).')) return;
+    const n = UPO.reinitTousEffectifs(); renderEffectifs(); alert(n + ' relevé(s) remis aux valeurs du fichier de la CS.');
+  }
+  function reinitialiserEcole(id) {
+    if (!UPO) return;
+    const e = data.ecoles.find(x => x.id == id);
+    if (!e || !UPO.officielEcole(e.nom)) { alert('Cette école ne figure pas dans les fichiers de la CS.'); return; }
+    if (!confirm('Remettre la zone, l’unité pédagogique, l’année de création, les classes autorisées et l’effectif du personnel de '
+      + e.nom + ' tels que dans les fichiers de la CS ?')) return;
+    UPO.reinitEcole(id); closeModal(); renderEcoles();
   }
   function deleteEffectif(id) {
     if (!confirm('Supprimer ce relevé ?')) return;
@@ -3499,26 +3541,85 @@
       const fiche = data.unites.filter(u => u.nom === nom)[0] || { nom: nom };
       const ecoles = data.ecoles.filter(e => e.unite_ped === nom);
       return { fiche: fiche, nom: nom, ecoles: ecoles.length,
-        arrondissement: ecoles.length ? (ecoles[0].arrondissement || '—')
-          : (fiche.arrondissement || '—') };
+        arrondissement: fiche.arrondissement || (ecoles.length ? (ecoles[0].arrondissement || '—') : '—') };
     });
   }
 
+  const jsNom = n => "decodeURIComponent('" + encodeURIComponent(n) + "')";
   function renderUP() {
-    document.getElementById('upTable').innerHTML = unitesPedagogiques().map(u =>
-      '<tr><td><b>' + echapper(u.nom) + '</b></td>'
-      + '<td>' + echapper(u.arrondissement) + '</td><td>' + u.ecoles + '</td>'
-      + '<td>' + (u.fiche.rup ? echapper(u.fiche.rup)
-        : '<span class="badge badge-warning">à renseigner</span>') + '</td>'
-      + '<td>' + echapper(u.fiche.contact_rup || '—') + '</td>'
-      + '<td>' + echapper(u.fiche.corup || '—') + '</td>'
-      + '<td>' + echapper(u.fiche.contact_corup || '—') + '</td>'
-      + '<td class="actions">'
-      + '<button class="btn btn-warning btn-sm" onclick="modifierUP(\''
-      + echapper(u.nom) + '\')">✏️</button>'
-      + '<button class="btn btn-danger btn-sm" onclick="supprimerUP(\''
-      + echapper(u.nom) + '\')">🗑️</button></td></tr>').join('')
-      || '<tr><td colspan="8" class="text-center">Aucune unité pédagogique</td></tr>';
+    const tb = document.getElementById('upTable');
+    if (!tb) return;
+    const zoneF = (document.getElementById('filterZoneUP') || {}).value || '';
+    const cycleF = (document.getElementById('filterCycleUP') || {}).value || '';
+    const liste = unitesPedagogiques().filter(u => u.ecoles || u.fiche.rup || u.fiche.officielle || u.fiche.id)
+      .map(u => Object.assign(u, { zone: u.fiche.zone || (data.ecoles.find(e => e.unite_ped === u.nom) || {}).zone_ped || '',
+        cycle: u.fiche.cycle || '' }))
+      .filter(u => (!zoneF || u.zone === zoneF) && (!cycleF || u.cycle === cycleF))
+      .sort((a, b) => (a.zone || 'Z').localeCompare(b.zone || 'Z') || (a.cycle === 'Maternelle' ? -1 : b.cycle === 'Maternelle' ? 1 : 0)
+        || ((a.fiche.numero || 99) - (b.fiche.numero || 99)) || a.nom.localeCompare(b.nom, 'fr'));
+    let zonePrec = null;
+    tb.innerHTML = liste.map(u => {
+      const ecoles = data.ecoles.filter(e => e.unite_ped === u.nom).map(e => e.nom).sort((a, b) => a.localeCompare(b, 'fr'));
+      const ligneZone = u.zone !== zonePrec ? '<tr class="ligne-zone"><td colspan="10"><b>' + echapper(u.zone || 'Zone non renseignée')
+        + '</b> — ' + liste.filter(x => x.zone === u.zone).length + ' unité(s), '
+        + data.ecoles.filter(e => (e.zone_ped || '') === (u.zone || '') && e.unite_ped).length + ' école(s)</td></tr>' : '';
+      zonePrec = u.zone;
+      const officielle = UPO && UPO.officielUP(u.nom);
+      return ligneZone + '<tr><td>' + echapper(u.zone || '—') + '</td><td>' + echapper(u.cycle || '—') + '</td>'
+        + '<td><b>' + echapper(u.nom) + '</b>' + (officielle ? ' <span class="badge badge-info" title="Document de la CS">officielle</span>' : '') + '</td>'
+        + '<td>' + echapper(u.arrondissement) + '</td>'
+        + '<td><b>' + ecoles.length + '</b><div class="petit" style="font-size:11.5px;color:#475467;max-width:340px">' + ecoles.map(echapper).join(', ') + '</div></td>'
+        + '<td>' + (u.fiche.rup ? echapper(u.fiche.rup) : '<span class="badge badge-warning">à renseigner</span>') + '</td>'
+        + '<td>' + echapper(u.fiche.contact_rup || '—') + '</td>'
+        + '<td>' + echapper(u.fiche.corup || '—') + '</td>'
+        + '<td>' + echapper(u.fiche.contact_corup || '—') + '</td>'
+        + '<td class="actions">'
+        + '<button class="btn btn-warning btn-sm" title="Modifier" onclick="modifierUP(' + jsNom(u.nom) + ')">✏️</button>'
+        + (officielle ? '<button class="btn btn-info btn-sm" title="Réinitialiser (valeurs du document de la CS)" onclick="reinitialiserUP(' + jsNom(u.nom) + ')">♻</button>' : '')
+        + '<button class="btn btn-danger btn-sm" title="Supprimer" onclick="supprimerUP(' + jsNom(u.nom) + ')">🗑️</button></td></tr>';
+    }).join('') || '<tr><td colspan="10" class="text-center">Aucune unité pédagogique</td></tr>';
+    const ar = document.getElementById('upARattacher');
+    if (ar) {
+      const sans = UPO ? UPO.aRattacher() : data.ecoles.filter(e => !e.unite_ped);
+      ar.innerHTML = sans.length
+        ? '<div class="alert alert-warning"><b>' + sans.length + ' école(s) à rattacher à une unité pédagogique</b> (absentes du document des UP) : '
+          + sans.map(e => '<a href="#" onclick="event.preventDefault();rattacherEcoleUP(\'' + e.id + '\')">' + echapper(e.nom) + '</a>'
+            + (e.zone_ped ? ' <small>(' + echapper(e.zone_ped) + ')</small>' : '')).join(', ') + '</div>'
+        : '<div class="alert alert-success">Toutes les écoles sont rattachées à une unité pédagogique.</div>';
+    }
+  }
+
+  /** Rattacher une école à une UP (et à sa zone). */
+  function rattacherEcoleUP(id) {
+    const e = data.ecoles.find(x => x.id == id); if (!e) return;
+    const ups = unitesPedagogiques();
+    openModal('Rattacher ' + e.nom,
+      '<form onsubmit="saveRattachement(event, \'' + e.id + '\')"><div class="form-grid">'
+      + selecteur('Unité pédagogique', 'unite_ped', [''].concat(ups.map(u => u.nom)), e.unite_ped)
+      + selecteur('Zone pédagogique', 'zone_ped', [''].concat(global.Donnees.ZONES), e.zone_ped)
+      + '</div><p class="petit muet">Sans zone choisie, l’école prend la zone de son unité pédagogique.</p>'
+      + '<div class="text-center mt-15"><button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
+      + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button></div></form>');
+  }
+  function saveRattachement(ev, id) {
+    ev.preventDefault();
+    const e = data.ecoles.find(x => x.id == id); if (!e) return;
+    const o = Object.fromEntries(new FormData(ev.target));
+    e.unite_ped = o.unite_ped || '';
+    const f = data.unites.find(u => u.nom === e.unite_ped);
+    e.zone_ped = o.zone_ped || (f && f.zone) || e.zone_ped || '';
+    saveData(); closeModal(); renderRepertoires(); renderEcoles();
+  }
+  function reinitialiserUP(nom) {
+    if (!UPO) return;
+    if (!confirm('Remettre l’unité pédagogique « ' + nom + ' » telle que dans le document de la CS (zone, RUP, co-RUP, écoles) ?')) return;
+    UPO.reinitUP(nom); renderRepertoires(); renderEcoles();
+  }
+  function reinitialiserToutesUP() {
+    if (!UPO) return;
+    if (!confirm('Remettre TOUTES les unités pédagogiques et les zones des écoles telles que dans le document de la CS ?\n'
+      + 'Les RUP, co-RUP et rattachements modifiés sur cet appareil seront remplacés (les contacts saisis sont conservés).')) return;
+    UPO.reinitToutesUP(); renderRepertoires(); renderEcoles();
   }
 
   function ficheUP(nom, creer) {
@@ -3533,11 +3634,13 @@
   function modifierUP(nom) {
     const u = ficheUP(nom);
     openModal(nom ? 'Unité pédagogique — ' + nom : 'Nouvelle unité pédagogique',
-      '<form onsubmit="saveUP(event, \'' + echapper(nom || '') + '\')"><div class="form-grid">'
+      '<form onsubmit="saveUP(event, ' + jsNom(nom || '') + ')"><div class="form-grid">'
       + '<div class="form-group"><label>Nom de l’unité *</label><input name="nom" value="'
       + echapper(u.nom || '') + '" required></div>'
       + selecteur('Arrondissement', 'arrondissement',
         [''].concat(['POBE', 'AHOYEYE', 'IGANNA', 'ISSABA', 'TOWE']), u.arrondissement)
+      + selecteur('Zone pédagogique', 'zone', [''].concat(global.Donnees.ZONES), u.zone)
+      + selecteur('Cycle', 'cycle', ['', 'Maternelle', 'Primaire'], u.cycle)
       + champ('Responsable (RUP)', 'rup', u.rup)
       + champ('Contact du RUP', 'contact_rup', u.contact_rup)
       + champ('Co-responsable (co-RUP)', 'corup', u.corup)
@@ -3569,16 +3672,15 @@
   }
 
   function supprimerUP(nom) {
-    const rattachees = data.ecoles.filter(e => e.unite_ped === nom).length;
-    if (rattachees) {
-      alert(rattachees + ' école(s) sont rattachées à ' + nom
-        + '. Rattachez-les ailleurs avant de supprimer cette unité.');
-      return;
-    }
-    if (!confirm('Supprimer l’unité pédagogique ' + nom + ' ?')) return;
+    const rattachees = data.ecoles.filter(e => e.unite_ped === nom);
+    if (rattachees.length && !confirm(rattachees.length + ' école(s) sont rattachées à ' + nom
+        + '. Supprimer l’unité et détacher ces écoles (elles iront dans la liste « à rattacher ») ?')) return;
+    if (!rattachees.length && !confirm('Supprimer l’unité pédagogique ' + nom + ' ?')) return;
+    rattachees.forEach(e => { e.unite_ped = ''; });
     data.unites = data.unites.filter(u => u.nom !== nom);
     saveData();
     renderRepertoires();
+    renderEcoles();
   }
 
   /* --- Comité d'évaluation --- */
@@ -5361,10 +5463,15 @@
         + donnees.parCours.map(c => '<td><b>' + (c.G + c.F) + '</b></td>').join('')
         + '<td><b>' + donnees.eleves.total + '</b></td></tr>'
         + '</tbody></table>'
-      : '<p>Effectif de l’école : <b>' + donnees.eleves.total + '</b> ('
-        + donnees.eleves.G + ' garçons, ' + donnees.eleves.F + ' filles).</p>';
+      : '<table style="width:100%;font-size:12px;"><thead><tr><th>Section</th><th>Garçons</th><th>Filles</th><th>Total</th></tr></thead><tbody>'
+        + (donnees.parSection || []).map(x => '<tr><td>' + x.section + '</td><td>' + x.G + '</td><td>' + x.F + '</td><td><b>' + (x.G + x.F) + '</b></td></tr>').join('')
+        + '<tr><td><b>Total</b></td><td><b>' + donnees.eleves.G + '</b></td><td><b>' + donnees.eleves.F + '</b></td><td><b>' + donnees.eleves.total + '</b></td></tr></tbody></table>';
 
-    const personnel = donnees.personnel.liste.length
+    const pf = donnees.personnel.fichier;
+    const personnelFichier = pf ? '<p class="petit">Effectif du personnel par statut <i>(pré-rempli : ' + echapper(pf.source || 'fichier de la CS') + ')</i> : '
+      + [['fe', 'FE'], ['acdpe', 'ACDPE'], ['ame', 'AME'], ['autres', 'autres']].filter(([k]) => pf[k]).map(([k, l]) => l + ' ' + pf[k]).join(', ')
+      + (pf.total !== undefined ? ' — total <b>' + pf.total + '</b>' : '') + '.</p>' : '';
+    const personnel = personnelFichier + (donnees.personnel.liste.length
       ? '<table style="width:100%;font-size:11px;"><thead><tr><th>N°</th><th>Matricule</th>'
         + '<th>Nom et prénoms</th><th>Sexe</th><th>Naissance</th><th>Grade</th>'
         + '<th>Statut</th><th>Fonction</th><th>Cours</th><th>Indice</th></tr></thead><tbody>'
@@ -5376,7 +5483,7 @@
           + '<td>' + echapper(a2.fonction || '') + '</td><td>' + echapper(a2.cours || '') + '</td>'
           + '<td>' + echapper(a2.indice || '') + '</td></tr>').join('')
         + '</tbody></table>'
-      : '<p class="muet">Aucun enseignant enregistré pour cette école.</p>';
+      : '<p class="muet">Aucun enseignant enregistré pour cette école.</p>');
 
     const locaux = donnees.locaux.length
       ? '<table style="width:100%;font-size:11px;"><thead><tr><th>Local</th><th>Murs</th>'
@@ -6888,6 +6995,8 @@
        fiches d'écoles disparaissent. */
     data.ecoles = data.ecoles.filter(e => e.id === ecole.id);
     isolerDonneesEcole(false);
+    /* v2.3 : l'école retrouvée dans les fichiers de la CS reçoit sa zone, son UP, ses effectifs et son personnel par statut */
+    if (UPO) UPO.migrer(true);
     saveData();
     closeModal();
     appliquerMode();
@@ -7082,7 +7191,8 @@
     saveMembre, supprimerMembre, renderMaFiche,
     renderUASCEP, openMembreUASCEPModal, saveMembreUASCEP, supprimerMembreUASCEP, exporterUASCEP,
     renderRepertoires, modifierDirecteur, saveDirecteur, modifierCP, saveCP,
-    modifierUP, saveUP, supprimerUP, modifierComite, saveComite, supprimerComite,
+    modifierUP, saveUP, supprimerUP, renderUP, reinitialiserUP, reinitialiserToutesUP, rattacherEcoleUP, saveRattachement,
+    reinitialiserEffectifs, reinitialiserTousEffectifs, reinitialiserEcole, modifierComite, saveComite, supprimerComite,
     ajouterAuRepertoire,
     renderApprenants, openApprenantModal, saveApprenant, supprimerApprenant,
     chargerPhoto, inscrireAuCEP, editerListeClasse, exporterEducmaster,

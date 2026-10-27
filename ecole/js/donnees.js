@@ -121,16 +121,23 @@
 
   /* Le découpage pédagogique de la circonscription : chaque école y est
      rattachée par sa zone et son unité. */
-  const ZONES = ['Zone 1', 'Zone 2', 'Zone 3', 'Zone 4', 'Zone 5', 'Zone 6'];
+  /* Trois zones pédagogiques (document « Unités pédagogiques par zone » de la CS). */
+  const ZONES = ['Zone 1', 'Zone 2', 'Zone 3'];
 
-  const UNITES = {
-    'POBE': ['UP Pobè centre', 'UP Pobè nord', 'UP Adjegounlé', 'UP Oké-Ola', 'UP Oké-Ata',
-      'UP Agbarou'],
-    'AHOYEYE': ['UP Ahoyeye', 'UP Ibéré-Okéita'],
-    'IGANNA': ['UP Iganna', 'UP Eguelou'],
-    'ISSABA': ['UP Issaba', 'UP Onigbolo', 'UP Illoulofin'],
-    'TOWE': ['UP Towè', 'UP Igbo-Edé', 'UP Kahé']
-  };
+  /* Unités provisoires de la première version (avant le document officiel) : remplacées par les unités officielles. */
+  const UNITES_PROVISOIRES = ['UP Pobè centre', 'UP Pobè nord', 'UP Adjegounlé', 'UP Oké-Ola', 'UP Oké-Ata', 'UP Agbarou',
+    'UP Ahoyeye', 'UP Ibéré-Okéita', 'UP Iganna', 'UP Eguelou', 'UP Issaba', 'UP Onigbolo', 'UP Illoulofin', 'UP Towè',
+    'UP Igbo-Edé', 'UP Kahé'];
+  /** Unités pédagogiques officielles par arrondissement (data/pobe-up.js). */
+  const UNITES = {};
+  ((global.POBE_UP || {}).ups || []).forEach(u => { (UNITES[u.arrondissement || 'POBE'] = UNITES[u.arrondissement || 'POBE'] || []).push(u.nom); });
+
+  /** Zone que l'ancien référentiel posait d'office (pour savoir si elle peut être remplacée par la zone officielle). */
+  function zoneReferentiel(nom) {
+    if (ZONES_MATERNELLES[nom]) return ZONES_MATERNELLES[nom];
+    const m = MATERNELLES_PRIVEES.find(x => x[1] === nom);
+    return m ? m[3] : undefined;
+  }
 
   /** Années scolaires proposées par défaut. */
   function anneesInitiales() {
@@ -202,5 +209,5 @@
     return ajouts;
   }
 
-  global.Donnees = { ecolesInitiales, completerEcoles, anneesInitiales, ZONES, UNITES };
+  global.Donnees = { ecolesInitiales, completerEcoles, anneesInitiales, ZONES, UNITES, UNITES_PROVISOIRES, zoneReferentiel };
 })(window);

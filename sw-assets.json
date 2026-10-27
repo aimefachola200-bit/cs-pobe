@@ -1,10 +1,11 @@
 {
- "version": "9d83f39d3c93",
+ "version": "15923f6ee235",
  "files": [
   "./",
   "css/style.css",
   "data/documents-officiels.js",
   "data/officiel.js",
+  "data/pobe-up.js",
   "data/ref.js",
   "data/reglement/page-1.jpg",
   "data/reglement/page-2.jpg",
@@ -69,6 +70,7 @@
   "js/interface.js",
   "js/officiel.js",
   "js/pieces.js",
+  "js/pobe-up.js",
   "js/presences.js",
   "js/qr.js",
   "js/rapports.js",

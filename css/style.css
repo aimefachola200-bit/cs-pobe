@@ -530,3 +530,7 @@ table.edt-plan textarea { min-width: 130px; }
 a.btn { text-decoration: none; display: inline-flex; align-items: center; }
 .btn-secondary { background: #fff; color: var(--bleu); border: 1px solid var(--bord); }
 .btn-secondary:hover { background: #F5F8FC; }
+
+/* v2.3 : unités pédagogiques par zone */
+#upTable tr.ligne-zone td{background:#EEF4FA;color:#12324F;border-top:2px solid #1F4E79}
+@media print{#rep-up .toolbar,#upTable .actions{display:none}}

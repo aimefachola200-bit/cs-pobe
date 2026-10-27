@@ -99,7 +99,12 @@
         { n: 'c_cm1_G', l: 'CM1 G', alias: ['cm1 g', 'cm1g', 'cm1 garçons'], type: 'entier' },
         { n: 'c_cm1_F', l: 'CM1 F', alias: ['cm1 f', 'cm1f', 'cm1 filles'], type: 'entier' },
         { n: 'c_cm2_G', l: 'CM2 G', alias: ['cm2 g', 'cm2g', 'cm2 garçons'], type: 'entier' },
-        { n: 'c_cm2_F', l: 'CM2 F', alias: ['cm2 f', 'cm2f', 'cm2 filles'], type: 'entier' }
+        { n: 'c_cm2_F', l: 'CM2 F', alias: ['cm2 f', 'cm2f', 'cm2 filles'], type: 'entier' },
+        // maternelle : effectif par section (petits, grands)
+        { n: 's_eff_sp_G', l: 'SP G', alias: ['sp g', 'petits g', 'section des petits g', 'section petits g'], type: 'entier' },
+        { n: 's_eff_sp_F', l: 'SP F', alias: ['sp f', 'petits f', 'section des petits f', 'section petits f'], type: 'entier' },
+        { n: 's_eff_sg_G', l: 'SG G', alias: ['sg g', 'grands g', 'section des grands g', 'section grands g'], type: 'entier' },
+        { n: 's_eff_sg_F', l: 'SG F', alias: ['sg f', 'grands f', 'section des grands f', 'section grands f'], type: 'entier' }
       ]
     },
     infrastructures: {
