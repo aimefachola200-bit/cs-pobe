@@ -439,6 +439,8 @@
                 <div class="tab active" data-tab="rep-directeurs">Directeurs par secteur</div>
                 <div class="tab" data-tab="rep-cp">Conseillers pédagogiques</div>
                 <div class="tab" data-tab="rep-up">Unités pédagogiques</div>
+                <div class="tab" data-tab="rep-attente">Écoles en attente d’UP</div>
+                <div class="tab" data-tab="rep-inactives">Écoles ne fonctionnant plus</div>
                 <div class="tab" data-tab="rep-comite">Comité d'évaluation</div>
             </div>
 
@@ -477,8 +479,9 @@
             <div id="rep-up" class="tab-content">
                 <div class="alert alert-info">
                     Unités pédagogiques de la circonscription par zone (document de la CS du 1er décembre 2023) : chaque unité a
-                    son responsable (RUP) et son co-responsable (co-RUP). ✏️ modifier, ♻ revenir aux valeurs du document,
-                    🗑️ supprimer (ses écoles passent « à rattacher »), ➕ Ajouter en haut de la page.
+                    son responsable (RUP) et son co-responsable (co-RUP). Une école d’une autre zone qui suit les activités d’une UP porte
+                    la marque de sa zone d’appartenance. ✏️ modifier, ♻ revenir aux valeurs du document, 🗑️ supprimer (ses écoles passent
+                    « en attente d’UP »), ➕ Ajouter en haut de la page.
                 </div>
                 <div class="toolbar" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
                     <select id="filterZoneUP" onchange="renderUP()" aria-label="Zone pédagogique"><option value="">Toutes les zones</option><option>Zone 1</option><option>Zone 2</option><option>Zone 3</option></select>
@@ -486,12 +489,32 @@
                     <button class="btn btn-info" onclick="reinitialiserToutesUP()">♻ Réinitialiser toutes les UP</button>
                     <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimer</button>
                 </div>
-                <div id="upARattacher"></div>
                 <div class="table-container"><div class="table-scroll"><table>
                     <thead><tr><th>Zone</th><th>Cycle</th><th>Unité pédagogique</th><th>Arrondissement</th><th>Écoles</th>
                         <th>RUP</th><th>Contact</th><th>Co-RUP</th><th>Contact</th>
                         <th>Actions</th></tr></thead>
                     <tbody id="upTable"></tbody>
+                </table></div></div>
+            </div>
+
+            <div id="rep-attente" class="tab-content">
+                <h3 id="attenteTitre" style="margin:0 0 6px">Écoles en attente d’UP</h3>
+                <div class="alert alert-info">Écoles sans unité pédagogique, en attendant de leur en trouver une : « 🔗 Donner une UP » les rattache
+                    (elles quittent alors cette rubrique). Une école qui ne fonctionne plus peut être rangée dans la rubrique suivante.</div>
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>École</th><th>Type</th><th>Statut</th><th>Arrondissement</th><th>Zone (appartenance)</th><th>Actions</th></tr></thead>
+                    <tbody id="attenteTable"></tbody>
+                </table></div></div>
+            </div>
+
+            <div id="rep-inactives" class="tab-content">
+                <h3 id="inactivesTitre" style="margin:0 0 6px">Écoles ne fonctionnant plus</h3>
+                <div class="alert alert-info">Écoles qui existent mais ne fonctionnent plus : elles sont hors des listes, des effectifs, des totaux,
+                    des synoptiques, des statistiques et des fiches. Leurs données sont conservées ; « ♻ Remettre en activité » les replace.
+                    Pour y ranger une école : bouton ⛔ de la liste des écoles ou de la rubrique précédente.</div>
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>École</th><th>Type</th><th>Arrondissement</th><th>Zone</th><th>Depuis</th><th>Données</th><th>Actions</th></tr></thead>
+                    <tbody id="inactivesTable"></tbody>
                 </table></div></div>
             </div>
 

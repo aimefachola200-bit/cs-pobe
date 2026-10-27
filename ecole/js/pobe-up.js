@@ -10,7 +10,7 @@
    qui n'a pas été modifié depuis. */
 (function (global) {
   'use strict';
-  const SOURCE = 'Fichier de la CS (classes autorisées 2024-2025)';
+  const SOURCE = 'Fichiers de la CS (écoles par zone, effectifs 2026-2027)';
   const COURS = ['CI', 'CP', 'CE1', 'CE2', 'CM1', 'CM2'];
   const norm = t => String(t || '').normalize('NFKD').replace(/[̀-ͯ]/g, '').toUpperCase().replace(/Œ/g, 'OE')
     .replace(/[^A-Z0-9/]+/g, ' ').replace(/\s+/g, ' ').trim();
@@ -54,6 +54,26 @@
       r.valeur = val;
     };
     const ecoleDe = nom => data.ecoles.find(e => norm(e.nom) === norm(nom));
+    data.ecolesInactives = data.ecolesInactives || [];
+    const archivee = nom => data.ecolesInactives.find(a => norm(a.ecole.nom) === norm(nom));
+    /** « Ne fonctionne plus » : l'école et ce qui ne vaut que pour elle (effectifs, locaux, mobilier) sortent des listes actives,
+        donc de tous les totaux, statistiques, synoptiques et fiches ; « Remettre en activité » les y replace. */
+    function desactiver(id, motif) {
+      const e = data.ecoles.find(x => x.id == id); if (!e) return false;
+      const lie = c => { const l = (data[c] || []).filter(x => x.ecoleId == id); data[c] = (data[c] || []).filter(x => x.ecoleId != id); return l; };
+      data.ecolesInactives.push({ id: e.id, ecole: Object.assign({}, e, { rubrique: 'ne_fonctionne_plus' }), effectifs: lie('effectifs'),
+        infrastructures: lie('infrastructures'), mobilier: lie('mobilier'), depuis: new Date().toISOString().slice(0, 10), motif: motif || '' });
+      data.ecoles = data.ecoles.filter(x => x.id != id);
+      saveData(); return true;
+    }
+    function reactiver(id) {
+      const a = data.ecolesInactives.find(x => x.id == id); if (!a) return false;
+      const e = Object.assign({}, a.ecole); delete e.rubrique; e._officiel = Object.assign({}, e._officiel, { reactivee: true });
+      data.ecoles.push(e);
+      ['effectifs', 'infrastructures', 'mobilier'].forEach(c => { data[c] = (data[c] || []).concat(a[c] || []); });
+      data.ecolesInactives = data.ecolesInactives.filter(x => x.id != id);
+      saveData(); return true;
+    }
 
     /** Pose une valeur officielle : forcer, ou rubrique vide, ou valeur encore égale à celle posée la fois d'avant. */
     function poser(e, champ, valeur, forcer, remplacables) {
@@ -69,13 +89,19 @@
     function appliquerEcole(e, o, forcer) {
       const D = global.Donnees || {};
       let n = 0;
-      // zone : l'ancien référentiel en posait une d'office pour les maternelles (rapport de fin d'année) ; l'UP fait foi
-      if (poser(e, 'zone_ped', o.zone, forcer, v => D.zoneReferentiel && v === D.zoneReferentiel(e.nom))) n++;
+      // zone d'appartenance (feuille du classeur) ; l'ancien référentiel en posait une d'office pour les maternelles
+      if (poser(e, 'zone_ped', o.zone ? 'Zone ' + String(o.zone).replace(/\D/g, '') : o.zone, forcer, v => D.zoneReferentiel && v === D.zoneReferentiel(e.nom))) n++;
+      // zone de l'UP (zone des activités pédagogiques) : une école peut suivre les activités d'une UP d'une autre zone
+      if (poser(e, 'zone_up', o.zone_up, forcer)) n++;
       if (poser(e, 'unite_ped', o.up, forcer, v => (D.UNITES_PROVISOIRES || []).indexOf(v) >= 0)) n++;
+      // l'école n'est plus dans l'UP officielle d'avant (ex. EPP AGBAROU sortie d'Ossomou 2) : retirée si l'UP n'a pas été changée à la main
+      if (!o.up && e._officiel && e._officiel.unite_ped && e.unite_ped === e._officiel.unite_ped) {
+        e.unite_ped = ''; delete e._officiel.unite_ped; if (e._officiel.zone_up && e.zone_up === e._officiel.zone_up) { e.zone_up = ''; delete e._officiel.zone_up; } n++;
+      }
       // école sans UP dans le document mais rangée dans une unité provisoire « UP X » devenue officielle (ex. UP Agbarou -> Agbarou)
       if (!o.up && (D.UNITES_PROVISOIRES || []).indexOf(e.unite_ped) >= 0) {
         const u = P().ups.find(x => norm('UP ' + x.nomOfficiel) === norm(e.unite_ped));
-        if (u) { e.unite_ped = u.nom; if (vide(e.zone_ped)) e.zone_ped = u.zone; n++; }
+        if (u) { e.unite_ped = u.nom; e.zone_up = u.zone; if (vide(e.zone_ped)) e.zone_ped = u.zone; n++; }
       }
       if (poser(e, 'annee_creation', o.annee_creation, forcer)) n++;
       if (poser(e, 'classes_autorisees', o.classes_autorisees, forcer)) n++;
@@ -135,6 +161,7 @@
         });
       } else {
         P().ecoles.forEach(o => {
+          if (archivee(o.nom)) return;
           let e = ecoleDe(o.nom);
           if (!e) {
             e = { id: uid(), code: '', nom: o.nom, type: o.type, statut: o.statut, arrondissement: o.arrondissement, commune: 'POBE',
@@ -144,6 +171,11 @@
           }
           rapport.ecoles += appliquerEcole(e, o, false) ? 1 : 0;
           rapport.effectifs += appliquerEffectifs(e, o, false);
+          // école ne fonctionnant plus (ex. EPP TOWE/C) : rangée dans sa rubrique, une seule fois (la CS peut la remettre en activité)
+          if (o.rubrique === 'ne_fonctionne_plus' && !(e._officiel && e._officiel.reactivee)) {
+            const deja = reglage('pobeUPInactives') || [];
+            if (deja.indexOf(norm(o.nom)) < 0) { desactiver(e.id, 'Fichiers de la CS'); reglage('pobeUPInactives', deja.concat(norm(o.nom))); rapport.inactives = (rapport.inactives || 0) + 1; }
+          }
         });
         P().ups.forEach(u => { appliquerUP(u, false); rapport.ups++; });
       }
@@ -169,7 +201,7 @@
       appliquerUP(u, true);
       // une UP ajoutée sans liste d'écoles (Agbarou) garde les écoles que la CS y a rattachées
       if (!u.ajoutee && u.ecoles.length) data.ecoles.forEach(e => { if (e.unite_ped === nom && u.ecoles.every(n => norm(n) !== norm(e.nom))) { e.unite_ped = ''; } });
-      u.ecoles.forEach(n => { const e = ecoleDe(n); if (e) { poser(e, 'unite_ped', u.nom, true); poser(e, 'zone_ped', u.zone, true); } });
+      u.ecoles.forEach(n => { const e = ecoleDe(n); if (e) { poser(e, 'unite_ped', u.nom, true); poser(e, 'zone_up', u.zone, true); } });
       saveData(); return true;
     }
     function reinitToutesUP() {
@@ -177,7 +209,11 @@
       const officielles = new Set(P().ups.filter(u => !u.ajoutee && u.ecoles.length).map(u => u.nom));
       data.ecoles.forEach(e => {
         const o = officielEcole(e.nom);
-        if (o) { if (o.up) poser(e, 'unite_ped', o.up, true); else if (officielles.has(e.unite_ped)) e.unite_ped = ''; if (o.zone) poser(e, 'zone_ped', o.zone, true); }
+        if (o) {
+          if (o.up) { poser(e, 'unite_ped', o.up, true); poser(e, 'zone_up', o.zone_up, true); }
+          else if (officielles.has(e.unite_ped)) { e.unite_ped = ''; e.zone_up = ''; }
+          if (o.zone) poser(e, 'zone_ped', o.zone, true);
+        }
       });
       saveData();
     }
@@ -205,7 +241,7 @@
     const migration = migrer();
     data.effectifs.forEach(r => { if (r._officiel && !r._empreinte) r._empreinte = empreinte(r); });
     if (migration) saveData();
-    return { migration, migrer, reinitUP, reinitToutesUP, reinitEcole, reinitEffectifs, reinitTousEffectifs, aRattacher,
+    return { migration, migrer, desactiver, reactiver, reinitUP, reinitToutesUP, reinitEcole, reinitEffectifs, reinitTousEffectifs, aRattacher,
       officielEcole, officielUP, SOURCE };
   }
 

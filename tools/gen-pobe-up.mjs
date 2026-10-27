@@ -47,7 +47,7 @@ const ecoles = P.ecoles.map(p => {
   const ref = cs.find(x => x.nom === nomCS[p.nom]);
   const o = {
     nom: nomCS[p.nom], nomOfficiel: p.nom, type: ref ? ref.type : typeDe(p), statut: ref ? ref.statut : statutDe(p),
-    arrondissement: (ref && ref.arrondissement) || arr(p.arrondissement), zone: zone(p.zone), up: upDe[nomCS[p.nom]] || '',
+    arrondissement: (ref && ref.arrondissement) || arr(p.arrondissement), zone: zone(p.zone), zone_up: zone(p.zone_up), up: upDe[nomCS[p.nom]] || '', rubrique: p.rubrique || '',
     annee_creation: p.annee_creation || null, classes_autorisees: p.classes_autorisees ?? null, personnel: p.personnel || null,
     effectifs: p.effectifs || null
   };
@@ -56,9 +56,9 @@ const ecoles = P.ecoles.map(p => {
 });
 const sansUP = ecoles.filter(e => !e.up).map(e => e.nom);
 const sortie = {
-  version: '2026-10-27.2', source: P.source, annee_fichier: P.annee,
-  note: 'Effectifs du fichier de la CS (classes autorisées 2024-2025) ; zones et unités pédagogiques du document du 1er décembre 2023.',
-  zones: P.zones.map(z => ({ nom: 'Zone ' + z.numero, libelle: z.nom, code: z.code })), ups, ecoles, sansUP
+  version: '2026-10-27.3', source: P.source, annee_fichier: P.annee,
+  note: 'Effectifs ' + P.annee + ' du fichier de la CS ; zones et unités pédagogiques du document du 1er décembre 2023.',
+  zones: P.zones.map(z => ({ nom: 'Zone ' + z.numero, libelle: z.nom, code: z.code, ecoles: z.ecoles })), ups, ecoles, sansUP, rubriques: P.rubriques
 };
 for (const f of ['data/pobe-up.js', 'ecole/data/pobe-up.js']) writeFileSync(join(racine, f), '/* CS Pobè — zones, unités pédagogiques (RUP, co-RUP), écoles et effectifs officiels de la circonscription.\n'
   + '   Fichier généré par tools/gen-pobe-up.mjs : ne pas modifier à la main. */\nwindow.POBE_UP = ' + JSON.stringify(sortie) + ';\n');

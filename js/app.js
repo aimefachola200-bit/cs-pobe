@@ -11,7 +11,9 @@
     'cepSession', 'identite', 'centres', 'compositions', 'apprenants', 'notes', 'fiches', 'certificats', 'visites', 'attributions', 'collegiale', 'unites', 'comite',
     'presencesApprenants', 'presencesPersonnel', 'joursFeries', 'bilans', 'themesDone', 'whatsapp',
     'officielPerso',   // v2.0 : emplois du temps et planifications modifiés sur cet appareil
-    'reglages'];       // v2.3 : réglages et versions des données de référence appliquées (zones, UP, effectifs officiels)
+    'reglages',        // v2.3 : réglages et versions des données de référence appliquées
+    'ecolesInactives'];  // v2.3.1 : écoles ne fonctionnant plus (avec leurs effectifs, locaux, mobilier) — hors des listes actives
+  // v2.3 : réglages et versions des données de référence appliquées (zones, UP, effectifs officiels)
 
   let data = charger();
   /* Cachets ronds partout (demande du 19/10/2026) : une seule fois, les cachets réglés en rectangulaire passent en rond ;
@@ -68,7 +70,10 @@
      depuis leur première ouverture, sans que rien de saisi ne soit touché. */
   if (!global.Config.estEcole()) {
     (function completerReferentiel() {
-      const ajouts = global.Donnees.completerEcoles(data.ecoles, uid);
+      // les écoles « ne fonctionnant plus » comptent comme connues : elles ne reviennent pas par le référentiel
+      const archivees = (data.ecolesInactives || []).map(a => a.ecole);
+      const ajouts = global.Donnees.completerEcoles(data.ecoles.concat(archivees), uid)
+        .filter(x => !archivees.some(a => String(a.nom).toUpperCase() === String(x.nom).toUpperCase()));
       if (ajouts.length) {
         data.ecoles = data.ecoles.concat(ajouts);
         saveData();
@@ -211,7 +216,9 @@
   function nomEcole(id) {
     if (!id) return 'Service CS';
     const e = data.ecoles.find(x => x.id == id);
-    return e ? e.nom : '—';
+    if (e) return e.nom;
+    const a = (data.ecolesInactives || []).find(x => x.id == id);
+    return a ? a.ecole.nom + ' (ne fonctionne plus)' : '—';
   }
 
   /* ---------------- Retraite ---------------- */
@@ -329,11 +336,14 @@
       '<tr><td><b>' + echapper(e.code) + '</b></td><td>' + echapper(e.nom) + '</td>'
       + '<td><span class="badge badge-info">' + echapper(e.type) + '</span></td>'
       + '<td>' + echapper(e.statut) + '</td><td>' + echapper(e.arrondissement) + '</td>'
-      + '<td>' + echapper(e.zone_ped || '—') + '</td><td>' + echapper(e.unite_ped || '—') + '</td>'
+      + '<td>' + echapper(e.zone_ped || '—') + (e.zone_up && e.zone_up !== e.zone_ped
+        ? '<div class="petit muet" style="font-size:11px">activités : ' + echapper(e.zone_up) + '</div>' : '') + '</td>'
+      + '<td>' + echapper(e.unite_ped || '—') + '</td>'
       + '<td>' + echapper(e.annee_creation) + '</td><td>' + (e.classes_existantes || 0) + '</td>'
       + '<td class="actions">'
       + '<button class="btn btn-info btn-sm" onclick="viewEcole(\'' + e.id + '\')">👁️</button>'
       + '<button class="btn btn-warning btn-sm" onclick="editEcole(\'' + e.id + '\')">✏️</button>'
+      + (global.Config.estEcole() ? '' : '<button class="btn btn-secondary btn-sm" title="Ne fonctionne plus" onclick="ecoleNeFonctionnePlus(\'' + e.id + '\')">⛔</button>')
       + '<button class="btn btn-danger btn-sm" onclick="deleteEcole(\'' + e.id + '\')">🗑️</button>'
       + '</td></tr>').join('')
       || '<tr><td colspan="10" class="text-center">Aucune école trouvée</td></tr>';
@@ -486,7 +496,8 @@
       + selecteur("Arrondissement *", 'arrondissement',
         ['POBE', 'AHOYEYE', 'IGANNA', 'ISSABA', 'TOWE'], e.arrondissement, true)
       + champ("Village ou quartier", 'village', e.village)
-      + selecteur("Zone pédagogique", 'zone_ped', [''].concat(global.Donnees.ZONES), e.zone_ped)
+      + selecteur("Zone pédagogique (appartenance)", 'zone_ped', [''].concat(global.Donnees.ZONES), e.zone_ped)
+      + selecteur("Zone des activités (zone de l’UP)", 'zone_up', [''].concat(global.Donnees.ZONES), e.zone_up)
       + '<div class="form-group"><label>Unité pédagogique</label>'
       + '<input name="unite_ped" list="listeUP" value="' + echapper(e.unite_ped || '') + '">'
       + '<datalist id="listeUP">' + unitesConnues().map(u => '<option value="'
@@ -532,6 +543,9 @@
   function saveEcole(ev, id) {
     ev.preventDefault();
     const obj = Object.fromEntries(new FormData(ev.target));
+    /* l'UP choisie donne la zone des activités quand elle n'est pas indiquée */
+    if (obj.unite_ped && !obj.zone_up) { const f = (data.unites || []).find(u => u.nom === obj.unite_ped); if (f && f.zone) obj.zone_up = f.zone; }
+    if (!obj.unite_ped) obj.zone_up = obj.zone_up || '';
     /* effectif du personnel par statut (champs pf_*) */
     const pf = {};
     Object.keys(obj).filter(k => k.indexOf('pf_') === 0).forEach(k => { if (obj[k] !== '') pf[k.slice(3)] = parseInt(obj[k], 10) || 0; delete obj[k]; });
@@ -3559,16 +3573,18 @@
         || ((a.fiche.numero || 99) - (b.fiche.numero || 99)) || a.nom.localeCompare(b.nom, 'fr'));
     let zonePrec = null;
     tb.innerHTML = liste.map(u => {
-      const ecoles = data.ecoles.filter(e => e.unite_ped === u.nom).map(e => e.nom).sort((a, b) => a.localeCompare(b, 'fr'));
+      const membres = data.ecoles.filter(e => e.unite_ped === u.nom).sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+      const ecoles = membres.map(e => echapper(e.nom) + (u.zone && e.zone_ped && e.zone_ped !== u.zone
+        ? ' <span class="badge badge-warning" title="Zone d’appartenance : ' + echapper(e.zone_ped) + ' — suit les activités de cette UP">' + echapper(e.zone_ped) + '</span>' : ''));
       const ligneZone = u.zone !== zonePrec ? '<tr class="ligne-zone"><td colspan="10"><b>' + echapper(u.zone || 'Zone non renseignée')
-        + '</b> — ' + liste.filter(x => x.zone === u.zone).length + ' unité(s), '
-        + data.ecoles.filter(e => (e.zone_ped || '') === (u.zone || '') && e.unite_ped).length + ' école(s)</td></tr>' : '';
+        + '</b> — ' + liste.filter(x => x.zone === u.zone).length + ' unité(s) ; '
+        + data.ecoles.filter(e => (e.zone_ped || '') === (u.zone || '')).length + ' école(s) de la zone (appartenance)</td></tr>' : '';
       zonePrec = u.zone;
       const officielle = UPO && UPO.officielUP(u.nom);
       return ligneZone + '<tr><td>' + echapper(u.zone || '—') + '</td><td>' + echapper(u.cycle || '—') + '</td>'
         + '<td><b>' + echapper(u.nom) + '</b>' + (officielle ? ' <span class="badge badge-info" title="Document de la CS">officielle</span>' : '') + '</td>'
         + '<td>' + echapper(u.arrondissement) + '</td>'
-        + '<td><b>' + ecoles.length + '</b><div class="petit" style="font-size:11.5px;color:#475467;max-width:340px">' + ecoles.map(echapper).join(', ') + '</div></td>'
+        + '<td><b>' + ecoles.length + '</b><div class="petit" style="font-size:11.5px;color:#475467;max-width:360px">' + ecoles.join(', ') + '</div></td>'
         + '<td>' + (u.fiche.rup ? echapper(u.fiche.rup) : '<span class="badge badge-warning">à renseigner</span>') + '</td>'
         + '<td>' + echapper(u.fiche.contact_rup || '—') + '</td>'
         + '<td>' + echapper(u.fiche.corup || '—') + '</td>'
@@ -3578,15 +3594,48 @@
         + (officielle ? '<button class="btn btn-info btn-sm" title="Réinitialiser (valeurs du document de la CS)" onclick="reinitialiserUP(' + jsNom(u.nom) + ')">♻</button>' : '')
         + '<button class="btn btn-danger btn-sm" title="Supprimer" onclick="supprimerUP(' + jsNom(u.nom) + ')">🗑️</button></td></tr>';
     }).join('') || '<tr><td colspan="10" class="text-center">Aucune unité pédagogique</td></tr>';
-    const ar = document.getElementById('upARattacher');
-    if (ar) {
+    renderRubriquesEcoles();
+  }
+
+  /* --- Rubriques : écoles en attente d'UP, écoles ne fonctionnant plus --- */
+  function renderRubriquesEcoles() {
+    const R = (global.POBE_UP || {}).rubriques || {};
+    const att = document.getElementById('attenteTable');
+    if (att) {
       const sans = UPO ? UPO.aRattacher() : data.ecoles.filter(e => !e.unite_ped);
-      ar.innerHTML = sans.length
-        ? '<div class="alert alert-warning"><b>' + sans.length + ' école(s) à rattacher à une unité pédagogique</b> (absentes du document des UP) : '
-          + sans.map(e => '<a href="#" onclick="event.preventDefault();rattacherEcoleUP(\'' + e.id + '\')">' + echapper(e.nom) + '</a>'
-            + (e.zone_ped ? ' <small>(' + echapper(e.zone_ped) + ')</small>' : '')).join(', ') + '</div>'
-        : '<div class="alert alert-success">Toutes les écoles sont rattachées à une unité pédagogique.</div>';
+      const t = document.getElementById('attenteTitre');
+      if (t) t.textContent = ((R.en_attente_up || {}).titre || 'Écoles en attente d’UP') + ' (' + sans.length + ')';
+      att.innerHTML = sans.map(e => '<tr><td><b>' + echapper(e.nom) + '</b></td><td>' + echapper(e.type) + '</td><td>' + echapper(e.statut || '') + '</td>'
+        + '<td>' + echapper(e.arrondissement || '—') + '</td><td>' + echapper(e.zone_ped || '—') + '</td>'
+        + '<td class="actions"><button class="btn btn-primary btn-sm" onclick="rattacherEcoleUP(\'' + e.id + '\')">🔗 Donner une UP</button>'
+        + '<button class="btn btn-secondary btn-sm" onclick="ecoleNeFonctionnePlus(\'' + e.id + '\')">⛔ Ne fonctionne plus</button></td></tr>').join('')
+        || '<tr><td colspan="6" class="text-center">Toutes les écoles en activité ont une unité pédagogique.</td></tr>';
     }
+    const ina = document.getElementById('inactivesTable');
+    if (ina) {
+      const l = (data.ecolesInactives || []).slice().sort((a, b) => a.ecole.nom.localeCompare(b.ecole.nom, 'fr'));
+      const t = document.getElementById('inactivesTitre');
+      if (t) t.textContent = ((R.ne_fonctionne_plus || {}).titre || 'Écoles ne fonctionnant plus') + ' (' + l.length + ')';
+      ina.innerHTML = l.map(a => '<tr><td><b>' + echapper(a.ecole.nom) + '</b></td><td>' + echapper(a.ecole.type) + '</td>'
+        + '<td>' + echapper(a.ecole.arrondissement || '—') + '</td><td>' + echapper(a.ecole.zone_ped || '—') + '</td>'
+        + '<td>' + echapper(formatDate(a.depuis)) + (a.motif ? ' <small>(' + echapper(a.motif) + ')</small>' : '') + '</td>'
+        + '<td>' + ((a.effectifs || []).length) + ' relevé(s) conservé(s)</td>'
+        + '<td class="actions"><button class="btn btn-success btn-sm" onclick="remettreEnActivite(\'' + a.id + '\')">♻ Remettre en activité</button></td></tr>').join('')
+        || '<tr><td colspan="7" class="text-center">Aucune école dans cette rubrique.</td></tr>';
+    }
+  }
+  function ecoleNeFonctionnePlus(id) {
+    if (!UPO || global.Config.estEcole()) return;
+    const e = data.ecoles.find(x => x.id == id); if (!e) return;
+    if (!confirm('« ' + e.nom + ' » ne fonctionne plus ?\nElle sort des listes, des effectifs, des totaux, des synoptiques et des fiches '
+      + '(ses données sont conservées dans la rubrique « Écoles ne fonctionnant plus » et peuvent être remises en activité).')) return;
+    UPO.desactiver(id, 'Décision de la CS'); closeModal(); renderEcoles(); renderRepertoires();
+  }
+  function remettreEnActivite(id) {
+    if (!UPO) return;
+    const a = (data.ecolesInactives || []).find(x => x.id == id); if (!a) return;
+    if (!confirm('Remettre « ' + a.ecole.nom + ' » en activité (avec ses effectifs, locaux et mobilier) ?')) return;
+    UPO.reactiver(id); renderEcoles(); renderRepertoires();
   }
 
   /** Rattacher une école à une UP (et à sa zone). */
@@ -3596,8 +3645,8 @@
     openModal('Rattacher ' + e.nom,
       '<form onsubmit="saveRattachement(event, \'' + e.id + '\')"><div class="form-grid">'
       + selecteur('Unité pédagogique', 'unite_ped', [''].concat(ups.map(u => u.nom)), e.unite_ped)
-      + selecteur('Zone pédagogique', 'zone_ped', [''].concat(global.Donnees.ZONES), e.zone_ped)
-      + '</div><p class="petit muet">Sans zone choisie, l’école prend la zone de son unité pédagogique.</p>'
+      + selecteur('Zone pédagogique (appartenance)', 'zone_ped', [''].concat(global.Donnees.ZONES), e.zone_ped)
+      + '</div><p class="petit muet">La zone des activités est celle de l’unité choisie ; sans zone d’appartenance, l’école prend aussi celle-ci.</p>'
       + '<div class="text-center mt-15"><button type="submit" class="btn btn-primary">💾 Enregistrer</button> '
       + '<button type="button" class="btn btn-danger" onclick="closeModal()">Annuler</button></div></form>');
   }
@@ -3607,7 +3656,8 @@
     const o = Object.fromEntries(new FormData(ev.target));
     e.unite_ped = o.unite_ped || '';
     const f = data.unites.find(u => u.nom === e.unite_ped);
-    e.zone_ped = o.zone_ped || (f && f.zone) || e.zone_ped || '';
+    e.zone_up = (f && f.zone) || '';
+    e.zone_ped = o.zone_ped || e.zone_ped || (f && f.zone) || '';
     saveData(); closeModal(); renderRepertoires(); renderEcoles();
   }
   function reinitialiserUP(nom) {
@@ -3666,6 +3716,8 @@
     if (ancien && ancien !== nom) {
       data.ecoles.forEach(e => { if (e.unite_ped === ancien) e.unite_ped = nom; });
     }
+    /* la zone de l'UP est la zone des activités de ses écoles */
+    if (u.zone) data.ecoles.forEach(e => { if (e.unite_ped === nom) e.zone_up = u.zone; });
     saveData();
     closeModal();
     renderRepertoires();
@@ -3674,7 +3726,7 @@
   function supprimerUP(nom) {
     const rattachees = data.ecoles.filter(e => e.unite_ped === nom);
     if (rattachees.length && !confirm(rattachees.length + ' école(s) sont rattachées à ' + nom
-        + '. Supprimer l’unité et détacher ces écoles (elles iront dans la liste « à rattacher ») ?')) return;
+        + '. Supprimer l’unité et détacher ces écoles (elles passeront « en attente d’UP ») ?')) return;
     if (!rattachees.length && !confirm('Supprimer l’unité pédagogique ' + nom + ' ?')) return;
     rattachees.forEach(e => { e.unite_ped = ''; });
     data.unites = data.unites.filter(u => u.nom !== nom);
@@ -3730,6 +3782,7 @@
     const onglet = ongletRepertoire();
     if (onglet === 'rep-up') return modifierUP('');
     if (onglet === 'rep-comite') return modifierComite();
+    if (onglet === 'rep-attente' || onglet === 'rep-inactives') return showPage('ecoles', document.querySelector('.menu-item[data-page="ecoles"]'));
     alert(onglet === 'rep-cp'
       ? 'Les conseillers pédagogiques suivent les zones : renseignez leur nom avec le '
         + 'crayon de leur ligne.'
@@ -7191,7 +7244,7 @@
     saveMembre, supprimerMembre, renderMaFiche,
     renderUASCEP, openMembreUASCEPModal, saveMembreUASCEP, supprimerMembreUASCEP, exporterUASCEP,
     renderRepertoires, modifierDirecteur, saveDirecteur, modifierCP, saveCP,
-    modifierUP, saveUP, supprimerUP, renderUP, reinitialiserUP, reinitialiserToutesUP, rattacherEcoleUP, saveRattachement,
+    modifierUP, saveUP, supprimerUP, renderUP, renderRubriquesEcoles, ecoleNeFonctionnePlus, remettreEnActivite, reinitialiserUP, reinitialiserToutesUP, rattacherEcoleUP, saveRattachement,
     reinitialiserEffectifs, reinitialiserTousEffectifs, reinitialiserEcole, modifierComite, saveComite, supprimerComite,
     ajouterAuRepertoire,
     renderApprenants, openApprenantModal, saveApprenant, supprimerApprenant,
