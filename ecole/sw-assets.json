@@ -1,5 +1,5 @@
 {
- "version": "3e5937d83cb1",
+ "version": "3d20f60d0c1c",
  "files": [
   "./",
   "css/style.css",
@@ -83,6 +83,8 @@
   "js/synoptique.js",
   "js/tableau-bord.js",
   "js/tableur.js",
+  "js/uascep-cs.js",
+  "js/uascep.js",
   "js/whatsapp.js",
   "js/zones-cp.js",
   "manifest.webmanifest",

@@ -8,7 +8,7 @@
   const CLE_STOCKAGE = (global.Config && global.Config.estEcole && global.Config.estEcole()) ? 'ecolePobeData' : 'csPobeData';
   const COLLECTIONS = ['ecoles', 'personnel', 'effectifs', 'infrastructures', 'mobilier',
     'evaluations', 'cep', 'cni', 'rapports', 'courriersArr', 'courriersDep', 'annees',
-    'cepSession', 'identite', 'centres', 'compositions', 'apprenants', 'notes', 'fiches', 'certificats', 'visites', 'attributions', 'collegiale', 'unites', 'comite',
+    'cepSession', 'identite', 'centres', 'compositions', 'apprenants', 'notes', 'fiches', 'certificats', 'visites', 'attributions', 'collegiale', 'unites', 'comite', 'uascepBureaux', 'uascepMembres',
     'presencesApprenants', 'presencesPersonnel', 'joursFeries', 'bilans', 'themesDone', 'whatsapp',
     'officielPerso',   // v2.0 : emplois du temps et planifications modifiés sur cet appareil
     'reglages',        // v2.3 : réglages et versions des données de référence appliquées
@@ -3205,9 +3205,10 @@
     { cle: 'ESPACE_VERT', libelle: 'Comité espace vert' },
     { cle: 'ENFANTS', libelle: 'Gouvernement des enfants' },
     { cle: 'GENRE', libelle: 'Comité genre' },
-    { cle: 'RECEPTION', libelle: 'Comité de réception du matériel' },
-    { cle: 'UASCEP', libelle: 'Bureau UASCEP de l’école' }
+    { cle: 'RECEPTION', libelle: 'Comité de réception du matériel' }
   ];
+  // v2.6 : le bureau UASCEP (école, UP, zone, CS, DDEMP) a son propre module « Bureaux UASCEP » (js/uascep.js) ;
+  // les anciens membres « UASCEP » de la gestion collégiale y sont repris automatiquement (sans perte).
 
   const FONCTIONS_INSTANCE = ['Responsable', 'Président', 'Vice-président', 'Secrétaire',
     'Secrétaire adjoint', 'Trésorier', 'Trésorier adjoint', 'Commissaire aux comptes',
@@ -3215,7 +3216,7 @@
 
   function libelleInstance(cle) {
     const i = INSTANCES.filter(x => x.cle === cle)[0];
-    return i ? i.libelle : cle;
+    return i ? i.libelle : cle === 'UASCEP' ? 'Bureau UASCEP (repris dans « Bureaux UASCEP »)' : cle;
   }
 
   function renderCollegiale() {
@@ -3237,10 +3238,10 @@
       return;
     }
 
-    const membres = data.collegiale.filter(m => m.ecoleId == ecole.id
+    const membres = data.collegiale.filter(m => m.ecoleId == ecole.id && !m.migreUascep
       && (!instanceF || m.instance === instanceF));
     const instancesGarnies = {};
-    data.collegiale.filter(m => m.ecoleId == ecole.id)
+    data.collegiale.filter(m => m.ecoleId == ecole.id && !m.migreUascep)
       .forEach(m => { instancesGarnies[m.instance] = true; });
     const femmes = membres.filter(m => String(m.sexe || '').toUpperCase() === 'F').length;
 

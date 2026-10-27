@@ -42,6 +42,7 @@
         <div class="menu-item" data-page="mobilier"><span class="icon">🪑</span> Mobilier &amp; matériel</div>
         <div class="menu-item" data-page="classes"><span class="icon">🧮</span> Attribution des classes</div>
         <div class="menu-item" data-page="collegiale"><span class="icon">🤝</span> Gestion collégiale</div>
+        <div class="menu-item" data-page="uascep"><span class="icon">🏵️</span> Bureaux UASCEP</div>
         <div class="menu-item" data-page="repertoires"><span class="icon">📕</span> Répertoires et contacts</div>
         <h3>Gestion pédagogique</h3>
         <div class="menu-item" data-page="evaluations"><span class="icon">📝</span> Évaluations</div>
@@ -404,26 +405,9 @@
                 <tbody id="collegialeTable"></tbody>
             </table></div></div>
 
-            <div class="table-container mt-15">
-                <div style="padding:15px;background:#006633;color:white;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-                    <b>🏵️ Bureau UASCEP — Unité pédagogique et Commune</b>
-                    <span>
-                        <button class="btn btn-warning btn-sm" onclick="exporterUASCEP()">📤 Télécharger</button>
-                        <button class="btn btn-primary btn-sm" onclick="openMembreUASCEPModal()">➕ Membre</button>
-                    </span>
-                </div>
-                <div class="search-bar">
-                    <select id="uascepNiveau" onchange="renderUASCEP()">
-                        <option value="UP">Unité pédagogique</option>
-                        <option value="COMMUNE">Commune</option>
-                    </select>
-                    <select id="uascepPortee" onchange="renderUASCEP()"></select>
-                </div>
-                <div class="table-scroll"><table>
-                    <thead><tr><th>Fonction</th><th>Nom et prénoms</th>
-                        <th>Sexe</th><th>Contact</th><th>Depuis</th><th>Actions</th></tr></thead>
-                    <tbody id="uascepTable"></tbody>
-                </table></div>
+            <div class="table-container mt-15" style="padding:14px 15px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                <span><b>🏵️ Bureaux UASCEP</b> — école, unité pédagogique, zone pédagogique, circonscription et DDEMP : membres, mandats, renouvellement, impression et Excel.</span>
+                <button class="btn btn-primary btn-sm" onclick="showPage('uascep')">Ouvrir le module « Bureaux UASCEP »</button>
             </div>
         </div>
 
@@ -907,6 +891,7 @@
         <div id="docsref" class="page hidden"></div>
         <div id="espaces" class="page hidden"></div>
         <div id="personnelZones" class="page hidden"></div>
+        <div id="uascep" class="page hidden"></div>
         <div id="synoptique" class="page hidden"></div>
         <div id="whatsapp" class="page hidden"></div>
         <div id="alertes" class="page hidden"></div>
@@ -1260,7 +1245,7 @@
 <script src="js/choix.js" data-geo="data/referentiel_villages.json"></script>
 <script src="js/embleme.js"></script>
 <script src="js/stockage.js"></script>
-<script>chargerScripts(["data/pobe-up.js", "js/donnees.js", "js/carriere.js", "js/calendrier.js", "js/presences.js", "js/qr.js", "js/pieces.js", "js/documents-scolaires.js", "js/examen.js", "js/evaluations.js", "js/rapports.js", "js/certificats.js", "js/tableur.js", "js/import.js", "data/ref.js", "js/bilan-schema.js", "js/pobe-up.js", "js/app.js", "js/extra.js", "js/graphiques.js", "js/effectifs-zone.js", "js/infra-zone.js", "js/ecoles-zone.js", "js/cep-zone.js", "js/synoptique.js", "js/espaces.js", "data/directeurs-pobe.js", "js/zones-cp.js", "js/entetes-fixes.js", "js/whatsapp.js", "js/ameliorations.js", "data/officiel.js", "data/documents-officiels.js", "js/officiel.js", "js/tableau-bord.js", "js/registres.js", "js/educmaster.js", "js/interface.js"]);</script>
+<script>chargerScripts(["data/pobe-up.js", "js/donnees.js", "js/carriere.js", "js/calendrier.js", "js/presences.js", "js/qr.js", "js/pieces.js", "js/documents-scolaires.js", "js/examen.js", "js/evaluations.js", "js/rapports.js", "js/certificats.js", "js/tableur.js", "js/import.js", "data/ref.js", "js/bilan-schema.js", "js/pobe-up.js", "js/app.js", "js/extra.js", "js/graphiques.js", "js/effectifs-zone.js", "js/infra-zone.js", "js/ecoles-zone.js", "js/cep-zone.js", "js/synoptique.js", "js/espaces.js", "data/directeurs-pobe.js", "js/zones-cp.js", "js/uascep.js", "js/uascep-cs.js", "js/entetes-fixes.js", "js/whatsapp.js", "js/ameliorations.js", "data/officiel.js", "data/documents-officiels.js", "js/officiel.js", "js/tableau-bord.js", "js/registres.js", "js/educmaster.js", "js/interface.js"]);</script>
 <script>
 (function () {
   var img = document.querySelector("#bandeauImpression img");
