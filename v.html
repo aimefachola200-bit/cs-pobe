@@ -52,8 +52,23 @@ function verifier() {
   var res = document.getElementById('res');
   if (!p.n || !p.e) { res.innerHTML = '<p class="etat ko">Aucun document à vérifier.</p><p>Scannez le code QR imprimé sur la fiche ou la carte.</p>'; return; }
   var r = p.r || '';
-  var bon = empreinte('CS-POBE|' + p.n + '|' + r).slice(0, 8) === String(p.e).toUpperCase();
   var type = String(p.n).split('-')[0], annee = String(p.n).split('-')[1] || '';
+  if (type === 'UASCEP') {
+    /* Pièces des bureaux UASCEP : l'empreinte porte sur le numéro et toutes les mentions du code */
+    var DOCS = { C: 'Composition du bureau', P: "Procès-verbal d'élection et d'installation du bureau", A: 'Attestation de fonction', L: 'Liste des bureaux UASCEP',
+      S: 'Rapport de fin de saison sportive', R: 'Compte rendu de réunion', J: 'Calendrier, résultats et journal des activités', E: "Fiches d'engagement des équipes",
+      F: 'État financier et journal de caisse', I: 'Inventaire du matériel sportif' };
+    var ch = [p.d || '', p.b || '', p.m || '', p.f || '', p.t || '', p.s || ''];
+    var ok = empreinte('CS-POBE|' + p.n + '|' + ch.join('|')).slice(0, 8) === String(p.e).toUpperCase();
+    res.innerHTML = (ok ? '<p class="etat ok">✔ Code authentique, non modifié</p>' : '<p class="etat ko">✖ Code altéré : ce document ne doit pas être accepté</p>')
+      + '<dl><dt>Type</dt><dd>UASCEP — ' + esc(DOCS[p.d] || 'Document') + '</dd><dt>Numéro</dt><dd>' + esc(p.n) + '</dd>'
+      + (p.b ? '<dt>Bureau</dt><dd>' + esc(p.b) + '</dd>' : '') + (p.m ? '<dt>Membre</dt><dd>' + esc(p.m) + '</dd>' : '')
+      + (p.f ? '<dt>Fonction</dt><dd>' + esc(p.f) + '</dd>' : '') + (p.t ? '<dt>Date</dt><dd>' + esc(p.t) + '</dd>' : '')
+      + (p.s ? '<dt>Signataire</dt><dd>' + esc(p.s) + '</dd>' : '') + '<dt>Code</dt><dd>' + esc(String(p.e).toUpperCase()) + '</dd>'
+      + '<dt>Émetteur</dt><dd>Circonscription Scolaire de Pobè — DDEMP Plateau</dd></dl>';
+    return;
+  }
+  var bon = empreinte('CS-POBE|' + p.n + '|' + r).slice(0, 8) === String(p.e).toUpperCase();
   res.innerHTML = (bon ? '<p class="etat ok">✔ Code authentique, non modifié</p>' : '<p class="etat ko">✖ Code altéré : ce document ne doit pas être accepté</p>')
     + '<dl><dt>Document</dt><dd>' + esc(TYPES[type] || type) + '</dd><dt>Numéro</dt><dd>' + esc(p.n) + '</dd>'
     + (annee ? '<dt>Émis en</dt><dd>' + esc(annee) + '</dd>' : '') + (r ? '<dt>Concerne</dt><dd>' + esc(r) + '</dd>' : '')

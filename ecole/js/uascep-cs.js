@@ -39,15 +39,19 @@
       zones = p && p.zone_ped ? zones.filter(z => z.cle === p.zone_ped) : [];
       const ecoleCle = p ? String(p.id) : null;
       return { niveaux: ['ECOLE', 'UP', 'ZONE'], entites: { ECOLE: ecoles, UP: upsV, ZONE: zones, CS: [], DDEMP: [] }, lieu: 'Pobè', fixe: { zone: true },
+        autorite: ecoleCle ? { niveau: 'ECOLE', cle: ecoleCle } : null,
         droits: { ecrire: (niv, cle) => niv === 'ECOLE' && String(cle) === ecoleCle } };
     }
     return { niveaux: ['ECOLE', 'UP', 'ZONE', 'CS', 'DDEMP'], entites: { ECOLE: ecoles, UP: upsV, ZONE: zones, CS: [CS], DDEMP: [DDEMP] }, lieu: 'Pobè',
+      autorite: { niveau: 'CS', cle: CS.cle },
       droits: { ecrire: () => true } };
   }
 
   function charger() {
     const r = (D().reglages || []).find(x => x.id === 'uascepFonctions');
-    return Promise.resolve({ version: 1, bureaux: D().uascepBureaux || [], membres: D().uascepMembres || [], fonctions: (r && r.valeur) || [] });
+    // vie des bureaux (activités, engagements, réunions, caisse, budget, matériel, rapports) et registre des pièces signées
+    const v = ((D().reglages || []).find(x => x.id === 'uascepVie') || {}).valeur || {};
+    return Promise.resolve(Object.assign({}, v, { version: 1, bureaux: D().uascepBureaux || [], membres: D().uascepMembres || [], fonctions: (r && r.valeur) || [] }));
   }
   function enregistrer(etat) {
     // l'école d'un bureau « École » est portée sur le bureau et ses membres : sur le poste d'une école, les bureaux
@@ -59,6 +63,8 @@
     D().reglages = D().reglages || [];
     let r = D().reglages.find(x => x.id === 'uascepFonctions'); if (!r) { r = { id: 'uascepFonctions' }; D().reglages.push(r); }
     r.valeur = etat.fonctions || [];
+    let v = D().reglages.find(x => x.id === 'uascepVie'); if (!v) { v = { id: 'uascepVie' }; D().reglages.push(v); }
+    v.valeur = {}; (((global.UASCEP && global.UASCEP.COLLECTIONS) || []).concat(['documents'])).forEach(k => { if (Array.isArray(etat[k])) v.valeur[k] = etat[k]; });
     A().saveData();
     return Promise.resolve();
   }
@@ -98,7 +104,56 @@
     return etat;
   }
 
-  function imprimer(titre, corps) {
+  /* ---------- cachets, visas et code QR : les outils de l'application (Cachets et signatures, page v.html) ---------- */
+  const P = () => global.Pieces;
+  /** Cachet rond dessiné par l'application (même dessin que ses autres pièces) ; le module dessine les autres formes */
+  function cachet(o) {
+    const c = String(o.couleur || 'bleu').toUpperCase();
+    if (o.forme !== 'rond' || !P() || !P().COULEURS[c]) return null;
+    return P().cachet({ cachet_haut: o.haut, cachet_bas: o.bas, cachet_centre: o.centre, cachet_couleur: c, cachet_forme: 'ROND' }, { taille: o.taille || 104 });
+  }
+  function identite(code) { return (D().identite || []).find(x => x.code === code) || null; }
+  /** Visa : le directeur (cachet et signature de l'école), le CP de la zone, le chef de la circonscription */
+  function visa(niv, cle) {
+    if (!P()) return Promise.resolve(null);
+    if (niv === 'ECOLE') {
+      const e = D().ecoles.find(x => String(x.id) === String(cle)); if (!e) return Promise.resolve(null);
+      const p = A().porteurEcole(e);
+      return Promise.resolve({ titre: 'Le Directeur / La Directrice', nom: e.directeur || p.cachet_nom || '', signature: e.signature_image || '', cachet: P().cachet(p, { taille: 100 }) });
+    }
+    const x = niv === 'ZONE' ? identite('CP-' + String(cle).replace(/\s+/g, '')) : niv === 'CS' ? identite('CCS') : null;
+    if (!x) return Promise.resolve(null);
+    return Promise.resolve({ titre: x.libelleSignature || x.nom, nom: x.cachet_nom || x.responsable || '', signature: x.signature_image || '', cachet: P().cachet(x, { taille: 100 }) });
+  }
+  /* Code QR : il mène à la page publique v.html, qui recalcule l'empreinte du numéro et des mentions
+     (type de pièce, bureau, membre, fonction, date, signataire) : toute mention modifiée est signalée. */
+  const CODES = { COMPOSITION: 'C', PV: 'P', ATTESTATION: 'A', LISTE: 'L', RAPPORT: 'S', CR: 'R', JOURNAL: 'J', ENGAGEMENTS: 'E', FINANCES: 'F', INVENTAIRE: 'I' };
+  const octets = (t) => new TextEncoder().encode(t).length;
+  function signer(doc) {
+    const p = P(); if (!p) return Promise.resolve(null);
+    const r = doc.resume || {};
+    const numero = 'UASCEP-' + new Date().getFullYear() + '-' + p.empreinte('UASCEP|' + doc.empreinte + '|' + r.date).slice(0, 6);
+    const base = p.lienVerification('X', '').split('#')[0];
+    const net = (t) => String(t || '').replace(/[|&#]/g, ' ').replace(/\s+/g, ' ').trim();
+    const ch = { d: CODES[doc.type] || 'C', b: net(r.bureau), m: net(r.membre), f: net(r.fonction), t: net(r.date), s: net(r.signataire) };
+    const lien = () => {
+      const e = p.empreinte('CS-POBE|' + numero + '|' + [ch.d, ch.b, ch.m, ch.f, ch.t, ch.s].join('|')).slice(0, 8);
+      return { e, url: base + '#n=' + encodeURIComponent(numero) + '&e=' + e + Object.keys(ch).filter(k => ch[k]).map(k => '&' + k + '=' + encodeURIComponent(ch[k]).replace(/%20/g, '+')).join('') };
+    };
+    // le code QR de l'application va jusqu'à la version 10 : les mentions longues sont raccourcies
+    let l = lien(), garde = 0;
+    while (octets(l.url) > 255 && garde++ < 200) {
+      const k = ['b', 's', 'm', 'f'].sort((x, y) => octets(ch[y]) - octets(ch[x]))[0];
+      ch[k] = ch[k].slice(0, Math.max(8, ch[k].length - 4)).trim() + (ch[k].endsWith('…') ? '' : '…');
+      if (ch[k].length <= 9) break;
+      l = lien();
+    }
+    return Promise.resolve({ numero, code: l.e, qr: p.qr(l.url, 96, 'L'), url: l.url,
+      mention: 'Scannez le code QR : la page de vérification de la Circonscription Scolaire de Pobè contrôle le numéro et les mentions du document.' });
+  }
+
+  async function imprimer(titre, corps) {
+    if (typeof corps === 'function') corps = await corps();
     A().openModal(titre, '<div class="xbar no-print"><button class="btn btn-primary" type="button" id="uasImprimer">🖨️ Imprimer / PDF</button></div>'
       + '<div class="page-a4">' + A().enteteDocument({}) + corps + '</div>');
     document.getElementById('uasImprimer').onclick = () => { document.body.classList.add('bilan-print'); window.print(); setTimeout(() => document.body.classList.remove('bilan-print'), 1500); };
@@ -110,7 +165,7 @@
   const memo = { get: (k) => { try { return localStorage.getItem('uascep.' + k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem('uascep.' + k, v); } catch (e) { /* stockage indisponible */ } } };
 
   const adaptateur = {
-    app: ecoleMode() ? 'Mon école' : 'CS Pobè', charger, enregistrer, migrer, imprimer, toast, memo,
+    app: ecoleMode() ? 'Mon école' : 'CS Pobè', charger, enregistrer, migrer, imprimer, toast, memo, cachet, visa, signer,
     contexte: () => Promise.resolve(contexte()),
     xlsxEcrire: (feuilles) => Promise.resolve(global.XlsxEcrire.classeur(feuilles)),
     xlsxLire: (f) => global.Tableur.lireClasseur(f),

@@ -45,5 +45,5 @@
 
   /* Version de l'application (affichée dans le menu ; lue aussi pour l'APK et l'installateur Windows). */
   global.Config = { MODE, estEcole, pageVisible, PAGES_CIRCONSCRIPTION, TITRES,
-    version: '2.6.0' };
+    version: '2.7.0' };
 })(window);
