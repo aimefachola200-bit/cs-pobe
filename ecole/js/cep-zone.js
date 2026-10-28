@@ -4,11 +4,11 @@
    privé à part : effectifs par sexe et pourcentages, parité filles / garçons, taux de présence, taux de réussite par
    sexe, écart filles − garçons, moyenne et écart type des taux des écoles. À défaut de fiche, les inscrits sont tirés
    de la liste des candidats au CEP. Graphiques au choix, impression / PDF, Excel.
-   Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33 */
+   Conception : Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33 */
 (function (global) {
   'use strict';
   const App = () => global.AppBridge, esc = (v) => App().echapper(v);
-  const CREDIT = 'Conçu par Maître Aimé FACHE · Tél. 01 96 51 03 33';
+  const CREDIT = 'Conçu par Maître Aimé FACHOLA · Tél. +229 01 96 51 03 33';
   const n0 = (x) => { const n = parseInt(x, 10); return Number.isFinite(n) && n > 0 ? n : 0; };
   const estPrimaire = (e) => String(e.type || '').indexOf('EP') === 0;
   const estPriv = (e) => String(e.type || '').indexOf('PRIV') > 0;
@@ -126,7 +126,7 @@
       const t = c.tot[s]; if (!t.ecoles) continue;
       html += `<h3 class="cz-sect" style="color:${coul};border-color:${coul}">${lib} — ${t.r.insc[2]} inscrits (${t.insc[0]} G · ${t.insc[1]} F) · ${t.r.adm[2]} admis · réussite ${pc(t.reussite[2])}</h3>` + htmlSecteur(c, s);
     }
-    page.innerHTML = html + `<p class="xnote">${CREDIT}</p>`;
+    page.innerHTML = html + `<p class="xnote credit">${CREDIT}</p>`;
     page.querySelectorAll('select[data-cle]').forEach(sel => sel.addEventListener('change', () => { etat[sel.dataset.cle] = sel.value; rendu(); }));
     page.querySelectorAll('button[data-niv]').forEach(b => b.addEventListener('click', () => { etat.niveau = b.dataset.niv; rendu(); }));
     page.querySelector('[data-act="print"]').addEventListener('click', () => window.print());

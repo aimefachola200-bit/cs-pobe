@@ -1,11 +1,12 @@
 /* République du Bénin — MEMP — CS Pobè
    Tableau synoptique : écoles, classes, salles, enseignants et élèves, par secteur (public / privé) et par cycle (maternelle / primaire),
    calculé automatiquement pour l'école, l'unité pédagogique, la zone pédagogique ou la circonscription.
-   Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33 */
+   Conception : Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33 */
 (function (global) {
   'use strict';
   const App = () => global.AppBridge, esc = (v) => App().echapper(v);
-  const CREDIT = 'Conçu par Maître Aimé FACHE · Tél. 01 96 51 03 33';
+  const CREDIT = 'Conçu par Maître Aimé FACHOLA · Tél. +229 01 96 51 03 33';
+  const CREDIT_DOC = 'Conception : Maître Aimé FACHOLA';
   const n0 = (x) => { const n = parseFloat(x); return Number.isFinite(n) && n > 0 ? n : 0; };
   const clean = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\w.-]+/g, '_').slice(0, 90);
 
@@ -125,7 +126,7 @@
     let html = `<h3>RÉPUBLIQUE DU BÉNIN — MEMP — Circonscription Scolaire de POBÈ</h3><h3>Tableau synoptique — ${esc(titreNiveau())} — ${esc(etat.annee)}</h3>` + tableSynoptique(derniere);
     if (!global.Config.estEcole() && etat.niveau === 'cs') html += '<br>' + tableRepartition(derniere, 'zone_ped', 'Zone pédagogique');
     if (!global.Config.estEcole() && (etat.niveau === 'cs' || etat.niveau === 'zone')) html += '<br>' + tableRepartition(derniere, 'unite_ped', 'Unité pédagogique');
-    saveFile(window.XlsxEcrire.depuisHtmlBlob('﻿<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><style>' + css + '</style></head><body>' + html + `<p>${CREDIT}</p></body></html>`),
+    saveFile(window.XlsxEcrire.depuisHtmlBlob('﻿<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><style>' + css + '</style></head><body>' + html + `<p style="font-size:7pt;color:#9aa0aa">${CREDIT_DOC}</p></body></html>`),
       clean('Tableau_synoptique_' + titreNiveau() + '_' + etat.annee) + '.xlsx');
   }
 

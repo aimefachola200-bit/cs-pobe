@@ -1,5 +1,5 @@
 /* République du Bénin — MEMP — CS Pobè — Graphiques au choix (courbe, histogramme, barres empilées, aires, points).
-   Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33 */
+   Conception : Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33 */
 (function (global) {
   'use strict';
   /* Graphiques au choix : courbe, histogramme, barres empilées, aires, points (SVG, sans dépendance).

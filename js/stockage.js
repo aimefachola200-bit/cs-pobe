@@ -3,7 +3,7 @@
    centaines d'élèves, elle sature. Les données sont donc tenues dans IndexedDB (plusieurs centaines de Mo,
    et stockage « persistant » demandé au navigateur) ; localStorage n'en garde qu'un double tant qu'il y a la place.
    Au démarrage, la copie la plus récente des deux l'emporte : rien n'est perdu lors du passage à IndexedDB.
-   Les scripts de l'application ne sont chargés qu'une fois les données lues. Conception : Maître Aimé FACHE */
+   Les scripts de l'application ne sont chargés qu'une fois les données lues. Conception : Maître Aimé FACHOLA */
 (function (global) {
   'use strict';
   const CLE = (global.Config && global.Config.estEcole && global.Config.estEcole()) ? 'ecolePobeData' : 'csPobeData';

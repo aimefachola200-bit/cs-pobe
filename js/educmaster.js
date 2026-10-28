@@ -7,7 +7,7 @@
      (Matricule, Nom, Prénoms fusionnés sur 2 lignes ; chaque matière fusionnée sur « Note obtenue » / « Note perf. »),
      données dès la ligne 3. « Note perf. » = barème (20).
    Importation : rien n'est enregistré avant d'avoir vu le résultat ; élève retrouvé par matricule / NPI puis par nom et
-   prénoms ; les lignes non reconnues sont listées.  Conception : Maître Aimé FACHE */
+   prénoms ; les lignes non reconnues sont listées.  Conception : Maître Aimé FACHOLA */
 (function (global) {
   'use strict';
   const A = () => global.AppBridge, D = () => A().data, V = () => global.Evaluations;

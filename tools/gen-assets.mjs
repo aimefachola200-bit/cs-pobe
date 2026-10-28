@@ -1,4 +1,4 @@
-// CS Pobè — Conception : Maître Aimé FACHE (01 96 51 03 33)
+// CS Pobè — Conception : Maître Aimé FACHOLA (+229 01 96 51 03 33)
 // Génère sw-assets.json : liste des fichiers à mettre en cache pour le mode hors ligne + empreinte de version.
 import { readdirSync, statSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';

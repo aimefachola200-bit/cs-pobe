@@ -676,7 +676,7 @@ changer de machine, et tout est perdu. Exportez régulièrement depuis
 
 ## Mise à jour — bilans, documents de référence, installation
 
-**Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33.** Le bandeau du ministère
+**Conception : Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33.** Le bandeau du ministère
 figure en tête de chaque document imprimé et la mention de conception en pied de
 page.
 
@@ -724,4 +724,4 @@ https ou localhost. Après toute modification d'un fichier : `node tools/gen-ass
 - **Espaces des divisions de la CS de Pobè** : Chef de la CS, Secrétariat, C/DOSP et un espace par zone pédagogique (CP) — titulaire, documents officiels (fiches de recensement, rapports de rentrée et de fin d'année, bilan trimestriel, thèmes d'UP 2026-2027, règlement intérieur), documents propres à la division (stockés sur l'appareil), notes et accès rapides.
 - **Cachets** : forme rectangulaire à double filet avec armoiries, comme dans l'application memp-cp ; la forme ronde reste disponible (Cachets et signatures → Régler le cachet → Forme du cachet).
 
-Conçu par Maître Aimé FACHE — Tél. 01 96 51 03 33
+Conçu par Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33

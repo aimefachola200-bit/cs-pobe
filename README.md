@@ -7,4 +7,4 @@ Même code ; seul `js/config.js` change (`MODE = 'CIRCONSCRIPTION'` à la racine
 Les deux versions gardent des données séparées sur un même appareil. Mode d'emploi : `LISEZ-MOI.md` et `INSTALLATION.md`.
 Publication automatique (branche `gh-pages`) à chaque envoi sur `main`. Ancienne version : branche `sauvegarde-17-octobre`.
 
-Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33
+Conception : Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33

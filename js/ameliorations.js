@@ -6,7 +6,7 @@
       WhatsApp (téléphone).
    3. Alertes : ce qui manque ou approche (directeurs, numéros, fiches CEP et cartes incomplètes, signatures,
       départs à la retraite, sauvegarde, paquets non reçus, espace de stockage).
-   Conception : Maître Aimé FACHE */
+   Conception : Maître Aimé FACHOLA */
 (function (global) {
   'use strict';
   const App = () => global.AppBridge;

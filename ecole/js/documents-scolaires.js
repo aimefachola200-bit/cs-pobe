@@ -7,7 +7,7 @@
      recto (photo, identité, informations administratives, signature de l'élève, QR, cachet, directeur)
      et verso (école, consignes, contact d'urgence) ; planche A4 de 10 cartes recto-verso.
    Tout est dessiné en SVG : l'impression (ou « Enregistrer en PDF ») donne le même rendu sur PC,
-   tablette et téléphone, sans réseau. Conception : Maître Aimé FACHE */
+   tablette et téléphone, sans réseau. Conception : Maître Aimé FACHOLA */
 (function (global) {
   'use strict';
 
@@ -232,7 +232,7 @@
       s += texte(486, 786, 'Fiche vérifiable', { famille: HELV, taille: 5.6, gras: true, couleur: VERT_F, ancre: 'd' });
       if (d.numero) s += texte(486, 794, 'N° ' + d.numero, { famille: HELV, taille: 5.2, couleur: GRIS_T, ancre: 'd' });
     }
-    s += texte(297.6, 828, 'Conception : Maître Aimé FACHE', { famille: HELV, taille: 6, italique: true, couleur: '#8A93A6', ancre: 'c' });
+    s += texte(297.6, 828, 'Conception : Maître Aimé FACHOLA', { famille: HELV, taille: 5, italique: true, couleur: '#BFC4CC', ancre: 'c' });
 
     return '<svg class="feuille-a4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 595.28 841.89"'
       + ' role="img" aria-label="Fiche d\'inscription au CEP">' + rect(0, 0, 595.28, 841.89, { fond: '#fff' }) + s + '</svg>';
@@ -301,7 +301,7 @@
     s += image(k.sig_dir, 60, 43.9, 18, 4);
     s += ligne(59, 48, 79, 48, '#D0D5DD', 0.1);
     s += tp(69, 50.1, k.dir_nom || '', 4.3, { ancre: 'c', gras: true, couleur: '#111827', max: 24 });
-    s += tp(CW - 2.2, 52.3, 'Conception : Maître Aimé FACHE', 3, { ancre: 'd', italique: true, couleur: '#8A93A6' });
+    s += tp(CW - 2.2, 52.3, 'Conception : Maître Aimé FACHOLA', 2.6, { ancre: 'd', italique: true, couleur: '#BFC4CC' });
     return s;
   }
 

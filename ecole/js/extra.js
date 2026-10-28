@@ -1,7 +1,7 @@
 /* République du Bénin — MEMP — CS Pobè
    Modules ajoutés : bilans trimestriels / annuel (zone et CS) avec appareil photo,
    et documents de référence (fiches PDF, thèmes 2026-2027, planification CI → CM2, règlement intérieur).
-   Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33 */
+   Conception : Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33 */
 (function (global) {
   'use strict';
   /* v1.10.10 — avant / arrière : appareil choisi d'après son nom (front / back, avant / arrière…), sinon le suivant :
@@ -28,7 +28,8 @@
   }
 
   const S = global.BilanSchema, REF = global.REF || {};
-  const CREDIT = 'Conçu par Maître Aimé FACHE · Tél. 01 96 51 03 33';
+  const CREDIT = 'Conçu par Maître Aimé FACHOLA · Tél. +229 01 96 51 03 33';
+  const CREDIT_DOC = 'Conception : Maître Aimé FACHOLA';
   const App = () => global.AppBridge;
   const esc = (v) => App().echapper(v);
 
@@ -379,7 +380,7 @@
     for (const [k, l] of [['commentaires', 'Commentaires'], ['perspectives', 'Perspectives et recommandations']]) if ((b.textes[k] || '').trim()) out += '<p class="bt">' + l + '</p><p class="bp">' + esc(b.textes[k]).replace(/\n/g, '<br>') + '</p>';
     out += '<p class="bc" style="text-align:right">Fait à ' + esc(e.lieu || '……………') + ', le ' + esc(dfr(e.dateBilan)) + '</p><table class="bilan-t bsign"><tr><th>' + esc(e.titreAuteur || 'Le Conseiller Pédagogique') + '</th><th>' + (b.niveau === 'CS' ? 'Le Directeur Départemental (visa)' : 'Le Chef de la Circonscription Scolaire (visa)') + '</th></tr><tr><td><br><br><br>' + esc(e.auteur || '') + '</td><td><br><br><br></td></tr></table>';
     if (photos && photos.length) out += '<div class="bilan-annexe"><h3 class="bs">ANNEXE — PREUVES PHOTOGRAPHIQUES</h3><div class="bphotos">' + photos.map((p, i) => '<figure><img src="' + p.data + '" alt=""><figcaption>Photo ' + (i + 1) + ' · ' + esc(p.legende || '') + ' · ' + new Date(p.date).toLocaleDateString('fr-FR') + '</figcaption></figure>').join('') + '</div></div>';
-    return out + '<p class="bcred">' + esc(CREDIT) + '</p></div>';
+    return out + '<p class="bcred credit">' + esc(CREDIT_DOC) + '</p></div>';
   }
   async function preview(b) {
     const photos = await PhotoDB.all(b.id), html = await bilanHtml(b, photos);

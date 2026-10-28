@@ -6,7 +6,7 @@
    et se cale juste sous la barre du haut tant que le tableau est à l'écran — y compris pour les tableaux placés dans
    une boîte à défilement horizontal, où un simple « position: sticky » ne fonctionne pas. Un tableau dont la 1re
    ligne n'a que des cellules <th> sans <thead> en reçoit un.
-   Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33 */
+   Conception : Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33 */
 (function (global) {
   'use strict';
   const EXCLURE = '.no-sticky, .apercu-import, .cal-mois, svg';

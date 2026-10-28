@@ -7,7 +7,7 @@
    * synthèse de l'évaluation de l'école (par cours, par matière, écarts de genre, analyse).
    Chaque document porte l'en-tête officiel, la signature digitale du titulaire et du directeur, le cachet de
    l'école et un code QR de vérification (page v.html). Impression / PDF et Excel (.xlsx).
-   Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33 */
+   Conception : Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33 */
 (function (global) {
   'use strict';
   const A = () => global.AppBridge, D = () => A().data, V = () => global.Evaluations, P = () => global.Pieces;

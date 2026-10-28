@@ -1,5 +1,5 @@
 /* République du Bénin — MEMP — Moteur des bilans trimestriels / annuels (zone et CS).
-   Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33 */
+   Conception : Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33 */
 (function (global) {
 'use strict';
 const num = (v) => { const n = parseFloat(String(v ?? '').replace(',', '.')); return isFinite(n) ? n : 0; };
@@ -7,7 +7,7 @@ const hasNum = (v) => v !== '' && v !== null && v !== undefined && isFinite(pars
 const norm = (s) => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 /* République du Bénin — MEMP — Bilan trimestriel / annuel des activités pédagogiques (niveau Zone et niveau CS)
    Canevas inspiré du bilan trimestriel du CS fourni par le Ministère, enrichi : calculs automatiques, consolidation,
-   analyses pré-rédigées, annexes photographiques.   Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33 */
+   analyses pré-rédigées, annexes photographiques.   Conception : Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33 */
 
 const PERIODES = { T1: 'Trimestre 1 (Septembre-Octobre-Novembre-Décembre)', T2: 'Trimestre 2 (Janvier-Février-Mars)', T3: 'Trimestre 3 (Avril-Mai-Juin-Juillet)', ANNUEL: 'Bilan annuel' };
 const PERIODES_COURT = { T1: 'Trimestre 1', T2: 'Trimestre 2', T3: 'Trimestre 3', ANNUEL: 'Annuel' };

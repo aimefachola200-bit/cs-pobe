@@ -515,6 +515,15 @@
       + champ("Directeur", 'directeur', e.directeur)
       + champ("Contact du directeur", 'contact_directeur', e.contact_directeur)
       + '</div></div>'
+      + '<div class="form-section"><h4>Logo et devise de l’école</h4><div class="form-grid">'
+      + '<div class="form-group"><label>Devise</label><input name="devise" list="listeDevises" maxlength="70" value="' + echapper(e.devise || '') + '" placeholder="Ex. : Travail – Discipline – Réussite">'
+      + '<datalist id="listeDevises">' + ((global.LogoEcole && global.LogoEcole.DEVISES) || []).map(d => '<option value="' + echapper(d) + '">').join('') + '</datalist></div>'
+      + '<div class="form-group"><label>Logo (automatique ou importé)</label><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'
+      + '<span id="apercuLogoEcole" style="line-height:0">' + (global.LogoEcole ? global.LogoEcole.svgDe(e.nom ? e : { nom: 'École' }, 64) : '') + '</span>'
+      + '<button type="button" class="btn btn-info btn-sm" data-le="ouvrir" onclick="reglerLogoEcole(this.form)">\uE047 Créer ou modifier le logo</button></div>'
+      + '<input type="hidden" name="logo_cfg" value="' + echapper(typeof e.logo_cfg === 'string' ? e.logo_cfg : JSON.stringify(e.logo_cfg || {})) + '">'
+      + '<input type="hidden" name="logo" value="' + echapper(e.logo || '') + '"></div>'
+      + '</div></div>'
       + '<div class="form-section"><h4>5. Effectif du personnel (par statut)</h4>'
       + '<p class="petit muet" style="font-size:12px">' + echapper((e.personnel_fichier || {}).source || 'Nombre d’agents par statut') + '</p><div class="form-grid">'
       + [['fe', 'FE'], ['acdpe', 'ACDPE'], ['ame', 'AME / ACDPCTD'], ['autres', 'Autres (privé…)'], ['total', 'Total']].map(([k, l]) =>
@@ -540,6 +549,18 @@
     if (apres) apres();
   }
 
+  /** Logo et devise de l'école : fenêtre commune (js/logo-ecole.js), le résultat revient dans le formulaire */
+  function reglerLogoEcole(form) {
+    if (!global.LogoEcole || !form) return;
+    const nom = (form.elements.nom && form.elements.nom.value) || 'École';
+    global.LogoEcole.editer({ nom, valeur: form.elements.logo_cfg.value, devise: form.elements.devise.value, surEnregistrer: (v) => {
+      form.elements.logo_cfg.value = JSON.stringify(v.cfg); form.elements.logo.value = v.png || ''; form.elements.devise.value = v.devise || '';
+      const ap = document.getElementById('apercuLogoEcole');
+      if (ap) ap.innerHTML = global.LogoEcole.svgDe({ nom, devise: v.devise, logo_cfg: v.cfg }, 64);
+    } });
+  }
+  global.reglerLogoEcole = reglerLogoEcole;
+
   function saveEcole(ev, id) {
     ev.preventDefault();
     const obj = Object.fromEntries(new FormData(ev.target));
@@ -563,7 +584,7 @@
     }
     /* Le titre de l'en-tête reprend le nom de l'école en mode ÉCOLE : il doit
        suivre si ce nom vient de changer. */
-    enregistrer('ecoles', obj, id, () => { renderEcoles(); appliquerMode(); renderMaFiche(); });
+    enregistrer('ecoles', obj, id, () => { renderEcoles(); appliquerMode(); renderMaFiche(); if (global.Interface && global.Interface.majMarque) global.Interface.majMarque(); });
   }
 
   /**
@@ -1261,8 +1282,14 @@
   }
 
   function enteteDocument(options) {
+    options = Object.assign({}, options || {});
+    /* L'école du document : son logo (automatique ou importé) et sa devise accompagnent son nom */
+    if (options.etablissement && global.LogoEcole && !options.blocEcole) {
+      const e = (data.ecoles || []).find(x => x.nom === options.etablissement);
+      if (e) options.blocEcole = global.LogoEcole.entete(e, { taille: 50 });
+    }
     return global.Pieces.enteteOfficiel(Object.assign({ emblemes: emblemes() },
-      options || {}));
+      options));
   }
 
   function chargerEmbleme(input, quoi) {
@@ -7067,6 +7094,7 @@
     document.getElementById('titreApplication').textContent =
       modele.titre.replace('{ecole}', ecole ? ecole.nom : 'Mon école');
     document.getElementById('sousTitreApplication').textContent = modele.sousTitre;
+    if (global.Interface && global.Interface.majMarque) setTimeout(global.Interface.majMarque, 0);   // logo et devise de l'école du poste
 
     /* La page « Écoles » est masquée en mode ÉCOLE : ce bouton reste le seul
        moyen de corriger la fiche de l'établissement une fois configuré. */

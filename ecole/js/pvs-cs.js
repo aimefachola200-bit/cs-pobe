@@ -2,7 +2,7 @@
    Modules : sport scolaire, tableau de bord du pilotage (lot A) ; les lots suivants s'ajoutent au même catalogue.
    Données : réglage « pvs » (sauvegarde, restauration et échanges comme le reste). Entités, droits, cachets et visas :
    ceux des bureaux UASCEP (js/uascep-cs.js). Code QR : page publique v.html (numéro PVS-…).
-   Conception : Maître Aimé FACHE */
+   Conception : Maître Aimé FACHOLA */
 (function (global) {
   'use strict';
   const A = () => global.AppBridge;

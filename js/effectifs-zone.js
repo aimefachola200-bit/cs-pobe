@@ -2,7 +2,7 @@
    Effectifs par âge, par classe et par sexe, consolidés par école, zone pédagogique et circonscription.
    Le total d'une zone (ou de la CS) est la somme des écoles et des classes ; la répartition par âge est tirée
    des relevés d'effectifs déjà saisis. Courbes d'âge, impression / PDF, Excel, export-import réimportable.
-   Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33 */
+   Conception : Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33 */
 (function (global) {
   'use strict';
   const App = () => global.AppBridge, esc = (v) => App().echapper(v);
@@ -12,7 +12,8 @@
   const SX = ['G', 'F'];
   const COULEURS = { G: '#0369a1', F: '#be185d', T: '#006633' };
   const CLS_COUL = ['#0369a1', '#be185d', '#15803d', '#b45309', '#6d28d9', '#0f766e'];
-  const CREDIT = 'Conçu par Maître Aimé FACHE · Tél. 01 96 51 03 33';
+  const CREDIT = 'Conçu par Maître Aimé FACHOLA · Tél. +229 01 96 51 03 33';
+  const CREDIT_DOC = 'Conception : Maître Aimé FACHOLA';
   const norm = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
   const n0 = (x) => { const n = parseInt(x, 10); return Number.isFinite(n) && n > 0 ? n : 0; };
   const estPrimaire = (e) => e && (e.type === 'EPP' || e.type === 'EPPRIV');
@@ -312,7 +313,7 @@
       blocs.push(h('h3', { class: 'eff-h', style: { color: coul } }, `Écoles maternelles ${lib} : effectifs par section (SP, SG) — ${o.ecoles.length} école(s)`), bloc);
     }
     if (c.agg.ecarts.length) blocs.push(h('div', { class: 'xnote' }, h('b', null, '\uE041 Contrôles de cohérence : '), h('ul', null, c.agg.ecarts.slice(0, 15).map(x => h('li', null, x)))));
-    blocs.push(h('p', { class: 'xnote' }, CREDIT));
+    blocs.push(h('p', { class: 'xnote credit' }, CREDIT));
     page.replaceChildren(h('div', { class: 'page-title' }, '\uE016 Effectifs par âge, classe et sexe'), barre, actions, ...blocs);
   }
 
@@ -329,7 +330,7 @@
       + '<br><table><thead><tr><th class="eff-l">Courbe d\'âge</th>' + AGES.map(a => `<th>${esc(a)}</th>`).join('') + '</tr></thead><tbody>'
       + ['G', 'F', 'T'].map(s => `<tr><td class="eff-l">${{ G: 'Garçons', F: 'Filles', T: 'Ensemble' }[s]}</td>` + serieAge(c.agg, '')[s].map(v => `<td>${v}</td>`).join('') + '</tr>').join('') + '</tbody></table>'
       + [['pub', 'publiques'], ['prv', 'privées']].filter(([k]) => c.mats[k].ecoles.length).map(([k, l]) => `<h3>Écoles maternelles ${l} : effectifs par section (SP, SG)</h3>` + htmlMat(c.mats[k].m, c.mats[k].ecoles, etat.niveau !== 'ecole')).join('<br>')
-      + `<p>${CREDIT}</p>`;
+      + `<p style="font-size:7pt;color:#9aa0aa">${CREDIT_DOC}</p>`;
     saveFile(window.XlsxEcrire.depuisHtmlBlob('﻿<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><style>' + CSS_XLS + '</style></head><body>' + html + '</body></html>'),
       clean('Effectifs_age_classe_' + titre + '_' + etat.annee) + '.xlsx');
   }

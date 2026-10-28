@@ -3,7 +3,7 @@
    SCOLARIS dans data/pedagogie/, chargés à la demande et gardés hors ligne).
    Notes de la circonscription ou de l'école : réglage « pedagogieNotes ». Sujets de l'examen blanc : réglage
    « examenBlancSujets », rappelés en tête de la page « Examen blanc ».
-   Conception : Maître Aimé FACHE */
+   Conception : Maître Aimé FACHOLA */
 (function (global) {
   'use strict';
   const A = () => global.AppBridge;

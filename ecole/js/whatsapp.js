@@ -8,7 +8,7 @@
      l'écran « Nouveau groupe » de WhatsApp ne propose QUE ceux qui ont un compte WhatsApp, préfixés « CSP Dir » :
      il suffit de tout cocher ;
    - elle envoie le lien d'invitation du groupe à chaque directeur en un toucher (wa.me), avec suivi des envois.
-   Les numéros restent sur cet appareil. Conception : Maître Aimé FACHE */
+   Les numéros restent sur cet appareil. Conception : Maître Aimé FACHOLA */
 (function (global) {
   'use strict';
   const App = () => global.AppBridge;

@@ -3,7 +3,7 @@
    Mon école : le bureau de l'école du poste (écriture), celui de son UP et de sa zone (consultation).
    Données : collections « uascepBureaux » et « uascepMembres » (sauvegarde, restauration et import comme le reste).
    Reprise sans perte des anciens membres « UASCEP » de la gestion collégiale (école, UP, commune).
-   Conception : Maître Aimé FACHE */
+   Conception : Maître Aimé FACHOLA */
 (function (global) {
   'use strict';
   const A = () => global.AppBridge;

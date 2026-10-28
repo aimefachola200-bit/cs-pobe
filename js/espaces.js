@@ -1,11 +1,11 @@
 /* République du Bénin — MEMP — CS Pobè
    Espaces des divisions de la Circonscription Scolaire (Chef de la CS, Secrétariat, C/DOSP, CP de chaque zone) :
    titulaire, documents officiels, documents propres à la division (stockés sur l'appareil), notes et raccourcis.
-   Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33 */
+   Conception : Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33 */
 (function (global) {
   'use strict';
   const App = () => global.AppBridge, esc = (v) => App().echapper(v);
-  const CREDIT = 'Conçu par Maître Aimé FACHE · Tél. 01 96 51 03 33';
+  const CREDIT = 'Conçu par Maître Aimé FACHOLA · Tél. +229 01 96 51 03 33';
   const CLE_META = 'pobe-espaces-meta';
 
   /* Documents officiels de référence (les mêmes que dans l'application memp-cp). */
@@ -85,7 +85,7 @@
       page.replaceChildren(h('div', { class: 'page-title' }, '\uE024 Espaces des divisions de la CS de Pobè'),
         h('p', { class: 'xnote' }, estEc ? "Les divisions de la circonscription et les documents officiels qu'elles diffusent. Vous pouvez conserver ici les documents reçus de chaque division (stockés sur cet appareil)."
           : "Chaque division dispose de son espace : titulaire, documents officiels, documents propres à la division et accès rapides à ses modules. Les fichiers sont stockés sur cet appareil."),
-        h('div', { class: 'esp-grille' }, cartes), h('p', { class: 'xnote' }, CREDIT));
+        h('div', { class: 'esp-grille' }, cartes), h('p', { class: 'xnote credit' }, CREDIT));
       return;
     }
     const d = divs.find(x => x.id === vue.id) || divs[0], mm = m[d.id] || {}, mesFichiers = fichiers.filter(f => f.division === d.id).sort((a, b) => b.date.localeCompare(a.date));
@@ -126,7 +126,7 @@
       h('div', { class: 'esp-bloc' }, h('h3', null, 'Documents officiels'), h('label', { class: 'xnote' }, h('input', { type: 'checkbox', checked: vue.tous, onchange: (e) => { vue.tous = e.target.checked; rendu(); } }), ' Afficher tous les documents officiels (pas seulement ceux de cette division)'), liste),
       h('div', { class: 'esp-bloc' }, h('h3', null, 'Documents de la division'), h('div', { class: 'xbar no-print' }, 'Catégorie : ', sel, entree), mine),
       h('div', { class: 'esp-bloc' }, h('h3', null, 'Notes'), h('textarea', { rows: 4, style: { width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '6px' }, placeholder: 'Instructions, rappels, échéances…', onchange: (e) => sauver('notes', e.target.value) }, mm.notes || '')),
-      h('p', { class: 'xnote' }, CREDIT));
+      h('p', { class: 'xnote credit' }, CREDIT));
     const ta = page.querySelector('textarea'); if (ta) ta.value = mm.notes || '';
     if (d.cp && global.ZonesCP) {
       page.querySelector('#espEcolesZone').insertAdjacentHTML('beforeend', global.ZonesCP.blocEcoles(d.zone));

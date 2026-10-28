@@ -2,11 +2,12 @@
    Infrastructures et mobilier consolidés par école, zone pédagogique et circonscription, secteur public et privé à part :
    salles de classe par état, commodités (compléments des fiches), mobilier du primaire avec places assises et déficit,
    mobilier de la maternelle, manuels par élève. Courbes, impression / PDF, Excel.
-   Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33 */
+   Conception : Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33 */
 (function (global) {
   'use strict';
   const App = () => global.AppBridge, esc = (v) => App().echapper(v);
-  const CREDIT = 'Conçu par Maître Aimé FACHE · Tél. 01 96 51 03 33';
+  const CREDIT = 'Conçu par Maître Aimé FACHOLA · Tél. +229 01 96 51 03 33';
+  const CREDIT_DOC = 'Conception : Maître Aimé FACHOLA';
   const norm = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const n0 = (x) => { const n = parseInt(x, 10); return Number.isFinite(n) && n > 0 ? n : 0; };
   const estMat = (e) => String(e.type || '').indexOf('EM') === 0;
@@ -161,7 +162,7 @@
       const t = c.tot[s];
       html += `<h3 class="inf-sect" style="color:${coul};border-color:${coul}">${lib} — ${t.ecoles} école(s) · ${t.salles_tot} salle(s) · ${t.places_ep} places assises (déficit ${t.deficit_ep})</h3>` + htmlSecteur(c, s);
     }
-    html += `<p class="xnote">${CREDIT}</p>`;
+    html += `<p class="xnote credit">${CREDIT}</p>`;
     page.innerHTML = html;
     page.querySelectorAll('select[data-cle]').forEach(sel => sel.addEventListener('change', () => { etat[sel.dataset.cle] = sel.value; rendu(); }));
     page.querySelectorAll('button[data-niv]').forEach(b => b.addEventListener('click', () => { etat.niveau = b.dataset.niv; rendu(); }));
@@ -173,7 +174,7 @@
     if (!derniere) return;
     const c = derniere, css = 'table{border-collapse:collapse;font-family:Arial;font-size:10pt}td,th{border:1px solid #444;padding:3px 6px;text-align:center}th{background:#006633;color:#fff}.inf-l{text-align:left}.tot td{background:#d9eadf;font-weight:bold}';
     const corps = ['pub', 'prv'].filter(s => c.tot[s].ecoles).map(s => `<h2>${s === 'pub' ? 'Secteur public' : 'Secteur privé'}</h2>` + sansGraphiques(htmlSecteur(c, s))).join('');
-    const html = `<h3>RÉPUBLIQUE DU BÉNIN — MEMP — Circonscription Scolaire de POBÈ</h3><h3>Infrastructures et mobilier — ${esc(etat.annee)}</h3>${corps}<p>${CREDIT}</p>`;
+    const html = `<h3>RÉPUBLIQUE DU BÉNIN — MEMP — Circonscription Scolaire de POBÈ</h3><h3>Infrastructures et mobilier — ${esc(etat.annee)}</h3>${corps}<p style="font-size:7pt;color:#9aa0aa">${CREDIT_DOC}</p>`;
     const a = document.createElement('a');
     a.href = URL.createObjectURL(window.XlsxEcrire.depuisHtmlBlob('﻿<html><head><meta charset="utf-8"><style>' + css + '</style></head><body>' + html + '</body></html>'));
     a.download = 'Infrastructures_mobilier_' + etat.annee + '.xlsx'; document.body.append(a); a.click(); setTimeout(() => a.remove(), 1500);

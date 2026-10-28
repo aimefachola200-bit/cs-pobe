@@ -7,7 +7,7 @@
       défaut dans la zone saisie sur sa fiche ; sans zone, il reste dans « Personnel de la CS (zone à attribuer) »
       jusqu'à ce qu'on lui en attribue une. Rubriques : petite section, grande section (maternelle), CI → CM2, sans
       classe / autres fonctions ; H / F / T par rubrique, par zone et pour la CS ; listes nominatives ; Excel.
-   Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33 */
+   Conception : Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33 */
 (function (global) {
   'use strict';
   const A = () => global.AppBridge, esc = (v) => A().echapper(v == null ? '' : v);

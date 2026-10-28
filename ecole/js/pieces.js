@@ -200,7 +200,7 @@
       + separateur
       + '<b>' + echapper(options.circonscription || 'CIRCONSCRIPTION SCOLAIRE DE POBÈ') + '</b>'
       + (options.etablissement
-        ? separateur + '<b>' + echapper(options.etablissement) + '</b>' : '')
+        ? separateur + (options.blocEcole || ('<b>' + echapper(options.etablissement) + '</b>')) : '')
       + (options.reference
         ? '<div class="entete-reference">' + echapper(options.reference) + '</div>' : '')
       + '</div>';

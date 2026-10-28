@@ -90,4 +90,4 @@ garde `cs-pobe`.
 L'adresse https est indispensable pour la caméra du module Bilans en dehors de
 `localhost`.
 
-Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33.
+Conception : Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33.

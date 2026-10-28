@@ -217,7 +217,7 @@ tr:hover { background: #f8fafc; }
 .cadre-ddemp { border: 1px solid #64748b; padding: 10px 14px; margin-top: 18px; }
 
 /* ===== Modules ajoutés : bilans, documents de référence, appareil photo =====
-   Conception : Maître Aimé FACHE — Tél. 01 96 51 03 33 */
+   Conception : Maître Aimé FACHOLA — Tél. +229 01 96 51 03 33 */
 .credit-concepteur { margin: 18px 14px 6px; padding: 10px; border-top: 1px solid #475569; font-size: 11px; color: #94a3b8; text-align: center; line-height: 1.5; }
 .credit-concepteur b { color: #FCD116; }
 #bandeauImpression { display: none; }
@@ -298,7 +298,8 @@ table.g textarea { resize: vertical; }
 @media print {
   #bandeauImpression { display: block; margin-bottom: 6px; }
   body.bilan-print #bandeauImpression { display: none; }   /* le bilan porte déjà son bandeau */
-  body::after { content: "Conçu par Maître Aimé FACHE · Tél. 01 96 51 03 33"; display: block; text-align: center; font-size: 9px; color: #444; margin-top: 10px; }
+  body::after { content: "Conception : Maître Aimé FACHOLA"; display: block; text-align: right; font-size: 6px; color: #c4c8cf; margin-top: 6px; }
+  .credit { font-size: 6px !important; color: #c4c8cf !important; text-align: right; }
   body.bilan-print::after { display: none; }
   .xbar, .cam-overlay, .xtoast, .credit-concepteur { display: none !important; }
   body.bilan-print .modal-header { display: none; }
@@ -553,3 +554,8 @@ table.ef thead th { background-clip: padding-box; }
   table.ef thead { transform: none !important; }
   .form-section > h4 { position: static; }
 }
+.logo-g.logo-ecole { background: #fff; padding: 0; overflow: hidden; border-radius: 50%; }
+.logo-g.logo-ecole svg, .logo-g.logo-ecole img { width: 34px; height: 34px; display: block; }
+.entete-service .le-ent b { font-size: 12pt; }
+.bh-logo-ecole { display: inline-flex; vertical-align: middle; width: 26px; height: 26px; border-radius: 50%; overflow: hidden; background: #fff; margin-right: 2px; }
+.bh-logo-ecole svg, .bh-logo-ecole img { width: 26px; height: 26px; display: block; }
