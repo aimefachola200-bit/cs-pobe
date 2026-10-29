@@ -1,5 +1,5 @@
 {
- "version": "18e10c7c4b6c",
+ "version": "dcf79076fed5",
  "files": [
   "./",
   "LISEZ-MOI.pdf",
@@ -62,6 +62,7 @@
   "js/documents-scolaires.js",
   "js/donnees.js",
   "js/ecoles-zone.js",
+  "js/ed25519.js",
   "js/educmaster.js",
   "js/effectifs-zone.js",
   "js/embleme.js",
@@ -94,6 +95,9 @@
   "js/securite-cs.js",
   "js/securite.js",
   "js/stockage.js",
+  "js/sync-client.js",
+  "js/sync-commun.js",
+  "js/sync-cs.js",
   "js/synoptique.js",
   "js/tableau-bord.js",
   "js/tableur.js",
