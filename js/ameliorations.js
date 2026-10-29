@@ -49,8 +49,65 @@
       const l = (D()[c] || []).filter(x => x && typeof x === 'object' && x.ecoleId === poste.id);
       if (l.length) collections[c] = l;
     });
-    return { format: 'POBE-PAQUET-ECOLE', version: 1, cree: new Date().toISOString(), annee: App().anneeActive(),
-      ecole: Object.assign({}, poste), collections };
+    return { format: 'POBE-PAQUET-ECOLE', version: 2, cree: new Date().toISOString(), annee: App().anneeActive(),
+      ecole: Object.assign({}, poste), collections, reglages: reglagesEcole(poste) };
+  }
+  /* Données rangées dans les réglages (sans identifiant d'école) qui doivent aussi remonter à la circonscription :
+     vie des bureaux UASCEP de l'école (activités, engagements, réunions, caisse, budget, matériel, rapports, pièces signées)
+     et modules sport, pilotage, communication, santé, inspection, patrimoine, examens (lots A à C). */
+  function reglagesEcole(poste) {
+    const r = (id) => (((D().reglages || []).find(x => x.id === id) || {}).valeur) || null;
+    const out = {};
+    const vie = r('uascepVie');
+    if (vie) {
+      const bur = new Set((D().uascepBureaux || []).filter(b => String(b.ecoleId) === String(poste.id)).map(b => b.id));
+      const v = {};
+      Object.keys(vie).forEach(k => { if (Array.isArray(vie[k])) { const l = vie[k].filter(x => x && (k === 'documents' || bur.has(x.bureauId))); if (l.length) v[k] = l; } });
+      if (Object.keys(v).length) out.uascepVie = v;
+    }
+    const ped = r('pedagogieNotes');   // versions modifiées d'épreuves, de fiches, de résumés et notes du module Pédagogie
+    if (ped && Object.keys(ped).length) out.pedagogieNotes = ped;
+    const pvs = r('pvs');
+    if (pvs) {
+      const v = {};
+      Object.keys(pvs).forEach(k => { if (Array.isArray(pvs[k]) && pvs[k].length) v[k] = pvs[k]; });
+      if (Object.keys(v).length) out.pvs = v;
+    }
+    return out;
+  }
+  /** Intègre les réglages d'un paquet : chaque enregistrement est marqué de l'école d'origine ; ce que l'école a retiré
+      depuis son envoi précédent est retiré aussi. Renvoie le nombre d'enregistrements intégrés. */
+  function integrerReglages(paquet, cible, remap) {
+    const d = D(); d.reglages = d.reglages || []; let n = 0;
+    Object.keys(paquet.reglages || {}).forEach(id => {
+      if (id === 'pedagogieNotes' && global.Pedagogie && global.Pedagogie.fusionnerNotes) {
+        let reg = d.reglages.find(x => x.id === id); if (!reg) { reg = { id, valeur: {} }; d.reglages.push(reg); }
+        const avant = global.Pedagogie.inventaireNotes(reg.valeur || {}).length;
+        reg.valeur = global.Pedagogie.fusionnerNotes(reg.valeur || {}, paquet.reglages[id]);
+        n += global.Pedagogie.inventaireNotes(reg.valeur).length - avant;
+        return;
+      }
+      if (['uascepVie', 'pvs'].indexOf(id) < 0) return;
+      let reg = d.reglages.find(x => x.id === id); if (!reg) { reg = { id, valeur: {} }; d.reglages.push(reg); }
+      reg.valeur = reg.valeur || {};
+      const src = paquet.reglages[id];
+      const colls = new Set(Object.keys(src).concat(Object.keys(reg.valeur).filter(k => Array.isArray(reg.valeur[k]))));
+      colls.forEach(k => {
+        const dest = Array.isArray(reg.valeur[k]) ? reg.valeur[k] : (reg.valeur[k] = []);
+        const garder = dest.filter(x => !(x && x._ecoleSync !== undefined && String(x._ecoleSync) === String(cible.id)));
+        const venus = (src[k] || []).map(x => {
+          const y = remap(Object.assign({}, x));
+          const pris = garder.some(z => z.id === y.id);
+          if (pris && k !== 'documents') y.id = 'S-' + cible.id + '-' + y.id;
+          y._ecoleSync = cible.id; y._sync = paquet.cree; return y;
+        });
+        // pièces signées : une seule fois par numéro
+        const nums = new Set(garder.filter(x => x && x.numero).map(x => x.numero));
+        reg.valeur[k] = garder.concat(k === 'documents' ? venus.filter(x => !x.numero || !nums.has(x.numero)) : venus);
+        n += venus.length;
+      });
+    });
+    return n;
   }
   function envoyerPaquet() {
     const p = paquetEcole();
@@ -93,8 +150,11 @@
       });
     });
     /* les références internes (élève d'une note, agent d'une attribution…) suivent les identifiants */
-    const remap = v => Array.isArray(v) ? v.map(remap) : (v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, w]) => [k, remap(w)]))
-      : (typeof v === 'string' && ids[v] !== undefined ? ids[v] : v));
+    /* l'identifiant de l'école sur son poste devient celui de la circonscription (bureaux UASCEP « École », modules) */
+    const ancien = paquet.ecole && paquet.ecole.id !== undefined ? String(paquet.ecole.id) : null;
+    const CLES_ECOLE = { entite: 1, ecole: 1, ecoleId: 1, ecoleCle: 1 };
+    const remap = (v, k) => Array.isArray(v) ? v.map(w => remap(w, k)) : (v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([kk, w]) => [kk, remap(w, kk)]))
+      : (ancien !== null && CLES_ECOLE[k] && String(v) === ancien ? String(cible.id) : (typeof v === 'string' && ids[v] !== undefined ? ids[v] : v)));
     plan.forEach(({ c, src, ex, id }) => {
       const x = remap(Object.assign({}, src));
       Object.assign(x, { id, ecoleId: cible.id, _sync: paquet.cree });
@@ -109,6 +169,7 @@
       d[c] = d[c].filter(y => !(y && y.ecoleId === cible.id && y._sync && !touches.has(y.id)));
       retires += avant - d[c].length;
     });
+    n += integrerReglages(paquet, cible, remap);
     cible._derniereSync = paquet.cree;
     App().saveData();
     return { n, retires };

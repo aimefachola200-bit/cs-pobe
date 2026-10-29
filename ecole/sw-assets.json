@@ -1,5 +1,5 @@
 {
- "version": "1a235c5d4905",
+ "version": "18e10c7c4b6c",
  "files": [
   "./",
   "LISEZ-MOI.pdf",
@@ -90,6 +90,9 @@
   "js/qr.js",
   "js/rapports.js",
   "js/registres.js",
+  "js/sauvegarde-auto.js",
+  "js/securite-cs.js",
+  "js/securite.js",
   "js/stockage.js",
   "js/synoptique.js",
   "js/tableau-bord.js",
