@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<script src="js/icones.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS Pobè — Gestion des Écoles</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#006633">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mon école">
+</head>
+<body>
+
+<!-- Bandeau officiel : n'apparaît qu'à l'impression, en tête de chaque document -->
+<div id="bandeauImpression"><img alt="Ministère des Enseignements Maternel et Primaire — République du Bénin"></div>
+
+<div id="voile" class="voile" hidden></div>
+<div class="container">
+    <aside class="sidebar" id="lateral" aria-label="Menu principal">
+        <div class="marque"><span class="logo-g" aria-hidden="true"><svg class="ico ico-ecole" data-ico="ecole" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M10 21v-5h4v5"/><path d="M12 5V2h3"/><circle cx="12" cy="11" r="1.6"/></svg></span><span><span id="marqueNom">CS Pobè</span><small id="marqueSous">Circonscription scolaire</small></span></div>
+        <nav class="menu-defile">
+        <h3>Menu principal</h3>
+        <div class="menu-item active" data-page="dashboard"><span class="icon"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg></span> Tableau de bord</div>
+        <div class="menu-item" data-page="alertes"><span class="icon"><svg class="ico ico-alerte" data-ico="alerte" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3l10 18H2z"/><path d="M12 10v5"/><path d="M12 18h.01"/></svg></span> Alertes</div>
+        <div class="menu-item" data-page="echanges"><span class="icon"><svg class="ico ico-actualiser" data-ico="actualiser" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 11a8 8 0 0 0-14.6-4.5L3 9"/><path d="M3 4v5h5"/><path d="M4 13a8 8 0 0 0 14.6 4.5L21 15"/><path d="M21 20v-5h-5"/></svg></span> Échanges école <svg class="ico ico-echange" data-ico="echange" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 9h16"/><path d="M16 5l4 4-4 4"/><path d="M20 15H4"/><path d="M8 11l-4 4 4 4"/></svg> CS</div>
+        <div class="menu-item" data-page="maFiche"><span class="icon"><svg class="ico ico-personne" data-ico="personne" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M5 20c.8-4 3.7-6 7-6s6.2 2 7 6"/></svg></span> Ma fiche école</div>
+        <div class="menu-item" data-page="ecoles"><span class="icon"><svg class="ico ico-ecole" data-ico="ecole" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M10 21v-5h4v5"/><path d="M12 5V2h3"/><circle cx="12" cy="11" r="1.6"/></svg></span> Écoles</div>
+        <div class="menu-item" data-page="personnel"><span class="icon"><svg class="ico ico-groupe" data-ico="groupe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-3.4 3-5 5.5-5s4.9 1.6 5.5 5"/><circle cx="16.5" cy="9" r="2.5"/><path d="M15 14c3 0 5 1.5 5.5 4.5"/></svg></span> Personnel enseignant</div>
+        <div class="menu-item" data-page="personnelZones"><span class="icon"><svg class="ico ico-carte" data-ico="carte" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14"/><path d="M15 6v14"/></svg></span> Personnel par zone, section et cours</div>
+        <div class="menu-item" data-page="administratif"><span class="icon"><svg class="ico ico-classeur" data-ico="classeur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h18v12H3z"/><path d="M5 8V5h5l2 3"/><path d="M7 12h10"/><path d="M7 16h6"/></svg></span> Personnel administratif</div>
+        <div class="menu-item" data-page="educateur"><span class="icon"><svg class="ico ico-enseignant" data-ico="enseignant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="7" cy="8" r="2.6"/><path d="M2.8 19c.4-3 2.2-4.6 4.2-4.6S10.8 16 11.2 19"/><rect x="12" y="4" width="9" height="8" rx="0.8"/><path d="M12 16l4-4"/><path d="M14 12h7"/></svg></span> Enseignants ACDPCTD (AME)</div>
+        <div class="menu-item" data-page="soutien"><span class="icon"><svg class="ico ico-balai" data-ico="balai" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 3l-4 9"/><path d="M7 12h7l3 9H4z"/><path d="M8 16l-1 5"/><path d="M12 16v5"/></svg></span> Personnel de soutien</div>
+        <div class="menu-item" data-page="carriere"><span class="icon"><svg class="ico ico-courbe" data-ico="courbe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M4 4v16"/><path d="M6 16l4-5 3 3 6-7"/><path d="M15 7h4v4"/></svg></span> Gestion des carrières</div>
+        <div class="menu-item" data-page="visites"><span class="icon"><svg class="ico ico-rechercher" data-ico="rechercher" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></span> Visites et inspections</div>
+        <div class="menu-item" data-page="retraite"><span class="icon"><svg class="ico ico-diplome" data-ico="diplome" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/><path d="M21 9v6"/></svg></span> Retraite</div>
+        <div class="menu-item" data-page="effectifs"><span class="icon"><svg class="ico ico-diplome" data-ico="diplome" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/><path d="M21 9v6"/></svg></span> Effectifs élèves</div>
+        <div class="menu-item" data-page="infrastructures"><span class="icon"><svg class="ico ico-chantier" data-ico="chantier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 21h16"/><path d="M7 21V5"/><path d="M7 5h12"/><path d="M7 8l4-3"/><path d="M17 5v5"/><rect x="15.5" y="10" width="3" height="3" rx="0.5"/><path d="M10 21v-5h4v5"/></svg></span> Infrastructures</div>
+        <div class="menu-item" data-page="mobilier"><span class="icon"><svg class="ico ico-chaise" data-ico="chaise" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 3v9h10"/><path d="M7 12v9"/><path d="M17 12v9"/><path d="M7 16h10"/><path d="M7 3h3"/></svg></span> Mobilier &amp; matériel</div>
+        <div class="menu-item" data-page="classes"><span class="icon"><svg class="ico ico-calcul" data-ico="calcul" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="18" rx="2"/><rect x="8" y="6" width="8" height="4" rx="0.5"/><path d="M8.5 13.5h.01"/><path d="M12 13.5h.01"/><path d="M15.5 13.5h.01"/><path d="M8.5 17h.01"/><path d="M12 17h.01"/><path d="M15.5 17h.01"/></svg></span> Attribution des classes</div>
+        <div class="menu-item" data-page="collegiale"><span class="icon"><svg class="ico ico-accord" data-ico="accord" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 11l4-4 5 3 5-3 4 4"/><path d="M7 7l-4 5 6 6 2-2"/><path d="M17 7l4 5-6 6-3-3"/><path d="M10 13l2 2"/><path d="M12 11l3 3"/></svg></span> Gestion collégiale</div>
+        <div class="menu-item" data-page="uascep"><span class="icon"><svg class="ico ico-insigne" data-ico="insigne" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="9" r="6"/><circle cx="12" cy="9" r="2.5"/><path d="M8.5 14L7 22l5-2.5 5 2.5-1.5-8"/></svg></span> Bureaux UASCEP</div>
+        <div class="menu-item" data-page="repertoires"><span class="icon"><svg class="ico ico-livre" data-ico="livre" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 5h5a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H4z"/><path d="M20 5h-5a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h6z"/></svg></span> Répertoires et contacts</div>
+        <h3>Vie scolaire, sport et pilotage</h3>
+        <div class="menu-item" data-page="pvsSport"><span class="icon"><svg class="ico ico-medaille" data-ico="medaille" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 3l4 7 4-7"/><path d="M6 3h4"/><path d="M14 3h4"/><circle cx="12" cy="15" r="5"/><path d="M12 12.5l.8 1.6 1.7.2-1.2 1.2.3 1.7-1.6-.8-1.6.8.3-1.7-1.2-1.2 1.7-.2z"/></svg></span> Sport scolaire</div>
+        <div class="menu-item" data-page="pvsPilotage"><span class="icon"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg></span> Tableau de bord du pilotage</div>
+        <div class="menu-item" data-page="pvsCommunication"><span class="icon"><svg class="ico ico-annonce" data-ico="annonce" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 10v4h3l7 4V6L6 10z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 6a8 8 0 0 1 0 12"/></svg></span> Communication et alertes</div>
+        <div class="menu-item" data-page="pvsSante"><span class="icon"><svg class="ico ico-sante" data-ico="sante" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="7" width="18" height="13" rx="1.5"/><path d="M9 7V4h6v3"/><path d="M12 10.5v6"/><path d="M9 13.5h6"/></svg></span> Santé, cantine et inclusion</div>
+        <div class="menu-item" data-page="pvsInspection"><span class="icon"><svg class="ico ico-inspection" data-ico="inspection" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="3" width="12" height="17" rx="1.5"/><path d="M8 8h6"/><path d="M8 11h4"/><circle cx="16" cy="16" r="3"/><path d="M18.2 18.2L21 21"/></svg></span> Inspection et formation</div>
+        <div class="menu-item" data-page="pvsPatrimoine"><span class="icon"><svg class="ico ico-patrimoine" data-ico="patrimoine" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 21h18"/><path d="M5 21V9l7-4 7 4v12"/><path d="M9 13h6v8H9z"/><path d="M9 17h6"/></svg></span> Patrimoine et matériel</div>
+        <div class="menu-item" data-page="pvsExamens"><span class="icon"><svg class="ico ico-examen" data-ico="examen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 3h12v18H6z"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15l1.5 1.5L14 13"/></svg></span> Examens et concours</div>
+        <h3>Gestion pédagogique</h3>
+        <div class="menu-item" data-page="evaluations"><span class="icon"><svg class="ico ico-fiche" data-ico="fiche" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 3h9l3 3v15H6z"/><path d="M9 9h6"/><path d="M9 13h4"/><path d="M12.5 19l1-3 4-4 2 2-4 4z"/></svg></span> Évaluations</div>
+        <div class="menu-item" data-page="pedagogie"><span class="icon"><svg class="ico ico-livres" data-ico="livres" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="4" height="16" rx="0.8"/><rect x="8" y="4" width="4" height="16" rx="0.8"/><path d="M14 6l3.8-1 4 14.6-3.8 1z"/><path d="M3 8h4"/><path d="M8 8h4"/></svg></span> Pédagogie : fiches, résumés, épreuves</div>
+        <div class="menu-item" data-page="apprenants"><span class="icon"><svg class="ico ico-eleve" data-ico="eleve" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="7" r="3.2"/><path d="M7 21v-4c0-2.8 2.2-5 5-5s5 2.2 5 5v4"/><path d="M9 21v-3"/><path d="M15 21v-3"/></svg></span> Listes des apprenants</div>
+        <div class="menu-item" data-page="presenceApprenants"><span class="icon"><svg class="ico ico-calendrier" data-ico="calendrier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="1.5"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M7 14h2"/><path d="M11 14h2"/><path d="M15 14h2"/><path d="M7 17h2"/><path d="M11 17h2"/></svg></span> Présence des apprenants</div>
+        <div class="menu-item" data-page="presencePersonnel"><span class="icon"><svg class="ico ico-horloge" data-ico="horloge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span> Présence du personnel</div>
+        <div class="menu-item" data-page="notes"><span class="icon"><svg class="ico ico-bloc-notes" data-ico="bloc-notes" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="4" width="14" height="17" rx="1.5"/><path d="M8 2v4"/><path d="M12 2v4"/><path d="M16 2v4"/><path d="M8 11h8"/><path d="M8 15h6"/></svg></span> Notes et bulletins</div>
+        <div class="menu-item" data-page="registres"><span class="icon"><svg class="ico ico-presse-papiers" data-ico="presse-papiers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="5" width="14" height="16" rx="1.5"/><path d="M9 3h6v4H9z"/><path d="M8.5 12h7"/><path d="M8.5 16h5"/></svg></span> Registres, affichage, statistiques, synthèse</div>
+        <div class="menu-item" data-page="educmaster"><span class="icon"><svg class="ico ico-actualiser" data-ico="actualiser" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 11a8 8 0 0 0-14.6-4.5L3 9"/><path d="M3 4v5h5"/><path d="M4 13a8 8 0 0 0 14.6 4.5L21 15"/><path d="M21 20v-5h-5"/></svg></span> EducMaster : élèves et notes</div>
+        <div class="menu-item" data-page="cep"><span class="icon"><svg class="ico ico-presse-papiers" data-ico="presse-papiers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="5" width="14" height="16" rx="1.5"/><path d="M9 3h6v4H9z"/><path d="M8.5 12h7"/><path d="M8.5 16h5"/></svg></span> Inscription CEP</div>
+        <div class="menu-item" data-page="cm2"><span class="icon"><svg class="ico ico-cible" data-ico="cible" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></svg></span> Écoles à CM2 et CEP 2027</div>
+        <div class="menu-item" data-page="examen"><span class="icon"><svg class="ico ico-stade" data-ico="stade" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 12c0-4 4.5-6 10-6s10 2 10 6-4.5 6-10 6S2 16 2 12z"/><path d="M6 12c0-2 2.6-3 6-3s6 1 6 3-2.6 3-6 3-6-1-6-3z"/><path d="M12 6v3"/><path d="M12 15v3"/></svg></span> Examen blanc</div>
+        <div class="menu-item" data-page="cni"><span class="icon"><svg class="ico ico-carte-identite" data-ico="carte-identite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="1.8"/><circle cx="8.5" cy="11" r="2.2"/><path d="M5.5 16c.6-1.8 5.4-1.8 6 0"/><path d="M14 10h4"/><path d="M14 13h4"/><path d="M14 16h2"/></svg></span> Cartes d'identité</div>
+        <h3>Administration</h3>
+        <div class="menu-item" data-page="fiches"><span class="icon"><svg class="ico ico-classeur" data-ico="classeur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h18v12H3z"/><path d="M5 8V5h5l2 3"/><path d="M7 12h10"/><path d="M7 16h6"/></svg></span> Fiches officielles</div>
+        <div class="menu-item" data-page="certificats"><span class="icon"><svg class="ico ico-attestation" data-ico="attestation" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 4h11a2 2 0 0 1 2 2v12"/><path d="M6 4a2 2 0 0 0-2 2v1h3"/><path d="M7 6v12a2 2 0 0 1-2 2h11a2 2 0 0 0 2-2"/><path d="M10 9h6"/><path d="M10 12h6"/><path d="M10 15h3"/></svg></span> Certificats</div>
+        <div class="menu-item" data-page="rapports"><span class="icon"><svg class="ico ico-document" data-ico="document" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6"/><path d="M9 16h6"/></svg></span> Rapports de rentrée</div>
+        <div class="menu-item" data-page="bilans"><span class="icon"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg></span> Bilans trimestriels / annuel</div>
+        <div class="menu-item" data-page="docsref"><span class="icon"><svg class="ico ico-livres" data-ico="livres" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="4" height="16" rx="0.8"/><rect x="8" y="4" width="4" height="16" rx="0.8"/><path d="M14 6l3.8-1 4 14.6-3.8 1z"/><path d="M3 8h4"/><path d="M8 8h4"/></svg></span> Documents officiels</div>
+        <div class="menu-item" data-page="espaces"><span class="icon"><svg class="ico ico-batiment" data-ico="batiment" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2"/><path d="M13 7h2"/><path d="M9 11h2"/><path d="M13 11h2"/><path d="M9 15h2"/><path d="M13 15h2"/><path d="M11 21v-3h2v3"/></svg></span> Espaces des divisions</div>
+        <div class="menu-item" data-page="synoptique"><span class="icon"><svg class="ico ico-classeur" data-ico="classeur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h18v12H3z"/><path d="M5 8V5h5l2 3"/><path d="M7 12h10"/><path d="M7 16h6"/></svg></span> Tableau synoptique</div>
+        <div class="menu-item" data-page="whatsapp"><span class="icon"><svg class="ico ico-message" data-ico="message" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8"/><path d="M8 12h5"/></svg></span> Groupe WhatsApp des directeurs</div>
+        <div class="menu-item" data-page="effectifsZone"><span class="icon"><svg class="ico ico-courbe" data-ico="courbe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M4 4v16"/><path d="M6 16l4-5 3 3 6-7"/><path d="M15 7h4v4"/></svg></span> Effectifs par âge, zone et CS</div>
+        <div class="menu-item" data-page="cepZone"><span class="icon"><svg class="ico ico-diplome" data-ico="diplome" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/><path d="M21 9v6"/></svg></span> Candidats au CEP par sexe</div>
+        <div class="menu-item" data-page="ecolesZone"><span class="icon"><svg class="ico ico-ecole" data-ico="ecole" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M10 21v-5h4v5"/><path d="M12 5V2h3"/><circle cx="12" cy="11" r="1.6"/></svg></span> Écoles : structure et équipements</div>
+        <div class="menu-item" data-page="infraZone"><span class="icon"><svg class="ico ico-chantier" data-ico="chantier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 21h16"/><path d="M7 21V5"/><path d="M7 5h12"/><path d="M7 8l4-3"/><path d="M17 5v5"/><rect x="15.5" y="10" width="3" height="3" rx="0.5"/><path d="M10 21v-5h4v5"/></svg></span> Infrastructures et mobilier (consolidé)</div>
+        <div class="menu-item" data-page="courriers"><span class="icon"><svg class="ico ico-courrier" data-ico="courrier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg></span> Archive courriers</div>
+        <div class="menu-item" data-page="analyses"><span class="icon"><svg class="ico ico-courbe" data-ico="courbe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M4 4v16"/><path d="M6 16l4-5 3 3 6-7"/><path d="M15 7h4v4"/></svg></span> Analyses et écarts</div>
+        <div class="menu-item" data-page="identite"><span class="icon"><svg class="ico ico-cadenas" data-ico="cadenas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="10" width="14" height="11" rx="1.8"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v3"/></svg></span> Cachets et signatures</div>
+        <div class="menu-item" data-page="annees"><span class="icon"><svg class="ico ico-calendrier" data-ico="calendrier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="1.5"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M7 14h2"/><path d="M11 14h2"/><path d="M15 14h2"/><path d="M7 17h2"/><path d="M11 17h2"/></svg></span> Années scolaires</div>
+        <div class="menu-item" data-page="joursFeries"><span class="icon"><svg class="ico ico-calendrier" data-ico="calendrier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="1.5"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M7 14h2"/><path d="M11 14h2"/><path d="M15 14h2"/><path d="M7 17h2"/><path d="M11 17h2"/></svg></span> Jours fériés</div>
+        <div class="menu-item" data-page="importation"><span class="icon"><svg class="ico ico-importer" data-ico="importer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/></svg></span> Import Excel</div>
+        <div class="menu-item" data-page="backup"><span class="icon"><svg class="ico ico-enregistrer" data-ico="enregistrer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4"/><rect x="8" y="13" width="8" height="7" rx="0.5"/></svg></span> Sauvegarde</div>
+        <div class="menu-item" id="menuGuide" data-guide="menu" role="button" tabindex="0" onclick="window.Guide && window.Guide.ouvrir()" onkeydown="if(event.key==='Enter')this.click()"><span class="icon"><svg class="ico ico-info" data-ico="info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7.5h.01"/></svg></span> Guide d’utilisation</div>
+        </nav>
+        <div class="lateral-pied">Version <b class="version-app">—</b><br>Conception : Maître Aimé FACHOLA · +229 01 96 51 03 33</div>
+    </aside>
+
+    <div class="zone">
+    <header class="header barre-haut">
+        <button id="btnMenu" class="btn-menu" type="button" aria-expanded="false" aria-controls="lateral" aria-label="Ouvrir le menu"><svg class="ico ico-menu" data-ico="menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></button>
+        <div class="bh-titre">
+            <strong id="titreApplication"><svg class="ico ico-ecole" data-ico="ecole" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M10 21v-5h4v5"/><path d="M12 5V2h3"/><circle cx="12" cy="11" r="1.6"/></svg> Circonscription Scolaire de POBÈ</strong>
+            <span class="subtitle" id="sousTitreApplication">Département du Plateau — République du Bénin</span>
+        </div>
+        <div class="bh-droite">
+            <button id="btnEcolePoste" class="btn btn-warning btn-sm hidden" onclick="editerEcoleDuPoste()"><svg class="ico ico-modifier" data-ico="modifier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20l1-4L16 5l3 3L8 19z"/><path d="M14 7l3 3"/></svg> Ma fiche école</button>
+            <button id="btnChangerEcole" class="btn btn-info btn-sm hidden" onclick="changerNomEcoleDuPoste()"><svg class="ico ico-actualiser" data-ico="actualiser" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 11a8 8 0 0 0-14.6-4.5L3 9"/><path d="M3 4v5h5"/><path d="M4 13a8 8 0 0 0 14.6 4.5L21 15"/><path d="M21 20v-5h-5"/></svg> Ce n'est pas mon école ?</button>
+            <label class="bh-annee">Année <select id="anneeActive" aria-label="Année scolaire"></select></label>
+            <span id="currentDate" class="bh-date"></span>
+        </div>
+    </header>
+    <div class="main">
+        <!-- TABLEAU DE BORD -->
+        <div id="dashboard" class="page">
+            <div class="page-title"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Tableau de bord</div>
+            <div class="stats-grid" id="statsGrid"></div>
+            <div class="table-container mt-15">
+                <div style="padding:15px;background:#006633;color:white;"><b><svg class="ico ico-groupe" data-ico="groupe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-3.4 3-5 5.5-5s4.9 1.6 5.5 5"/><circle cx="16.5" cy="9" r="2.5"/><path d="M15 14c3 0 5 1.5 5.5 4.5"/></svg> Personnel par statut et par sexe</b></div>
+                <div id="ventilationDashboard" style="padding:15px;overflow-x:auto;"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;margin-top:20px;">
+                <div class="table-container">
+                    <div style="padding:15px;background:#006633;color:white;"><b><svg class="ico ico-epingle" data-ico="epingle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h6"/><path d="M10 3v6l-3 4h10l-3-4V3"/><path d="M12 13v8"/></svg> Alertes retraite (12 prochains mois)</b></div>
+                    <div id="alerteRetraite" style="padding:15px;max-height:300px;overflow-y:auto;"></div>
+                </div>
+                <div class="table-container">
+                    <div style="padding:15px;background:#E8112D;color:white;"><b><svg class="ico ico-courrier" data-ico="courrier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg> Derniers courriers</b></div>
+                    <div id="derniersCourriers" style="padding:15px;max-height:300px;overflow-y:auto;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MA FICHE ÉCOLE -->
+        <div id="maFiche" class="page hidden">
+            <div class="page-title"><svg class="ico ico-personne" data-ico="personne" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M5 20c.8-4 3.7-6 7-6s6.2 2 7 6"/></svg> Ma fiche école</div>
+            <div class="alert alert-info">
+                Chaque directeur retrouve ici sa propre école pour vérifier et compléter les
+                renseignements déjà enregistrés (directeur, zone et unité pédagogiques,
+                contacts…) : ce sont ces renseignements qui remplissent automatiquement les
+                fiches officielles.
+            </div>
+            <div class="search-bar">
+                <select id="maFicheEcole" onchange="renderMaFiche()">
+                    <option value="">— Choisir mon école —</option>
+                </select>
+            </div>
+            <div id="maFicheResultat"></div>
+        </div>
+
+        <!-- ÉCOLES -->
+        <div id="ecoles" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-ecole" data-ico="ecole" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M10 21v-5h4v5"/><path d="M12 5V2h3"/><circle cx="12" cy="11" r="1.6"/></svg> Gestion des écoles
+                <span>
+                    <button class="btn btn-info" data-import="ecoles"><svg class="ico ico-importer" data-ico="importer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/></svg> Importer</button>
+                    <button class="btn btn-warning" data-export="ecoles"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-primary" onclick="openEcoleModal()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Ajouter une école</button>
+                </span>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchEcole" placeholder=" Rechercher...">
+                <select id="filterType">
+                    <option value="">Tous types</option>
+                    <option value="EPP">Primaire publique</option>
+                    <option value="EPPRIV">Primaire privée</option>
+                    <option value="EM">Maternelle publique</option>
+                    <option value="EMPRIV">Maternelle privée</option>
+                </select>
+                <select id="filterArrond">
+                    <option value="">Tous arrondissements</option>
+                    <option value="POBE">POBÈ</option>
+                    <option value="AHOYEYE">AHOYEYE</option>
+                    <option value="IGANNA">IGANNA</option>
+                    <option value="ISSABA">ISSABA</option>
+                    <option value="TOWE">TOWE</option>
+                </select>
+                <select id="filterZone"><option value="">Toutes zones pédagogiques</option></select>
+                <select id="filterUP"><option value="">Toutes unités pédagogiques</option></select>
+            </div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>Code</th><th>Nom</th><th>Type</th><th>Statut</th>
+                    <th>Arrondissement</th><th>Zone</th><th>Unité pédagogique</th>
+                    <th>Année</th><th>Classes</th><th>Actions</th></tr></thead>
+                <tbody id="ecolesTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- PERSONNEL -->
+        <div id="personnel" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-groupe" data-ico="groupe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-3.4 3-5 5.5-5s4.9 1.6 5.5 5"/><circle cx="16.5" cy="9" r="2.5"/><path d="M15 14c3 0 5 1.5 5.5 4.5"/></svg> Personnel enseignant et de soutien
+                <span>
+                    <button class="btn btn-info" data-import="personnel"><svg class="ico ico-importer" data-ico="importer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/></svg> Importer</button>
+                    <button class="btn btn-warning" data-export="personnel"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-primary" onclick="openPersonnelModal()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Ajouter</button>
+                </span>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchPersonnel" placeholder=" Nom ou matricule...">
+                <select id="filterEcolePers"><option value="">Toutes écoles</option></select>
+                <select id="filterSituation">
+                    <option value="ACTIFS">En poste et affectés</option>
+                    <option value="">Toutes situations</option>
+                    <option value="EN_POSTE">En poste</option>
+                    <option value="AFFECTE">Affectés</option>
+                    <option value="MUTE">Mutés hors circonscription</option>
+                    <option value="DETACHE">Détachés</option>
+                    <option value="RETRAITE">Retraités</option>
+                    <option value="DECEDE">Décédés</option>
+                </select>
+                <select id="filterGrade">
+                    <option value="">Tous grades</option>
+                    <option value="A">Catégorie A</option>
+                    <option value="B">Catégorie B</option>
+                    <option value="C">Catégorie C</option>
+                    <option value="D">Catégorie D</option>
+                    <option value="E">Catégorie E</option>
+                </select>
+            </div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>Situation</th><th>Matricule</th><th>Nom et prénoms</th><th>Sexe</th>
+                    <th>Naissance</th><th>Grade</th><th>Fonction</th><th>École</th>
+                    <th>Retraite prévue</th><th>Actions</th></tr></thead>
+                <tbody id="personnelTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- VISITES ET INSPECTIONS -->
+        <div id="visites" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-rechercher" data-ico="rechercher" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg> Visites de classe et inspections
+                <span>
+                    <button class="btn btn-warning" data-export="visites"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-primary" onclick="openVisiteModal()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Enregistrer une visite</button>
+                </span>
+            </div>
+            <div class="search-bar">
+                <select id="filterZoneVisite"><option value="">Toutes zones</option></select>
+                <select id="filterTypeVisite">
+                    <option value="">Tous les types</option>
+                    <option value="VISITE_CLASSE">Visite de classe (CP)</option>
+                    <option value="INSPECTION_ECOLE">Inspection d'école (CCS)</option>
+                </select>
+                <input type="text" id="searchVisite" placeholder=" École ou enseignant...">
+            </div>
+            <div id="resumeVisites" class="stats-grid"></div>
+            <div class="table-container mb-15"><div class="table-scroll"><table>
+                <thead><tr><th>Date</th><th>Type</th><th>Zone</th><th>École</th>
+                    <th>Enseignant</th><th>Cours</th><th>Matière</th><th>Note</th>
+                    <th>Actions</th></tr></thead>
+                <tbody id="visitesTable"></tbody>
+            </table></div></div>
+            <h3 style="margin:20px 0 10px;color:#006633;">Couverture par zone pédagogique</h3>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>Zone</th><th>Écoles</th><th>Enseignants</th><th>Visites</th>
+                    <th>Inspections</th><th>Enseignants visités</th><th>Couverture</th>
+                    <th>Note moyenne</th></tr></thead>
+                <tbody id="zonesTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- CARRIÈRES -->
+        <div id="carriere" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-courbe" data-ico="courbe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M4 4v16"/><path d="M6 16l4-5 3 3 6-7"/><path d="M15 7h4v4"/></svg> Gestion des carrières
+                <button class="btn btn-warning" data-export="carriere"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchCarriere" placeholder=" Nom ou matricule de l'agent...">
+                <select id="filterEcoleCarriere"><option value="">Toutes écoles</option></select>
+            </div>
+            <div class="grille-carriere" style="display:grid;grid-template-columns:minmax(280px,360px) 1fr;gap:20px;">
+                <div class="table-container" style="max-height:70vh;overflow:auto;">
+                    <div style="padding:12px;background:#006633;color:white;"><b>Agents</b></div>
+                    <table><tbody id="listeCarriere"></tbody></table>
+                </div>
+                <div id="ficheCarriere"></div>
+            </div>
+        </div>
+
+        <!-- RETRAITE -->
+        <div id="retraite" class="page hidden">
+            <div class="page-title"><svg class="ico ico-diplome" data-ico="diplome" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/><path d="M21 9v6"/></svg> Module retraite</div>
+            <div class="alert alert-info">
+                <b>Règles de calcul de l'âge de retraite :</b><br>
+                • Catégorie A (A1, A2, A3-1 à 15) : <b>60 ans</b><br>
+                • Catégorie B (B1-1 à 15) : <b>58 ans</b><br>
+                • Catégories C, D, E : <b>55 ans</b><br>
+                • Date effective : <b>1<sup>er</sup> jour du trimestre qui suit l'anniversaire</b> —
+                né de janvier à mars : 1<sup>er</sup> avril ; d'avril à juin : 1<sup>er</sup> juillet ;
+                de juillet à septembre : 1<sup>er</sup> octobre ; d'octobre à décembre :
+                1<sup>er</sup> janvier suivant<br>
+                • Un agent <b>sans grade</b> n'a pas encore de date de départ
+            </div>
+            <div class="tabs">
+                <div class="tab active" data-tab="retr-prev">Prévisions</div>
+                <div class="tab" data-tab="retr-actu">Année en cours</div>
+                <div class="tab" data-tab="retr-partis">Déjà partis</div>
+            </div>
+            <div id="retr-prev" class="tab-content active">
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>Matricule</th><th>Nom</th><th>Naissance</th><th>Grade</th>
+                        <th>Âge retraite</th><th>Date effective</th><th>Reste</th><th>Actions</th></tr></thead>
+                    <tbody id="retraitePrevTable"></tbody>
+                </table></div></div>
+            </div>
+            <div id="retr-actu" class="tab-content">
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>Matricule</th><th>Nom</th><th>Grade</th><th>Date retraite</th>
+                        <th>École</th><th>Actions</th></tr></thead>
+                    <tbody id="retraiteActuTable"></tbody>
+                </table></div></div>
+            </div>
+            <div id="retr-partis" class="tab-content">
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>Matricule</th><th>Nom</th><th>Grade</th><th>Date départ</th><th>Actions</th></tr></thead>
+                    <tbody id="retraitePartisTable"></tbody>
+                </table></div></div>
+            </div>
+        </div>
+
+        <!-- EFFECTIFS -->
+        <div id="effectifs" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-diplome" data-ico="diplome" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/><path d="M21 9v6"/></svg> Effectifs des apprenants
+                <span>
+                    <button class="btn btn-info" data-import="effectifs"><svg class="ico ico-importer" data-ico="importer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/></svg> Importer</button>
+                    <button class="btn btn-warning" data-export="effectifs"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-info" onclick="reinitialiserTousEffectifs()" title="Effectifs du fichier de la CS"><svg class="ico ico-actualiser" data-ico="actualiser" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 11a8 8 0 0 0-14.6-4.5L3 9"/><path d="M3 4v5h5"/><path d="M4 13a8 8 0 0 0 14.6 4.5L21 15"/><path d="M21 20v-5h-5"/></svg> Réinitialiser</button>
+                    <button class="btn btn-primary" onclick="openEffectifModal()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Nouveau relevé</button>
+                </span>
+            </div>
+            <div class="search-bar">
+                <select id="filterEcoleEff"><option value="">Toutes écoles</option></select>
+            </div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>École</th><th>Année</th><th>Total G</th><th>Total F</th>
+                    <th>Total</th><th>Handicapés</th><th>Actions</th></tr></thead>
+                <tbody id="effectifsTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- INFRASTRUCTURES -->
+        <div id="infrastructures" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-chantier" data-ico="chantier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 21h16"/><path d="M7 21V5"/><path d="M7 5h12"/><path d="M7 8l4-3"/><path d="M17 5v5"/><rect x="15.5" y="10" width="3" height="3" rx="0.5"/><path d="M10 21v-5h4v5"/></svg> Infrastructures
+                <span>
+                    <button class="btn btn-info" data-import="infrastructures"><svg class="ico ico-importer" data-ico="importer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/></svg> Importer</button>
+                    <button class="btn btn-warning" data-export="infrastructures"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-primary" onclick="openInfraModal()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Ajouter</button>
+                </span>
+            </div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>École</th><th>Type local</th><th>Nature murs</th><th>État</th>
+                    <th>Année</th><th>Actions</th></tr></thead>
+                <tbody id="infraTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- MOBILIER -->
+        <div id="mobilier" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-chaise" data-ico="chaise" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 3v9h10"/><path d="M7 12v9"/><path d="M17 12v9"/><path d="M7 16h10"/><path d="M7 3h3"/></svg> Mobilier et matériel didactique
+                <span>
+                    <button class="btn btn-info" data-import="mobilier"><svg class="ico ico-importer" data-ico="importer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/></svg> Importer</button>
+                    <button class="btn btn-warning" data-export="mobilier"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-primary" onclick="openMobilierModal()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Ajouter</button>
+                </span>
+            </div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>École</th><th>Catégorie</th><th>Désignation</th><th>Quantité</th>
+                    <th>État</th><th>Actions</th></tr></thead>
+                <tbody id="mobilierTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- ATTRIBUTION DES CLASSES -->
+        <div id="classes" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-calcul" data-ico="calcul" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="18" rx="2"/><rect x="8" y="6" width="8" height="4" rx="0.5"/><path d="M8.5 13.5h.01"/><path d="M12 13.5h.01"/><path d="M15.5 13.5h.01"/><path d="M8.5 17h.01"/><path d="M12 17h.01"/><path d="M15.5 17h.01"/></svg> Attribution des classes
+                <button class="btn btn-info" onclick="reporterAttributionsAnneePrecedente()"><svg class="ico ico-presse-papiers" data-ico="presse-papiers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="5" width="14" height="16" rx="1.5"/><path d="M9 3h6v4H9z"/><path d="M8.5 12h7"/><path d="M8.5 16h5"/></svg> Reporter les titulaires de l'année précédente</button>
+                <button class="btn btn-warning" data-export="classes"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+            </div>
+            <div class="alert alert-info">
+                Chaque cours reçoit son titulaire. Un enseignant déjà attribué ailleurs dans
+                la même école est signalé : l'application n'empêche pas la double attribution,
+                fréquente en classe jumelée, mais elle la rend visible. Le bouton « Reporter les
+                titulaires » copie, pour chaque cours qui n'en a pas encore pour l'année active,
+                le titulaire et la salle de l'année précédente — un point de départ à corriger
+                selon les mouvements de personnel, pas une affectation définitive.
+            </div>
+            <div class="search-bar">
+                <select id="classesEcole"><option value="">— École —</option></select>
+            </div>
+            <div id="resumeClassesAttrib" class="stats-grid"></div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>Cours</th><th>Titulaire</th><th>Effectif</th>
+                    <th>Salle</th><th>Observation</th></tr></thead>
+                <tbody id="classesTableAttrib"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- GESTION COLLÉGIALE -->
+        <div id="collegiale" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-accord" data-ico="accord" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 11l4-4 5 3 5-3 4 4"/><path d="M7 7l-4 5 6 6 2-2"/><path d="M17 7l4 5-6 6-3-3"/><path d="M10 13l2 2"/><path d="M12 11l3 3"/></svg> Gestion collégiale
+                <span>
+                    <button class="btn btn-warning" data-export="collegiale"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-primary" onclick="openMembreModal()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Membre</button>
+                </span>
+            </div>
+            <div class="search-bar">
+                <select id="collegialeEcole"><option value="">— École —</option></select>
+                <select id="collegialeInstance"><option value="">Toutes les instances</option></select>
+            </div>
+            <div id="resumeCollegiale" class="stats-grid"></div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>Instance</th><th>Fonction</th><th>Nom et prénoms</th>
+                    <th>Sexe</th><th>Contact</th><th>Depuis</th><th>Actions</th></tr></thead>
+                <tbody id="collegialeTable"></tbody>
+            </table></div></div>
+
+            <div class="table-container mt-15" style="padding:14px 15px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                <span><b><svg class="ico ico-insigne" data-ico="insigne" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="9" r="6"/><circle cx="12" cy="9" r="2.5"/><path d="M8.5 14L7 22l5-2.5 5 2.5-1.5-8"/></svg> Bureaux UASCEP</b> — école, unité pédagogique, zone pédagogique, circonscription et DDEMP : membres, mandats, renouvellement, impression et Excel.</span>
+                <button class="btn btn-primary btn-sm" onclick="showPage('uascep')">Ouvrir le module « Bureaux UASCEP »</button>
+            </div>
+        </div>
+
+        <!-- RÉPERTOIRES -->
+        <div id="repertoires" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-livre" data-ico="livre" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 5h5a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H4z"/><path d="M20 5h-5a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h6z"/></svg> Répertoires et contacts
+                <span>
+                    <button class="btn btn-warning" data-export="repertoires"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-primary" onclick="ajouterAuRepertoire()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Ajouter</button>
+                </span>
+            </div>
+            <div class="tabs">
+                <div class="tab active" data-tab="rep-directeurs">Directeurs par secteur</div>
+                <div class="tab" data-tab="rep-cp">Conseillers pédagogiques</div>
+                <div class="tab" data-tab="rep-up">Unités pédagogiques</div>
+                <div class="tab" data-tab="rep-attente">Écoles en attente d’UP</div>
+                <div class="tab" data-tab="rep-inactives">Écoles ne fonctionnant plus</div>
+                <div class="tab" data-tab="rep-comite">Comité d'évaluation</div>
+            </div>
+
+            <div id="rep-directeurs" class="tab-content active">
+                <div class="search-bar">
+                    <select id="filterSecteurRep">
+                        <option value="">Tous les secteurs</option>
+                        <option value="EPP">EP publiques</option>
+                        <option value="EPPRIV">EP privées</option>
+                        <option value="EM">EM publiques</option>
+                        <option value="EMPRIV">EM privées</option>
+                    </select>
+                    <input type="text" id="searchDirecteur" placeholder=" École ou directeur...">
+                </div>
+                <div id="resumeDirecteurs" class="stats-grid"></div>
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>Secteur</th><th>École</th><th>Arrondissement</th>
+                        <th>Zone</th><th>Unité pédagogique</th><th>Directeur</th>
+                        <th>Contact</th><th>Actions</th></tr></thead>
+                    <tbody id="directeursTable"></tbody>
+                </table></div></div>
+            </div>
+
+            <div id="rep-cp" class="tab-content">
+                <div class="alert alert-info">
+                    Un conseiller pédagogique par zone. Son nom et son contact figurent sur
+                    les rapports de visite qu'il signe.
+                </div>
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>Zone</th><th>Conseiller pédagogique</th><th>Contact</th>
+                        <th>Écoles</th><th>Actions</th></tr></thead>
+                    <tbody id="cpTable"></tbody>
+                </table></div></div>
+            </div>
+
+            <div id="rep-up" class="tab-content">
+                <div class="alert alert-info">
+                    Unités pédagogiques de la circonscription par zone (document de la CS du 1er décembre 2023) : chaque unité a
+                    son responsable (RUP) et son co-responsable (co-RUP). Une école d’une autre zone qui suit les activités d’une UP porte
+                    la marque de sa zone d’appartenance. <svg class="ico ico-modifier" data-ico="modifier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20l1-4L16 5l3 3L8 19z"/><path d="M14 7l3 3"/></svg> modifier, <svg class="ico ico-actualiser" data-ico="actualiser" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 11a8 8 0 0 0-14.6-4.5L3 9"/><path d="M3 4v5h5"/><path d="M4 13a8 8 0 0 0 14.6 4.5L21 15"/><path d="M21 20v-5h-5"/></svg> revenir aux valeurs du document, <svg class="ico ico-supprimer" data-ico="supprimer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6"/><path d="M14 11v6"/></svg> supprimer (ses écoles passent
+                    « en attente d’UP »), <svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Ajouter en haut de la page.
+                </div>
+                <div class="toolbar" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+                    <select id="filterZoneUP" onchange="renderUP()" aria-label="Zone pédagogique"><option value="">Toutes les zones</option><option>Zone 1</option><option>Zone 2</option><option>Zone 3</option></select>
+                    <select id="filterCycleUP" onchange="renderUP()" aria-label="Cycle"><option value="">Maternelle et primaire</option><option>Maternelle</option><option>Primaire</option></select>
+                    <button class="btn btn-info" onclick="reinitialiserToutesUP()"><svg class="ico ico-actualiser" data-ico="actualiser" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 11a8 8 0 0 0-14.6-4.5L3 9"/><path d="M3 4v5h5"/><path d="M4 13a8 8 0 0 0 14.6 4.5L21 15"/><path d="M21 20v-5h-5"/></svg> Réinitialiser toutes les UP</button>
+                    <button class="btn btn-secondary" onclick="window.print()"><svg class="ico ico-imprimer" data-ico="imprimer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 9V4h10v5"/><rect x="4" y="9" width="16" height="7" rx="1.5"/><path d="M7 14h10v6H7z"/><path d="M17 12h.01"/></svg> Imprimer</button>
+                </div>
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>Zone</th><th>Cycle</th><th>Unité pédagogique</th><th>Arrondissement</th><th>Écoles</th>
+                        <th>RUP</th><th>Contact</th><th>Co-RUP</th><th>Contact</th>
+                        <th>Actions</th></tr></thead>
+                    <tbody id="upTable"></tbody>
+                </table></div></div>
+            </div>
+
+            <div id="rep-attente" class="tab-content">
+                <h3 id="attenteTitre" style="margin:0 0 6px">Écoles en attente d’UP</h3>
+                <div class="alert alert-info">Écoles sans unité pédagogique, en attendant de leur en trouver une : « <svg class="ico ico-lien" data-ico="lien" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg> Donner une UP » les rattache
+                    (elles quittent alors cette rubrique). Une école qui ne fonctionne plus peut être rangée dans la rubrique suivante.</div>
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>École</th><th>Type</th><th>Statut</th><th>Arrondissement</th><th>Zone (appartenance)</th><th>Actions</th></tr></thead>
+                    <tbody id="attenteTable"></tbody>
+                </table></div></div>
+            </div>
+
+            <div id="rep-inactives" class="tab-content">
+                <h3 id="inactivesTitre" style="margin:0 0 6px">Écoles ne fonctionnant plus</h3>
+                <div class="alert alert-info">Écoles qui existent mais ne fonctionnent plus : elles sont hors des listes, des effectifs, des totaux,
+                    des synoptiques, des statistiques et des fiches. Leurs données sont conservées ; « <svg class="ico ico-actualiser" data-ico="actualiser" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 11a8 8 0 0 0-14.6-4.5L3 9"/><path d="M3 4v5h5"/><path d="M4 13a8 8 0 0 0 14.6 4.5L21 15"/><path d="M21 20v-5h-5"/></svg> Remettre en activité » les replace.
+                    Pour y ranger une école : bouton <svg class="ico ico-interdit" data-ico="interdit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg> de la liste des écoles ou de la rubrique précédente.</div>
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>École</th><th>Type</th><th>Arrondissement</th><th>Zone</th><th>Depuis</th><th>Données</th><th>Actions</th></tr></thead>
+                    <tbody id="inactivesTable"></tbody>
+                </table></div></div>
+            </div>
+
+            <div id="rep-comite" class="tab-content">
+                <div class="alert alert-info">
+                    Le comité d'évaluation de la circonscription : ses membres, leur qualité
+                    et leur contact.
+                </div>
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>Qualité</th><th>Nom et prénoms</th><th>Fonction</th>
+                        <th>Contact</th><th>Actions</th></tr></thead>
+                    <tbody id="comiteTable"></tbody>
+                </table></div></div>
+            </div>
+        </div>
+
+        <!-- ÉVALUATIONS -->
+        <div id="pedagogie" class="page hidden">
+            <div class="page-title"><svg class="ico ico-livres" data-ico="livres" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="4" height="16" rx="0.8"/><rect x="8" y="4" width="4" height="16" rx="0.8"/><path d="M14 6l3.8-1 4 14.6-3.8 1z"/><path d="M3 8h4"/><path d="M8 8h4"/></svg> Pédagogie — programmes, guides, fiches, résumés, épreuves, planification</div>
+            <div id="pedagogieModule"></div>
+        </div>
+        <div id="evaluations" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-fiche" data-ico="fiche" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 3h9l3 3v15H6z"/><path d="M9 9h6"/><path d="M9 13h4"/><path d="M12.5 19l1-3 4-4 2 2-4 4z"/></svg> Évaluations
+                <span>
+                    <button class="btn btn-info" data-import="evaluations"><svg class="ico ico-importer" data-ico="importer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/></svg> Importer</button>
+                    <button class="btn btn-warning" data-export="evaluations"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-primary" onclick="openEvalModal()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Relevé d'évaluation</button>
+                </span>
+            </div>
+            <div class="alert alert-info">
+                Une épreuve est maîtrisée à partir de 10 sur 20. Le seuil demande six maîtrises
+                sur neuf matières composées, et les deux tiers lorsque les onze sont composées.
+                Le CI ne compose pas la première évaluation sommative.
+            </div>
+            <div class="search-bar">
+                <select id="filterPeriode"></select>
+                <select id="filterCoursEval">
+                    <option value="">Tous les cours</option>
+                </select>
+                <input type="text" id="searchEval" placeholder=" École...">
+                <button class="btn btn-primary" onclick="editerPVEvaluation()"><svg class="ico ico-document" data-ico="document" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6"/><path d="M9 16h6"/></svg> PV d'évaluation</button>
+            </div>
+            <div id="resumeEval" class="stats-grid"></div>
+            <div class="table-container mb-15"><div class="table-scroll"><table>
+                <thead><tr><th>École</th><th>Cours</th><th>Période</th>
+                    <th>Inscrits G</th><th>Inscrits F</th><th>Inscrits</th>
+                    <th>Ont composé</th><th>Ont atteint le seuil</th>
+                    <th>Taux G</th><th>Taux F</th><th>Taux</th>
+                    <th>Appréciation</th><th>Actions</th></tr></thead>
+                <tbody id="evalTable"></tbody>
+            </table></div></div>
+            <h3 style="margin:20px 0 10px;color:#006633;">Synthèse par niveau</h3>
+            <div class="tabs">
+                <div class="tab active" data-tab="ev-cours">Par cours</div>
+                <div class="tab" data-tab="ev-ecole">Par école</div>
+                <div class="tab" data-tab="ev-up">Par unité pédagogique</div>
+            </div>
+            <div id="ev-cours" class="tab-content active">
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>Cours</th><th>Relevés</th><th>Inscrits</th><th>Ont composé</th>
+                        <th>Ont atteint le seuil</th><th>Taux G</th><th>Taux F</th>
+                        <th>Taux</th><th>Appréciation</th></tr></thead>
+                    <tbody id="evalCoursTable"></tbody>
+                </table></div></div>
+            </div>
+            <div id="ev-ecole" class="tab-content">
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>École</th><th>Relevés</th><th>Inscrits</th><th>Ont composé</th>
+                        <th>Ont atteint le seuil</th><th>Taux</th><th>Appréciation</th></tr></thead>
+                    <tbody id="evalEcoleTable"></tbody>
+                </table></div></div>
+            </div>
+            <div id="ev-up" class="tab-content">
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>Unité pédagogique</th><th>Écoles</th><th>Inscrits</th>
+                        <th>Ont composé</th><th>Ont atteint le seuil</th><th>Taux</th>
+                        <th>Appréciation</th></tr></thead>
+                    <tbody id="evalUPTable"></tbody>
+                </table></div></div>
+            </div>
+        </div>
+
+        <!-- APPRENANTS -->
+        <div id="apprenants" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-eleve" data-ico="eleve" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="7" r="3.2"/><path d="M7 21v-4c0-2.8 2.2-5 5-5s5 2.2 5 5v4"/><path d="M9 21v-3"/><path d="M15 21v-3"/></svg> Listes des apprenants
+                <span>
+                    <button class="btn btn-info" data-import="apprenants"><svg class="ico ico-importer" data-ico="importer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/></svg> Importer</button>
+                    <button class="btn btn-warning" data-export="apprenants"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-info" onclick="exporterEducmaster()"><svg class="ico ico-exporter" data-ico="exporter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 14V4"/><path d="M8 8l4-4 4 4"/></svg> Liste apprenants + enseignants</button>
+                    <button class="btn btn-primary" onclick="openApprenantModal()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Apprenant</button>
+                </span>
+            </div>
+            <div class="xbar no-print" style="margin:6px 0 10px"><button class="btn btn-info btn-sm" type="button" onclick="showPage('registres')"><svg class="ico ico-presse-papiers" data-ico="presse-papiers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="5" width="14" height="16" rx="1.5"/><path d="M9 3h6v4H9z"/><path d="M8.5 12h7"/><path d="M8.5 16h5"/></svg> Registre d’appel, affichage, statistiques, synthèse</button> <button class="btn btn-warning btn-sm" type="button" onclick="showPage('educmaster')"><svg class="ico ico-actualiser" data-ico="actualiser" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 11a8 8 0 0 0-14.6-4.5L3 9"/><path d="M3 4v5h5"/><path d="M4 13a8 8 0 0 0 14.6 4.5L21 15"/><path d="M21 20v-5h-5"/></svg> EducMaster : élèves et notes</button></div>
+            <div class="search-bar">
+                <select id="filterEcoleApp"><option value="">Toutes écoles</option></select>
+                <select id="filterCoursApp"><option value="">Tous les cours</option></select>
+                <input type="text" id="searchApprenant" placeholder=" Nom, NPI ou matricule...">
+                <button class="btn btn-primary" onclick="editerListeClasse()"><svg class="ico ico-document" data-ico="document" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6"/><path d="M9 16h6"/></svg> Liste de classe</button>
+            </div>
+            <div id="resumeApprenants" class="stats-grid"></div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>Photo</th><th>Nom et prénoms</th><th>Sexe</th><th>Né(e) le</th>
+                    <th>Lieu</th><th>NPI</th><th>Matricule</th><th>École</th><th>Cours</th>
+                    <th>Redoublant</th><th>Actions</th></tr></thead>
+                <tbody id="apprenantsTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- PRÉSENCE DES APPRENANTS -->
+        <div id="presenceApprenants" class="page hidden">
+            <div class="page-title"><svg class="ico ico-calendrier" data-ico="calendrier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="1.5"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M7 14h2"/><path d="M11 14h2"/><path d="M15 14h2"/><path d="M7 17h2"/><path d="M11 17h2"/></svg> Présence des apprenants</div>
+            <div class="xbar no-print" style="margin:6px 0 10px"><button class="btn btn-info btn-sm" type="button" onclick="showPage('registres')"><svg class="ico ico-presse-papiers" data-ico="presse-papiers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="5" width="14" height="16" rx="1.5"/><path d="M9 3h6v4H9z"/><path d="M8.5 12h7"/><path d="M8.5 16h5"/></svg> Registre d’appel, affichage, statistiques, synthèse</button> <button class="btn btn-warning btn-sm" type="button" onclick="showPage('educmaster')"><svg class="ico ico-actualiser" data-ico="actualiser" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 11a8 8 0 0 0-14.6-4.5L3 9"/><path d="M3 4v5h5"/><path d="M4 13a8 8 0 0 0 14.6 4.5L21 15"/><path d="M21 20v-5h-5"/></svg> EducMaster : élèves et notes</button></div>
+            <div class="alert alert-info">
+                Le calendrier scolaire (rubrique « Jours fériés ») exclut automatiquement les
+                week-ends et les jours fériés : seuls les jours de classe réellement saisis
+                comptent dans les bilans. Une journée compte deux demi-journées (matin et
+                après-midi) : cocher une seule case compte pour une demi-absence.
+            </div>
+
+            <div class="form-section">
+                <h4>Saisie du jour</h4>
+                <div class="search-bar">
+                    <select id="presAppEcole" onchange="renderPresenceApprenantsJour()">
+                        <option value="">— École —</option></select>
+                    <select id="presAppCours" onchange="renderPresenceApprenantsJour()">
+                        <option value="">— Cours —</option></select>
+                    <input type="date" id="presAppDate" onchange="renderPresenceApprenantsJour()">
+                </div>
+                <div id="presAppJourInfo"></div>
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>Nom et prénoms</th><th>Sexe</th><th>Absent(e) matin</th><th>Absent(e) après-midi</th></tr></thead>
+                    <tbody id="presAppJourTable"></tbody>
+                </table></div></div>
+                <div id="presAppJourActions" class="text-center mt-15"></div>
+            </div>
+
+            <div class="form-section mt-15">
+                <h4>Bilan mensuel</h4>
+                <div class="search-bar">
+                    <input type="month" id="presAppMois" onchange="renderBilanPresenceApprenants()">
+                </div>
+                <div id="presAppBilanMois"></div>
+            </div>
+
+            <div class="form-section mt-15">
+                <h4>Bilan annuel — <span id="presAppAnneeLabel"></span></h4>
+                <div id="presAppBilanAnnee"></div>
+            </div>
+        </div>
+
+        <!-- PRÉSENCE DU PERSONNEL -->
+        <div id="presencePersonnel" class="page hidden">
+            <div class="page-title"><svg class="ico ico-horloge" data-ico="horloge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Présence du personnel</div>
+            <div class="alert alert-info">
+                L'heure d'arrivée sert de preuve : un agent arrivé après 07:30 est signalé en
+                retard, avec le nombre de minutes. Le registre du jour peut être imprimé et
+                signé comme pièce justificative.
+            </div>
+
+            <div class="form-section">
+                <h4>Saisie du jour</h4>
+                <div class="search-bar">
+                    <select id="presPersEcole" onchange="renderPresencePersonnelJour()">
+                        <option value="">— École —</option></select>
+                    <input type="date" id="presPersDate" onchange="renderPresencePersonnelJour()">
+                </div>
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>Nom et prénoms</th><th>Fonction</th><th>Absent</th>
+                        <th>Heure d'arrivée</th><th>Retard</th><th>Motif (si absent)</th></tr></thead>
+                    <tbody id="presPersJourTable"></tbody>
+                </table></div></div>
+                <div id="presPersJourActions" class="text-center mt-15"></div>
+            </div>
+
+            <div class="form-section mt-15">
+                <h4>Bilan mensuel</h4>
+                <div class="search-bar">
+                    <input type="month" id="presPersMois" onchange="renderBilanPresencePersonnel()">
+                </div>
+                <div id="presPersBilanMois"></div>
+            </div>
+        </div>
+
+        <!-- NOTES ET BULLETINS -->
+        <div id="notes" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-bloc-notes" data-ico="bloc-notes" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="4" width="14" height="17" rx="1.5"/><path d="M8 2v4"/><path d="M12 2v4"/><path d="M16 2v4"/><path d="M8 11h8"/><path d="M8 15h6"/></svg> Notes et bulletins
+                <span>
+                    <button class="btn btn-warning" data-export="notes"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-primary" onclick="editerReleveClasse()"><svg class="ico ico-document" data-ico="document" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6"/><path d="M9 16h6"/></svg> Relevé de la classe</button>
+                </span>
+            </div>
+            <div class="xbar no-print" style="margin:6px 0 10px"><button class="btn btn-info btn-sm" type="button" onclick="showPage('registres')"><svg class="ico ico-presse-papiers" data-ico="presse-papiers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="5" width="14" height="16" rx="1.5"/><path d="M9 3h6v4H9z"/><path d="M8.5 12h7"/><path d="M8.5 16h5"/></svg> Registre d’appel, affichage, statistiques, synthèse</button> <button class="btn btn-warning btn-sm" type="button" onclick="showPage('educmaster')"><svg class="ico ico-actualiser" data-ico="actualiser" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 11a8 8 0 0 0-14.6-4.5L3 9"/><path d="M3 4v5h5"/><path d="M4 13a8 8 0 0 0 14.6 4.5L21 15"/><path d="M21 20v-5h-5"/></svg> EducMaster : élèves et notes</button></div>
+            <div class="alert alert-info">
+                Choisissez une école, un cours et une période, puis saisissez les notes
+                directement dans le tableau. Le total, la moyenne, le nombre de maîtrises,
+                le seuil et le rang se calculent à la frappe. Une case laissée vide n'est pas
+                comptée zéro : la matière sort du calcul.
+            </div>
+            <div class="search-bar">
+                <select id="notesEcole"><option value="">— École —</option></select>
+                <select id="notesCours"><option value="">— Cours —</option></select>
+                <select id="notesPeriode"></select>
+            </div>
+            <div id="resumeNotes" class="stats-grid"></div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr id="enteteNotes"></tr></thead>
+                <tbody id="notesTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- CEP -->
+        <div id="cep" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-presse-papiers" data-ico="presse-papiers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="5" width="14" height="16" rx="1.5"/><path d="M9 3h6v4H9z"/><path d="M8.5 12h7"/><path d="M8.5 16h5"/></svg> Inscription au CEP
+                <span>
+                    <button class="btn btn-info" data-import="cep"><svg class="ico ico-importer" data-ico="importer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/></svg> Liste EDUCMaster / Excel</button>
+                    <button class="btn btn-warning" data-export="cep"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-success" onclick="plancheCartes('cep')"><svg class="ico ico-carte-identite" data-ico="carte-identite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="1.8"/><circle cx="8.5" cy="11" r="2.2"/><path d="M5.5 16c.6-1.8 5.4-1.8 6 0"/><path d="M14 10h4"/><path d="M14 13h4"/><path d="M14 16h2"/></svg> Cartes des candidats</button>
+                    <button class="btn btn-primary" onclick="openCepModal()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Inscrire un candidat</button>
+                </span>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchCep" placeholder=" Nom du candidat...">
+            </div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>N°</th><th>Nom et prénoms</th><th>Sexe</th><th>Date naiss.</th>
+                    <th>Lieu</th><th>École</th><th>Session</th><th>Actions</th></tr></thead>
+                <tbody id="cepTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- ÉCOLES À CM2 ET CANDIDATS AU CEP -->
+        <div id="cm2" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-cible" data-ico="cible" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></svg> Écoles à CM2 — candidats au CEP, session de juin 2027
+                <button class="btn btn-warning" data-export="cm2"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+            </div>
+            <div class="alert alert-info">
+                Les écoles listées sont celles dont le CM2 compte au moins un élève au relevé
+                d'effectifs de l'année active. Le nombre de candidats se saisit directement dans
+                le tableau ; le taux de présentation et le décrochage se calculent seuls.
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchCm2" placeholder=" École...">
+                <select id="filterSecteurCm2">
+                    <option value="">Public et privé</option>
+                    <option value="EPP">Primaire public</option>
+                    <option value="EPPRIV">Primaire privé</option>
+                </select>
+            </div>
+            <div id="resumeCm2" class="stats-grid"></div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>École</th><th>Secteur</th><th>Arrondissement</th>
+                    <th>CM2 G</th><th>CM2 F</th><th>CM2 total</th>
+                    <th>Candidats G</th><th>Candidats F</th><th>Candidats total</th>
+                    <th>Taux de présentation</th><th>Décrochage</th></tr></thead>
+                <tbody id="cm2Table"></tbody>
+            </table></div></div>
+            <h3 style="margin:20px 0 10px;color:#006633;">Synthèse de la circonscription</h3>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>Ensemble</th><th>Écoles à CM2</th><th>CM2 G</th><th>CM2 F</th>
+                    <th>CM2 total</th><th>Candidats G</th><th>Candidats F</th>
+                    <th>Candidats total</th><th>Taux</th><th>Décrochage</th></tr></thead>
+                <tbody id="cm2SyntheseTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- EXAMEN BLANC -->
+        <div id="examen" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-stade" data-ico="stade" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 12c0-4 4.5-6 10-6s10 2 10 6-4.5 6-10 6S2 16 2 12z"/><path d="M6 12c0-2 2.6-3 6-3s6 1 6 3-2.6 3-6 3-6-1-6-3z"/><path d="M12 6v3"/><path d="M12 15v3"/></svg> Examen blanc — niveau circonscription
+                <span>
+                    <button class="btn btn-info" data-import="examen"><svg class="ico ico-importer" data-ico="importer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/></svg> Importer des candidats</button>
+                    <button class="btn btn-warning" data-export="examen"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-primary" onclick="openCandidatModal()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Candidat</button>
+                </span>
+            </div>
+            <div class="search-bar">
+                <select id="filterCentre"></select>
+                <input type="text" id="searchCandidat" placeholder=" Nom du candidat...">
+                <button class="btn btn-info" onclick="openCentreModal()"><svg class="ico ico-reglages" data-ico="reglages" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3"/><path d="M12 2v3"/><path d="M12 19v3"/><path d="M2 12h3"/><path d="M19 12h3"/><path d="M4.9 4.9L7 7"/><path d="M17 17l2.1 2.1"/><path d="M4.9 19.1L7 17"/><path d="M17 7l2.1-2.1"/></svg> Régler le centre</button>
+                <button class="btn btn-primary" onclick="editerPV()"><svg class="ico ico-document" data-ico="document" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6"/><path d="M9 16h6"/></svg> PV du centre</button>
+            </div>
+            <div id="resumeExamen" class="stats-grid"></div>
+            <div class="table-container mb-15"><div class="table-scroll"><table>
+                <thead><tr id="enteteExamen"></tr></thead>
+                <tbody id="examenTable"></tbody>
+            </table></div></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px;">
+                <div class="table-container">
+                    <div style="padding:12px;background:#006633;color:white;"><b>Résultats par épreuve</b></div>
+                    <div class="table-scroll"><table>
+                        <thead><tr><th>Épreuve</th><th>Composé</th><th>Moyenne</th>
+                            <th>Maîtrises</th><th>Taux</th><th>Écart type</th></tr></thead>
+                        <tbody id="matieresTable"></tbody>
+                    </table></div>
+                </div>
+                <div class="table-container">
+                    <div style="padding:12px;background:#E8112D;color:white;"><b>Recommandations</b></div>
+                    <div id="recommandations" style="padding:15px;"></div>
+                </div>
+            </div>
+            <h3 style="margin:20px 0 10px;color:#006633;">Synthèse de la circonscription</h3>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>Centre</th><th>Écoles</th><th>Inscrits G</th><th>Inscrits F</th>
+                    <th>Inscrits</th><th>Ont composé</th><th>Ont atteint le seuil</th>
+                    <th>Taux G</th><th>Taux F</th><th>Taux</th><th>Moyenne</th>
+                    <th>Écart type</th></tr></thead>
+                <tbody id="centresTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- CNI -->
+        <div id="cni" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-carte-identite" data-ico="carte-identite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="1.8"/><circle cx="8.5" cy="11" r="2.2"/><path d="M5.5 16c.6-1.8 5.4-1.8 6 0"/><path d="M14 10h4"/><path d="M14 13h4"/><path d="M14 16h2"/></svg> Fiches de carte d'identité
+                <span>
+                    <button class="btn btn-info" data-import="cni"><svg class="ico ico-importer" data-ico="importer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/></svg> Liste EDUCMaster</button>
+                    <button class="btn btn-success" onclick="plancheCartes('cni')"><svg class="ico ico-carte-identite" data-ico="carte-identite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="1.8"/><circle cx="8.5" cy="11" r="2.2"/><path d="M5.5 16c.6-1.8 5.4-1.8 6 0"/><path d="M14 10h4"/><path d="M14 13h4"/><path d="M14 16h2"/></svg> Planche des cartes</button>
+                    <button class="btn btn-primary" onclick="openCniModal()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Nouvelle fiche</button>
+                </span>
+            </div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>Nom et prénoms</th><th>Sexe</th><th>Naissance</th><th>Lieu</th>
+                    <th>Père</th><th>Mère</th><th>École</th><th>Actions</th></tr></thead>
+                <tbody id="cniTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- FICHES OFFICIELLES -->
+        <div id="fiches" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-classeur" data-ico="classeur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h18v12H3z"/><path d="M5 8V5h5l2 3"/><path d="M7 12h10"/><path d="M7 16h6"/></svg> Fiches officielles
+                <span>
+                    <button class="btn btn-warning" data-export="fiches"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-primary" onclick="editerFiche()"><svg class="ico ico-document" data-ico="document" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6"/><path d="M9 16h6"/></svg> Éditer la fiche</button>
+                </span>
+            </div>
+            <div class="alert alert-info">
+                La fiche se remplit toute seule à partir de ce que l'application sait déjà de
+                l'école : identification, classes, effectifs, personnel, locaux et mobilier.
+                Les rubriques qu'elle ne peut pas déduire sont à compléter ci-dessous ; elles
+                sont conservées et reprises d'une fiche à l'autre.
+            </div>
+            <div class="search-bar">
+                <select id="ficheEcole"><option value="">— École —</option></select>
+                <select id="ficheType">
+                    <option value="RECENSEMENT">Recensement annuel</option>
+                    <option value="RENTREE">Rapport de rentrée</option>
+                    <option value="FIN_ANNEE">Rapport de fin d'année</option>
+                </select>
+            </div>
+            <div id="etatFiche"></div>
+            <div id="formulaireFiche"></div>
+        </div>
+
+        <!-- CERTIFICATS -->
+        <div id="certificats" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-attestation" data-ico="attestation" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 4h11a2 2 0 0 1 2 2v12"/><path d="M6 4a2 2 0 0 0-2 2v1h3"/><path d="M7 6v12a2 2 0 0 1-2 2h11a2 2 0 0 0 2-2"/><path d="M10 9h6"/><path d="M10 12h6"/><path d="M10 15h3"/></svg> Certificats administratifs
+                <button class="btn btn-primary" onclick="editerCertificat()"><svg class="ico ico-document" data-ico="document" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6"/><path d="M9 16h6"/></svg> Éditer le certificat</button>
+            </div>
+            <div class="alert alert-info">
+                Le certificat reprend l'état civil, le grade, le matricule, l'affectation et
+                les dates de prise de service de l'agent. Seules les références de l'acte et
+                les mentions propres au certificat restent à saisir.
+            </div>
+            <div class="search-bar">
+                <select id="certModele"></select>
+                <select id="certAgent"><option value="">— Agent —</option></select>
+                <input type="text" id="certNumero" placeholder="N° d'ordre (SO n°)">
+            </div>
+            <div id="formulaireCertificat"></div>
+        </div>
+
+        <!-- RAPPORTS -->
+        <div id="rapports" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-document" data-ico="document" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6"/><path d="M9 16h6"/></svg> Rapports de rentrée
+                <button class="btn btn-primary" onclick="openRapportModal()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Nouveau rapport</button>
+            </div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>École</th><th>Année scolaire</th><th>Date</th><th>Auteur</th><th>Actions</th></tr></thead>
+                <tbody id="rapportsTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- BILANS ET DOCUMENTS DE RÉFÉRENCE (modules ajoutés) -->
+        <div id="bilans" class="page hidden"></div>
+        <div id="docsref" class="page hidden"></div>
+        <div id="espaces" class="page hidden"></div>
+        <div id="personnelZones" class="page hidden"></div>
+        <div id="uascep" class="page hidden"></div>
+        <div id="pvsSport" class="page hidden"></div>
+        <div id="pvsPilotage" class="page hidden"></div>
+        <div id="pvsCommunication" class="page hidden"></div>
+        <div id="pvsSante" class="page hidden"></div>
+        <div id="pvsInspection" class="page hidden"></div>
+        <div id="pvsPatrimoine" class="page hidden"></div>
+        <div id="pvsExamens" class="page hidden"></div>
+        <div id="synoptique" class="page hidden"></div>
+        <div id="whatsapp" class="page hidden"></div>
+        <div id="alertes" class="page hidden"></div>
+        <div id="echanges" class="page hidden"></div>
+        <div id="effectifsZone" class="page hidden"></div>
+        <div id="infraZone" class="page hidden"></div>
+        <div id="ecolesZone" class="page hidden"></div>
+        <div id="cepZone" class="page hidden"></div>
+        <div id="registres" class="page hidden"></div>
+        <div id="educmaster" class="page hidden"></div>
+
+        <!-- COURRIERS -->
+        <div id="courriers" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-courrier" data-ico="courrier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 7l9 6 9-6"/></svg> Archive des courriers
+                <button class="btn btn-primary" onclick="openCourrierModal()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Enregistrer</button>
+            </div>
+            <div class="tabs">
+                <div class="tab active" data-tab="courr-arr"><svg class="ico ico-importer" data-ico="importer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/></svg> Arrivés</div>
+                <div class="tab" data-tab="courr-dep"><svg class="ico ico-exporter" data-ico="exporter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 14V4"/><path d="M8 8l4-4 4 4"/></svg> Départs</div>
+            </div>
+            <div id="courr-arr" class="tab-content active">
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>N°</th><th>Date</th><th>Expéditeur</th><th>Objet</th>
+                        <th>Référence</th><th>Actions</th></tr></thead>
+                    <tbody id="courriersArrTable"></tbody>
+                </table></div></div>
+            </div>
+            <div id="courr-dep" class="tab-content">
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>N°</th><th>Date</th><th>Destinataire</th><th>Objet</th>
+                        <th>Référence</th><th>Actions</th></tr></thead>
+                    <tbody id="courriersDepTable"></tbody>
+                </table></div></div>
+            </div>
+        </div>
+
+        <!-- PERSONNEL ADMINISTRATIF -->
+        <div id="administratif" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-classeur" data-ico="classeur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h18v12H3z"/><path d="M5 8V5h5l2 3"/><path d="M7 12h10"/><path d="M7 16h6"/></svg> Personnel administratif
+                <span>
+                    <button class="btn btn-info" data-import="personnel"><svg class="ico ico-importer" data-ico="importer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/></svg> Importer</button>
+                    <button class="btn btn-warning" data-export="administratif"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-info" onclick="verifierCategoriesAdministratif()"><svg class="ico ico-rechercher" data-ico="rechercher" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg> Vérifier les catégories</button>
+                    <button class="btn btn-primary" onclick="openPersonnelModal(null,'Administratif')"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Ajouter</button>
+                </span>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchAdmin" placeholder=" Nom ou matricule...">
+            </div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>Situation</th><th>Matricule</th><th>Nom et prénoms</th>
+                    <th>Sexe</th><th>Fonction</th><th>Grade</th><th>École ou service</th>
+                    <th>Anc. FP</th><th>Retraite</th><th>Actions</th></tr></thead>
+                <tbody id="administratifTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- ENSEIGNANTS ACDPCTD (AME) -->
+        <div id="educateur" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-enseignant" data-ico="enseignant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="7" cy="8" r="2.6"/><path d="M2.8 19c.4-3 2.2-4.6 4.2-4.6S10.8 16 11.2 19"/><rect x="12" y="4" width="9" height="8" rx="0.8"/><path d="M12 16l4-4"/><path d="M14 12h7"/></svg> Enseignants ACDPCTD (AME)
+                <span>
+                    <button class="btn btn-info" data-import="personnel"><svg class="ico ico-importer" data-ico="importer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/></svg> Importer</button>
+                    <button class="btn btn-warning" data-export="educateur"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-primary" onclick="openPersonnelModal(null,'Éducateur')"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Ajouter</button>
+                </span>
+            </div>
+            <div class="alert alert-info">
+                Cette rubrique regroupe les agents ACDPCTD — dont les AME, l'ancienne appellation
+                du même statut — et les Éducateurs à statut propre. La colonne « Titre » indique
+                pour chaque agent lequel des deux s'applique.
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchEducateur" placeholder=" Nom ou matricule...">
+            </div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>Situation</th><th>Matricule</th><th>Nom et prénoms</th>
+                    <th>Sexe</th><th>Titre</th><th>Fonction</th><th>Grade</th><th>École ou service</th>
+                    <th>Anc. FP</th><th>Retraite</th><th>Actions</th></tr></thead>
+                <tbody id="educateurTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- PERSONNEL DE SOUTIEN -->
+        <div id="soutien" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-balai" data-ico="balai" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 3l-4 9"/><path d="M7 12h7l3 9H4z"/><path d="M8 16l-1 5"/><path d="M12 16v5"/></svg> Personnel de soutien
+                <span>
+                    <button class="btn btn-warning" data-export="soutien"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+                    <button class="btn btn-primary" onclick="openPersonnelModal(null,'Soutien')"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Ajouter</button>
+                </span>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchSoutien" placeholder=" Nom ou fonction...">
+            </div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>Situation</th><th>Matricule</th><th>Nom et prénoms</th>
+                    <th>Sexe</th><th>Qualité</th><th>Statut</th><th>École</th><th>Âge</th>
+                    <th>Actions</th></tr></thead>
+                <tbody id="soutienTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- ANALYSES -->
+        <div id="analyses" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-courbe" data-ico="courbe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M4 4v16"/><path d="M6 16l4-5 3 3 6-7"/><path d="M15 7h4v4"/></svg> Analyses et écarts
+                <button class="btn btn-warning" data-export="analyses"><svg class="ico ico-graphique" data-ico="graphique" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M10 20V8"/><path d="M14 20v-9"/><path d="M18 20V5"/></svg> Excel</button>
+            </div>
+            <div class="tabs">
+                <div class="tab active" data-tab="an-genre">Écarts filles / garçons</div>
+                <div class="tab" data-tab="an-classes">Classes autorisées et ouvertes</div>
+                <div class="tab" data-tab="an-enseignants">Besoins en enseignants</div>
+                <div class="tab" data-tab="an-synthese">Synthèse de la circonscription</div>
+                <div class="tab" data-tab="an-ages">Répartition par âge</div>
+                <div class="tab" data-tab="an-personnel">Personnel par statut</div>
+            </div>
+            <div id="an-genre" class="tab-content active">
+                <div id="resumeGenre" class="stats-grid"></div>
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>École</th><th>Garçons</th><th>Filles</th><th>Total</th>
+                        <th>Écart F − G</th><th>Part des filles</th><th>Écart au point d'équilibre</th></tr></thead>
+                    <tbody id="genreTable"></tbody>
+                </table></div></div>
+            </div>
+            <div id="an-classes" class="tab-content">
+                <div id="resumeClasses" class="stats-grid"></div>
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>École</th><th>Arrondissement</th><th>Autorisées</th>
+                        <th>Ouvertes</th><th>Écart</th><th>Situation</th></tr></thead>
+                    <tbody id="classesTable"></tbody>
+                </table></div></div>
+            </div>
+            <div id="an-personnel" class="tab-content">
+                <div class="alert alert-info">
+                    Le personnel en poste, ventilé par statut et par rôle, avec les hommes,
+                    les femmes, la part de femmes et l'écart type du nombre d'agents par école.
+                    Un écart type élevé signale un groupe concentré sur quelques écoles.
+                    Les agents mutés, décédés ou retraités n'y figurent pas.
+                </div>
+                <div class="search-bar">
+                    <select id="filterCyclePersonnel">
+                        <option value="">Toute la circonscription</option>
+                        <option value="EP">Écoles primaires</option>
+                        <option value="EM">Écoles maternelles</option>
+                        <option value="EPP">Primaire public</option>
+                        <option value="EPPRIV">Primaire privé</option>
+                        <option value="EM_PUB">Maternelle publique</option>
+                        <option value="EMPRIV">Maternelle privée</option>
+                    </select>
+                    <select id="filterCategoriePersonnel">
+                        <option value="">Toutes catégories</option>
+                        <option value="Enseignant">Enseignants</option>
+                        <option value="Administratif">Administratifs</option>
+                        <option value="Soutien">Personnel de soutien</option>
+                    </select>
+                </div>
+                <div id="resumePersonnel" class="stats-grid"></div>
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>Statut et rôle</th><th>Hommes</th><th>Femmes</th>
+                        <th>Total</th><th>Part de femmes</th><th>Écoles concernées</th>
+                        <th>Écart type par école</th></tr></thead>
+                    <tbody id="personnelStatutTable"></tbody>
+                </table></div></div>
+            </div>
+            <div id="an-ages" class="tab-content">
+                <div class="alert alert-info">
+                    Répartition des apprenants par tranche d'âge, de moins de 5 ans à 16 ans et
+                    plus, par cours et par sexe. Elle vient des relevés d'effectifs de l'année
+                    active. Les tranches vides ne sont pas affichées.
+                </div>
+                <div class="search-bar">
+                    <select id="filterSecteurAge">
+                        <option value="">Public et privé</option>
+                        <option value="EPP">Primaire public</option>
+                        <option value="EPPRIV">Primaire privé</option>
+                    </select>
+                </div>
+                <div id="resumeAges" class="stats-grid"></div>
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr id="enteteAges"></tr></thead>
+                    <tbody id="agesTable"></tbody>
+                </table></div></div>
+            </div>
+            <div id="an-synthese" class="tab-content">
+                <div class="alert alert-info">
+                    Les classes autorisées et ouvertes sont comptées séparément pour le primaire
+                    et la maternelle, puis pour le public et le privé. Les lignes en gras
+                    réunissent chaque cycle, la dernière l'ensemble de la circonscription.
+                </div>
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>Ensemble</th><th>Écoles</th><th>Classes autorisées</th>
+                        <th>Classes ouvertes</th><th>Écart</th><th>Salles utilisées</th>
+                        <th>Garçons</th><th>Filles</th><th>Total élèves</th>
+                        <th>Enseignants</th><th>Requis</th><th>Écart</th></tr></thead>
+                    <tbody id="syntheseTable"></tbody>
+                </table></div></div>
+            </div>
+            <div id="an-enseignants" class="tab-content">
+                <div id="resumeEnseignants" class="stats-grid"></div>
+                <div class="table-container"><div class="table-scroll"><table>
+                    <thead><tr><th>École</th><th>Classes ouvertes</th><th>Enseignants</th>
+                        <th>Requis</th><th>Écart</th><th>Situation</th></tr></thead>
+                    <tbody id="enseignantsTable"></tbody>
+                </table></div></div>
+            </div>
+        </div>
+
+        <!-- CACHETS ET SIGNATURES -->
+        <div id="identite" class="page hidden">
+            <div class="page-title"><svg class="ico ico-cadenas" data-ico="cadenas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="10" width="14" height="11" rx="1.8"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v3"/></svg> Cachets et signatures</div>
+            <div class="alert alert-info">
+                Le cachet est dessiné par l'application : trois lignes et une couleur d'encre.
+                La signature se trace à l'écran, à la souris ou au doigt sur tablette. Les deux
+                sont apposés sur les documents que vous éditez, avec un code QR de vérification.
+                Tout reste sur cet ordinateur.
+            </div>
+            <div class="form-container mb-15">
+                <h3 style="color:#006633;margin-bottom:12px;">Armoiries et sceau</h3>
+                <div id="zoneEmblemes"></div>
+            </div>
+            <div class="form-container mb-15" id="blocIdentiteCS">
+                <h3 style="color:#006633;margin-bottom:12px;">Circonscription scolaire</h3>
+                <div id="identiteCS"></div>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchIdentite" placeholder=" École...">
+            </div>
+            <h3 style="margin:18px 0 10px;color:#006633;">Écoles</h3>
+            <div class="table-container mb-15"><div class="table-scroll"><table>
+                <thead><tr><th>École</th><th>Directeur</th><th>Cachet</th>
+                    <th>Signature</th><th>Actions</th></tr></thead>
+                <tbody id="identiteTable"></tbody>
+            </table></div></div>
+            <h3 style="margin:18px 0 10px;color:#006633;">Signatures du personnel</h3>
+            <p class="muet mb-15">Directeurs et enseignants signent les registres, les
+                relevés et les bulletins. Chaque signature est tracée à l'écran et reste
+                sur cet ordinateur.</p>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>Agent</th><th>Signature</th><th>Actions</th></tr></thead>
+                <tbody id="signaturesPersonnel"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- ANNÉES SCOLAIRES -->
+        <div id="annees" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-calendrier" data-ico="calendrier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="1.5"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M7 14h2"/><path d="M11 14h2"/><path d="M15 14h2"/><path d="M7 17h2"/><path d="M11 17h2"/></svg> Années scolaires
+                <button class="btn btn-primary" onclick="openAnneeModal()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Ajouter une année</button>
+                <button class="btn btn-info" onclick="reporterEffectifsAnneePrecedente()"><svg class="ico ico-presse-papiers" data-ico="presse-papiers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="5" width="14" height="16" rx="1.5"/><path d="M9 3h6v4H9z"/><path d="M8.5 12h7"/><path d="M8.5 16h5"/></svg> Reporter les effectifs de l'année précédente</button>
+            </div>
+            <div class="alert alert-info">
+                L'année active sert de référence partout : calcul des anciennetés au 31 décembre,
+                relevés d'effectifs, rapports. Changez-la depuis le sélecteur en haut de l'écran.
+                Le bouton « Reporter les effectifs » copie, pour chaque école qui n'en a pas encore
+                pour l'année active, le dernier relevé d'effectifs connu de l'année précédente — un
+                point de départ à corriger, pas un calcul définitif.
+            </div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>Année scolaire</th><th>État</th><th>Effectifs saisis</th>
+                    <th>Rapports</th><th>Actions</th></tr></thead>
+                <tbody id="anneesTable"></tbody>
+            </table></div></div>
+        </div>
+
+        <!-- JOURS FÉRIÉS -->
+        <div id="joursFeries" class="page hidden">
+            <div class="page-title">
+                <svg class="ico ico-calendrier" data-ico="calendrier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="1.5"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M7 14h2"/><path d="M11 14h2"/><path d="M15 14h2"/><path d="M7 17h2"/><path d="M11 17h2"/></svg> Jours fériés
+                <button class="btn btn-primary" onclick="openJourFerieModal()"><svg class="ico ico-ajouter" data-ico="ajouter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Ajouter un jour férié</button>
+            </div>
+            <div class="alert alert-info">
+                Les fêtes à date fixe (Jour de l'An, Fête du Vodoun, Fête du Travail,
+                Indépendance, Assomption, Toussaint, Noël) et les fêtes chrétiennes mobiles
+                (lundi de Pâques, Ascension, lundi de Pentecôte) sont exclues automatiquement du
+                calendrier scolaire, chaque année, sans rien à saisir. Les fêtes musulmanes
+                (Tabaski, Maouloud, fin du Ramadan) se fixent par observation de la lune :
+                ajoutez-les ici dès qu'elles sont connues, pour qu'elles comptent dans les
+                relevés de présence.
+            </div>
+            <div class="table-container"><div class="table-scroll"><table>
+                <thead><tr><th>Date</th><th>Libellé</th><th>Actions</th></tr></thead>
+                <tbody id="joursFeriesTable"></tbody>
+            </table></div></div>
+            <h4 class="mt-15">Fêtes calculées automatiquement pour <span id="joursFeriesAnneeLabel"></span></h4>
+            <div id="joursFeriesCalcules"></div>
+        </div>
+
+        <!-- IMPORT EXCEL -->
+        <div id="importation" class="page hidden">
+            <div class="page-title"><svg class="ico ico-importer" data-ico="importer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/></svg> Import de classeurs Excel</div>
+            <div class="alert alert-info">
+                Choisissez ce que vous importez, puis déposez votre classeur.
+                L'application reconnaît les colonnes d'après leur intitulé, vous montre
+                le résultat, et n'enregistre qu'après votre accord.
+            </div>
+            <div class="form-container">
+                <div class="form-group mb-15">
+                    <label>Que voulez-vous importer ?</label>
+                    <select id="choixImport"></select>
+                </div>
+                <div class="form-group mb-15">
+                    <label>École des élèves (pour une liste EDUCMaster sans colonne « École »)</label>
+                    <select id="ecoleImportDefaut"></select>
+                </div>
+                <div class="zone-depot" id="zoneDepot">
+                    <div style="font-size:36px;"><svg class="ico ico-document" data-ico="document" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6"/><path d="M9 16h6"/></svg></div>
+                    <b>Déposez ici votre fichier .xlsx ou .csv</b><br>
+                    <small>ou cliquez pour le choisir</small>
+                    <input type="file" id="fichierImport" hidden accept=".xlsx,.csv,.txt">
+                </div>
+                <div id="resultatImport"></div>
+            </div>
+        </div>
+
+        <!-- SAUVEGARDE -->
+        <div id="backup" class="page hidden">
+            <div class="page-title"><svg class="ico ico-enregistrer" data-ico="enregistrer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4"/><rect x="8" y="13" width="8" height="7" rx="0.5"/></svg> Sauvegarde et restauration</div>
+            <div class="form-container">
+                <h3 style="color:#006633;margin-bottom:15px;">Gérer vos données</h3>
+                <p style="margin-bottom:15px;">
+                    Toutes vos données sont enregistrées dans ce navigateur, sur cet ordinateur.
+                    Elles ne partent nulle part. Exportez-les régulièrement : c'est votre seule
+                    sauvegarde.
+                </p>
+                <p id="etatStockage" class="alert alert-info"></p>
+                <button class="btn btn-primary" onclick="exportData()"><svg class="ico ico-importer" data-ico="importer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/></svg> Exporter toutes les données (JSON)</button>
+                <button class="btn btn-info" onclick="document.getElementById('importFile').click()"><svg class="ico ico-exporter" data-ico="exporter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 14v5h16v-5"/><path d="M12 14V4"/><path d="M8 8l4-4 4 4"/></svg> Importer une sauvegarde</button>
+                <input type="file" id="importFile" hidden accept=".json">
+                <button class="btn btn-danger" onclick="resetData()"><svg class="ico ico-supprimer" data-ico="supprimer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6"/><path d="M14 11v6"/></svg> Réinitialiser tout</button>
+            </div>
+        </div>
+    </div>
+    </div><!-- .zone -->
+</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Titre</h2>
+            <button class="close-btn" onclick="closeModal()"><svg class="ico ico-fermer" data-ico="fermer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
+        </div>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<script src="js/config.js"></script>
+<script>window.CHOIX_GEO_DEFAUT = { departement: "Plateau", commune: "Pobè" };</script>
+<script src="js/choix.js" data-geo="data/referentiel_villages.json"></script>
+<script src="js/embleme.js"></script>
+<script src="js/stockage.js"></script>
+<script>chargerScripts(["data/pobe-up.js", "js/donnees.js", "js/carriere.js", "js/calendrier.js", "js/presences.js", "js/qr.js", "js/pieces.js", "js/documents-scolaires.js", "js/examen.js", "js/evaluations.js", "js/rapports.js", "js/certificats.js", "js/tableur.js", "js/import.js", "data/ref.js", "js/bilan-schema.js", "js/pobe-up.js", "js/logo-ecole.js", "js/guide.js", "js/guide-contenu.js", "js/app.js", "js/extra.js", "js/graphiques.js", "js/effectifs-zone.js", "js/infra-zone.js", "js/ecoles-zone.js", "js/cep-zone.js", "js/synoptique.js", "js/espaces.js", "data/directeurs-pobe.js", "js/zones-cp.js", "js/uascep.js", "js/uascep-cs.js", "js/pvs-modules.js", "js/pvs.js", "js/pvs-cs.js", "js/pedagogie.js", "js/pedagogie-cs.js", "js/entetes-fixes.js", "js/whatsapp.js", "js/ameliorations.js", "data/officiel.js", "data/documents-officiels.js", "js/officiel.js", "js/tableau-bord.js", "js/registres.js", "js/educmaster.js", "js/interface.js", "js/securite.js", "js/sauvegarde-auto.js", "js/securite-cs.js", "js/ed25519.js", "js/sync-client.js", "js/sync-commun.js", "js/sync-cs.js"]);</script>
+<script>
+(function () {
+  var img = document.querySelector("#bandeauImpression img");
+  if (img && window.Embleme) img.src = window.Embleme.BANDEAU;
+  /* Mise à jour automatique : vérifiée au démarrage, au retour sur l'application et toutes les 30 minutes
+     (sans cache HTTP) ; une nouvelle version installée recharge la page (sauf si une fenêtre est ouverte). */
+  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(function (reg) {
+        var verifier = function () { reg.update().catch(function () {}); };
+        verifier(); setInterval(verifier, 30 * 60 * 1000);
+        document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") verifier(); });
+      }).catch(function () {});
+    });
+    var dejaControle = !!navigator.serviceWorker.controller, recharge = false;
+    navigator.serviceWorker.addEventListener("controllerchange", function () {
+      if (!dejaControle) { dejaControle = true; return; }
+      if (recharge) return;
+      var occupe = document.querySelector(".modal.active") || document.querySelector(".cam-overlay");
+      if (occupe) { window.__majEnAttente = true; return; }
+      recharge = true; location.reload();
+    });
+    document.addEventListener("click", function (e) {
+      if (window.__majEnAttente && e.target.closest && e.target.closest(".close-btn")) { window.__majEnAttente = false; setTimeout(function () { location.reload(); }, 300); }
+    });
+  }
+})();
+</script>
+<!-- Installation de l'application (PC, Android, tablette, iPhone / iPad) -->
+<div id="installBandeau" hidden style="position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;max-width:520px;margin:0 auto;background:#006633;color:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 6px 24px rgba(0,0,0,.25);font:15px/1.4 system-ui,Segoe UI,Roboto,Arial,sans-serif;display:flex;gap:10px;align-items:center">
+  <span style="font-size:26px" aria-hidden="true"><svg class="ico ico-telephone" data-ico="telephone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></span>
+  <span id="installTexte" style="flex:1">Installer l'application sur cet appareil : elle s'ouvrira comme une application et fonctionnera sans Internet.</span>
+  <button id="installOui" type="button" style="background:#fff;color:#006633;border:0;border-radius:10px;padding:9px 14px;font-weight:700;cursor:pointer">Installer</button>
+  <button id="installNon" type="button" aria-label="Fermer" style="background:transparent;color:#fff;border:0;font-size:20px;cursor:pointer">✕</button>
+</div>
+<script>
+(function () {
+  var b = document.getElementById('installBandeau'), oui = document.getElementById('installOui'), non = document.getElementById('installNon'), txt = document.getElementById('installTexte');
+  var invite = null, cle = 'installRefus:' + location.pathname;
+  var installee = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  var refus = false; try { refus = localStorage.getItem(cle) === '1'; } catch (e) {}
+  function montrer() { if (!installee && !refus) { b.hidden = false; b.style.display = 'flex'; } }
+  function cacher() { b.hidden = true; b.style.display = 'none'; }
+  cacher();
+  /* PC (Chrome, Edge) et Android : invitation native */
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); invite = e; montrer(); });
+  oui.addEventListener('click', function () {
+    if (invite) { invite.prompt(); invite.userChoice.then(function () { invite = null; cacher(); }); return; }
+    cacher();
+  });
+  non.addEventListener('click', function () { try { localStorage.setItem(cle, '1'); } catch (e) {} cacher(); });
+  window.addEventListener('appinstalled', cacher);
+  /* iPhone / iPad (Safari) : pas d'invitation automatique, on explique le geste */
+  var ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (ios && !installee) { txt.textContent = "Pour installer : touchez le bouton Partager (carré avec une flèche), puis « Sur l'écran d'accueil »."; oui.textContent = 'Compris'; setTimeout(montrer, 1500); }
+})();
+</script>
+</body>
+</html>
