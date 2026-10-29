@@ -1,5 +1,5 @@
 /* CS Pobè et Mon école — adaptateur du module commun « Pédagogie » (js/pedagogie.js) : programmes, guides, progressions
-   annuelles, fiches de préparation, résumés, épreuves avec corrigés et planification jour / semaine / mois (contenus de
+   annuelles, fiches de préparation, résumés, épreuves avec corrigés et planification jour / semaine / mois, maternelle comprise (contenus de
    SCOLARIS dans data/pedagogie/, chargés à la demande et gardés hors ligne).
    Notes de la circonscription ou de l'école : réglage « pedagogieNotes ». Sujets de l'examen blanc : réglage
    « examenBlancSujets », rappelés en tête de la page « Examen blanc ».
@@ -31,7 +31,8 @@
     liens.push({ l: 'Examens et concours', route: 'pvsExamens', icone: 'examen' });
     return {
       app: ecoleMode() ? 'Mon école' : 'CS Pobè', base: 'data/pedagogie/', peutAnnoter: true, auteur: auteur(),
-      coursParDefaut: ecole && ecole.cycle === 'Maternelle' ? 'CI' : undefined,
+      // école maternelle (cycle « Maternelle » ou nom en « EM ») : le module s'ouvre sur les contenus de la maternelle
+      coursParDefaut: ecole && (ecole.cycle === 'Maternelle' || (global.Pedagogie && global.Pedagogie.estMaternelle && global.Pedagogie.estMaternelle(ecole.nom))) ? 'MAT' : undefined,
       notes: { charger: () => Promise.resolve(reglage('pedagogieNotes') || {}), enregistrer: (o) => ecrireReglage('pedagogieNotes', o) },
       imprimer: U && U.imprimer ? (titre, html, o) => ((o && o.epreuve) ? global.Pedagogie.imprimerSimple(titre, html) : U.imprimer(titre, html)) : undefined,
       memo: { get: (k) => { try { return localStorage.getItem('ped.' + k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem('ped.' + k, v); } catch (e) { /* stockage indisponible */ } } },
