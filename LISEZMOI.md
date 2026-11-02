@@ -1,6 +1,6 @@
 # Guide d’utilisation — CS Pobè — Circonscription scolaire de Pobè
 
-_Version 3.1.0_
+_Version 3.2.0_
 
 Rôles : Chef de circonscription et secrétariat · Conseiller pédagogique (espace CP) · Directeur (données des écoles)
 
@@ -65,7 +65,7 @@ _Pour : Chef de circonscription et secrétariat_
 2. Maternelle (une école maternelle ou une classe EM s’ouvre directement dessus) : choisissez la section (petits ou grands), puis le domaine (D1 à D5), le thème et le mois ou la semaine. Onglets : fiches d’activités, repères pour l’éducateur, grilles d’observation (à imprimer avec la liste des enfants), progressions, domaines et compétences ; la planification se lit par jour (emploi du temps de la section), semaine ou mois.
 3. ES et EPS : les programmes suivent les mesures correctives en vigueur (onglet « **Programmes** », mention « **en vigueur** ») et les fiches y sont rattachées.
 4. Filtrez par matière, sous-matière, SA et séance, ou cherchez un mot du titre.
-5. Ouvrez une fiche : saisissez le nom du titulaire (filigrane), puis « **Imprimer / PDF** ». Le « **Classeur** » imprime toutes les fiches de la sélection, d’un jour, d’une semaine ou d’un mois.
+5. Ouvrez une fiche : saisissez le nom du titulaire (filigrane, sinon la classe), puis « **Télécharger PDF** », « **Télécharger Word** » ou « **Imprimer** ». Une fiche tient sur une page, ou sur deux (un recto verso) : en-tête et éléments de planification, puis déroulement et évaluation. Le « **Classeur** » réunit toutes les fiches de la sélection, d’un jour, d’une semaine ou d’un mois.
 6. Résumés : version enseignant (avec réponses) ou version élève (sans réponses) ; « **Cahier de résumés** » pour tout un cours.
 7. Épreuves : sujets et corrigés par période (mensuelle, trimestrielle, passage, CEP blanc) ; « **Modifier** » pour adapter un énoncé, un barème ou l’en-tête (votre version reste sur l’appareil, « **Rétablir l’original** » revient au texte de départ).
 
@@ -83,12 +83,15 @@ Chaque école peut avoir son logo, créé automatiquement à partir de son nom, 
 3. Ou importez votre propre logo (photo ou image).
 4. Touchez « **Enregistrer** ». « **Télécharger SVG / PNG** » donne le logo en fichier ; « **Réinitialiser** » revient au logo automatique.
 
-## 9. Imprimer et enregistrer en PDF
+## 9. Télécharger en PDF ou en Word, imprimer
 
-1. Ouvrez le document (fiche, liste, attestation, épreuve…) puis touchez « **Imprimer / PDF** ».
-2. Choisissez l’imprimante, ou « **Enregistrer au format PDF** » pour obtenir un fichier.
-3. Pour les fiches de préparation longues, choisissez « **recto verso** » dans les réglages de l’imprimante : les marges et les numéros de page sont prévus pour cela.
-4. Cochez « **Graphiques d’arrière-plan** » (ou « **Couleurs** ») pour garder les bandeaux de couleur des fiches.
+1. Ouvrez le document (fiche, liste, attestation, épreuve…) puis touchez « **Imprimer** » (ou « **Imprimer / PDF** ») : trois choix s’affichent.
+2. « **Télécharger en PDF** » : un fichier PDF prêt à imprimer ou à envoyer (WhatsApp, e-mail). Sur téléphone et tablette, il est enregistré dans « **Téléchargements** », dans le dossier de l’application.
+3. « **Télécharger en Word** » : un document modifiable (Word, WPS Office, Google Docs) pour adapter la fiche ou le rapport.
+4. « **Imprimer** » : l’imprimante, ou « **Enregistrer au format PDF** » du téléphone ou de l’ordinateur.
+5. Dans le module Pédagogie, chaque fiche, résumé ou sujet a ses boutons « **PDF** » et « **Word** » directement dans la liste, sans l’ouvrir ; les cahiers et classeurs se téléchargent aussi en un seul fichier.
+6. Pour les fiches de préparation longues, choisissez « **recto verso** » dans les réglages de l’imprimante : les marges et les numéros de page sont prévus pour cela.
+7. Cochez « **Graphiques d’arrière-plan** » (ou « **Couleurs** ») pour garder les bandeaux de couleur des fiches.
 
 **Bon à savoir**
 

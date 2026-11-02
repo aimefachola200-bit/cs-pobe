@@ -1,5 +1,5 @@
 {
- "version": "f8d00fdd8469",
+ "version": "bb274d08721f",
  "files": [
   "./",
   "LISEZ-MOI.pdf",
@@ -59,6 +59,7 @@
   "js/certificats.js",
   "js/choix.js",
   "js/config.js",
+  "js/doc-export.js",
   "js/documents-scolaires.js",
   "js/donnees.js",
   "js/ecoles-zone.js",

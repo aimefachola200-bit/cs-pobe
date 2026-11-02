@@ -106,9 +106,13 @@
     return String(parseInt(String(anneeActive()).slice(-4), 10) || new Date().getFullYear());
   }
 
-  /** Millésime servant de référence aux anciennetés : la première année du couple. */
+  /** Première année du couple de l'année scolaire active (âge des agents, année suivante). */
   function anneeReference() {
     return parseInt(String(anneeActive()).slice(0, 4), 10) || new Date().getFullYear();
+  }
+  /** Millésime de référence des anciennetés : la seconde année du couple (« 2026-2027 » → arrêtées au 31/12/2027). */
+  function anneeAnciennete() {
+    return parseInt(String(anneeActive()).slice(-4), 10) || (anneeReference() + 1);
   }
 
   /* ---------------- Navigation ---------------- */
@@ -453,10 +457,10 @@
       datePriseServiceEcole: lire('datePriseServiceEcole')
     };
     global.Carriere.ANNEES_NOTES.forEach(a2 => { agent['note' + a2] = lire('note' + a2); });
-    const anc = global.Carriere.anciennetes(agent, anneeReference());
+    const anc = global.Carriere.anciennetes(agent, anneeAnciennete());
     const moyenne = global.Carriere.moyenneNotes(agent);
     const dr = global.Carriere.dateRetraite(lire('dateNaissance'), lire('grade'), lire('statut'));
-    zone.innerHTML = 'Ancienneté au 31 décembre ' + anneeReference() + ' — '
+    zone.innerHTML = 'Ancienneté au 31 décembre ' + anneeAnciennete() + ' — '
       + 'fonction publique : <b>' + (anc.fonctionPublique === null ? '—' : anc.fonctionPublique + ' an(s)')
       + '</b> · département : <b>' + (anc.departement === null ? '—' : anc.departement + ' an(s)')
       + '</b> · école : <b>' + (anc.ecole === null ? '—' : anc.ecole + ' an(s)') + '</b>'
@@ -828,7 +832,7 @@
       + '</div></div>'
       + '<div class="form-section"><h4>Prises de service</h4>'
       + '<p style="font-size:12px;color:#64748b;" class="mb-15">Les anciennetés se calculent '
-      + 'seules, arrêtées au 31 décembre ' + anneeReference() + '.</p>'
+      + 'seules, arrêtées au 31 décembre ' + anneeAnciennete() + '.</p>'
       + '<div class="form-grid">'
       + champDate('Première prise de service (fonction publique)', 'datePriseServiceFP', p.datePriseServiceFP)
       + champDate('Prise de service dans le département', 'datePriseServiceDept', p.datePriseServiceDept)
@@ -904,7 +908,7 @@
       + '</td>';
 
     document.getElementById(cible).innerHTML = liste.map(p => {
-      const anc = global.Carriere.anciennetes(p, anneeReference());
+      const anc = global.Carriere.anciennetes(p, anneeAnciennete());
       const sit = global.Carriere.situationDe(p);
       const cellSituation = '<td><span class="badge badge-' + sit.ton + '">'
         + echapper(sit.libelle) + '</span></td>';
@@ -2554,7 +2558,7 @@
     if (!p) { zone.innerHTML = ''; return; }
 
     const C = global.Carriere;
-    const anc = C.anciennetes(p, anneeReference());
+    const anc = C.anciennetes(p, anneeAnciennete());
     const moyenne = C.moyenneNotes(p);
     const dr = C.dateRetraite(p.dateNaissance, p.grade, p.statut);
     const restant = dr ? Math.max(0, Math.round((dr - new Date())
@@ -2655,7 +2659,7 @@
     const p = data.personnel.find(x => x.id == id);
     if (!p) return;
     const C = global.Carriere;
-    const anc = C.anciennetes(p, anneeReference());
+    const anc = C.anciennetes(p, anneeAnciennete());
     const dr = C.dateRetraite(p.dateNaissance, p.grade, p.statut);
     const moyenne = C.moyenneNotes(p);
     const ligne = (l, v) => '<tr><td style="background:#f8fafc;width:34%;">' + l
@@ -2666,7 +2670,7 @@
       + enteteDocument({ direction: 'DIRECTION DÉPARTEMENTALE DES ENSEIGNEMENTS '
         + 'MATERNEL ET PRIMAIRE DU PLATEAU' })
       + '<h2 class="titre-a4">FICHE DE CARRIÈRE</h2>'
-      + '<p class="text-center">Arrêtée au 31 décembre ' + anneeReference() + '</p>'
+      + '<p class="text-center">Arrêtée au 31 décembre ' + anneeAnciennete() + '</p>'
       + '<table style="width:100%;margin-top:12px;font-size:12px;"><tbody>'
       + ligne('Nom et prénoms', '<b>' + echapper(p.nom) + '</b>')
       + ligne('Matricule', echapper(p.matricule || '—'))
@@ -6537,7 +6541,7 @@
   function valeurExport(ligne, cle) {
     if (cle.charAt(0) !== '_') return ligne[cle];
     if (cle === '_rang') return ligne.__rang || '';
-    const anc = global.Carriere.anciennetes(ligne, anneeReference());
+    const anc = global.Carriere.anciennetes(ligne, anneeAnciennete());
     switch (cle) {
       case '_ecole': return nomEcole(ligne.ecoleId);
       case '_ancFP': return anc.fonctionPublique;
@@ -6633,7 +6637,7 @@
         'Écoles précédentes'])];
 
     data.personnel.forEach(p => {
-      const anc = C.anciennetes(p, anneeReference());
+      const anc = C.anciennetes(p, anneeAnciennete());
       const dr = C.dateRetraite(p.dateNaissance, p.grade, p.statut);
       lignes.push([p.matricule || '', p.nom || '', p.sexe || '', p.dateNaissance || '',
         p.categorie || 'Enseignant', p.grade || '', p.statut || '', p.fonction || '',

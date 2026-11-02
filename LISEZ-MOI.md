@@ -140,7 +140,8 @@ la désignation pour le mobilier.
 ## Ce qui vient d'être ajouté
 
 **Années scolaires.** L'année active se choisit dans l'en-tête ; elle sert de
-référence partout, notamment pour arrêter les anciennetés au 31 décembre. La page
+référence partout, notamment pour arrêter les anciennetés au 31 décembre de la seconde année
+(« 2026-2027 » : au 31/12/2027). La page
 *Années scolaires* permet d'en ajouter et d'archiver les précédentes. L'année en
 cours est 2026-2027.
 
@@ -154,7 +155,7 @@ agent porte désormais une catégorie : enseignant, administratif ou soutien.
 **Carrière.** La fiche d'un agent accueille les trois prises de service —
 fonction publique, département, école — et les notes d'évaluation de 2022 à 2026.
 Les anciennetés et la moyenne des notes se calculent seules et s'affichent
-pendant la saisie, arrêtées au 31 décembre de l'année active. L'indice actuel et
+pendant la saisie, arrêtées au 31 décembre de la seconde année de l'année active. L'indice actuel et
 l'indice payé sont distingués.
 
 **Analyses et écarts.** Trois tableaux : l'écart entre garçons et filles avec
@@ -430,7 +431,7 @@ le signale au lieu de faire signer n'importe qui.
 
 *Menu → Gestion des carrières.* On choisit un agent dans la liste de gauche ; sa
 carrière s'affiche à droite : grade, statut, fonction, indices actuel et payé,
-les trois anciennetés arrêtées au 31 décembre, la moyenne de ses notes, sa date
+les trois anciennetés arrêtées au 31 décembre de la seconde année, la moyenne de ses notes, sa date
 de départ et le temps qui l'en sépare.
 
 Le **déroulé de carrière** reconstitue les étapes datées dans l'ordre : entrée

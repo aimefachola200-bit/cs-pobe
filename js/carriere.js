@@ -90,7 +90,8 @@
 
   /* ---------------- Ancienneté ---------------- */
 
-  /* L'ancienneté se compte jusqu'au 31 décembre de l'année en cours : c'est la
+  /* L'ancienneté se compte jusqu'au 31 décembre de l'année de référence (la seconde année de l'année
+     scolaire active : « 2026-2027 » → 31/12/2027 ; à défaut, l'année en cours) : c'est la
      règle administrative, et elle évite qu'un agent change d'ancienneté d'un
      jour à l'autre. */
   function anciennete(dateDebut, anneeReference) {
