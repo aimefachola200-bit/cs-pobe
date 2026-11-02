@@ -11,6 +11,7 @@
   const lien = page => "showPage('" + page + "', document.querySelector('.menu-item[data-page=" + page + "]'))";
 
   const RACCOURCIS_CS = [
+    ['listesClasse', '\uE01F', 'Listes de classe', 'Élèves par cours et par classe'],
     ['ecoles', '\uE022', 'Écoles', 'Liste et fiches'], ['personnel', '\uE01C', 'Personnel', 'Enseignants et carrières'],
     ['effectifs', '\uE020', 'Effectifs', 'Élèves par école'], ['echanges', '\uE058', 'Échanges', 'Paquets des écoles'],
     ['visites', '\uE02A', 'Visites', 'Inspections'], ['fiches', '\uE011', 'Fiches officielles', 'À imprimer'],
@@ -18,7 +19,8 @@
     ['bilans', '\uE015', 'Bilans', 'Trimestriels et annuel'], ['backup', '\uE007', 'Sauvegarde', 'Garder une copie']
   ];
   const RACCOURCIS_ECOLE = [
-    ['maFiche', '\uE01D', 'Ma fiche école', 'Renseignements'], ['apprenants', '\uE01F', 'Apprenants', 'Listes par classe'],
+    ['listesClasse', '\uE01F', 'Listes de classe', 'Élèves par cours et par classe'],
+    ['maFiche', '\uE01D', 'Ma fiche école', 'Renseignements'], ['apprenants', '\uE021', 'Apprenants', 'Inscriptions et fiches'],
     ['presenceApprenants', '\uE017', 'Présences', 'Appel du jour'], ['notes', '\uE010', 'Notes et bulletins', 'Évaluations'],
     ['registres', '\uE00F', 'Registres et synthèse', 'Appel, affichage, statistiques'], ['educmaster', '\uE058', 'EducMaster', 'Élèves et notes'],
     ['personnel', '\uE01C', 'Personnel', 'Enseignants'], ['cep', '\uE00F', 'Inscription CEP', 'Fiches candidats'],
@@ -60,7 +62,7 @@
     const racc = (ecole() ? RACCOURCIS_ECOLE : RACCOURCIS_CS).filter(([p]) => vis(p) && existe(p));
     const raccHtml = '<div class="raccourcis">'
       + (al.length ? '<a href="#" class="alerte" onclick="event.preventDefault();' + lien('alertes') + '"><span class="ico">\uE041</span><b>Alertes</b><span class="d">' + al.length + ' point(s) à voir</span></a>' : '')
-      + racc.map(([p, i, t, s]) => '<a href="#" onclick="event.preventDefault();' + lien(p) + '"><span class="ico">' + i + '</span><b>' + t + '</b><span class="d">' + s + '</span></a>').join('') + '</div>';
+      + racc.map(([p, i, t, s]) => '<a href="#" data-raccourci="' + p + '" onclick="event.preventDefault();' + lien(p) + '"><span class="ico">' + i + '</span><b>' + t + '</b><span class="d">' + s + '</span></a>').join('') + '</div>';
 
     /* indicateurs */
     const kpis = '<div class="grille">'

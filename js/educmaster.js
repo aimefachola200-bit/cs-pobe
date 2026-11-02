@@ -45,14 +45,19 @@
   const fichierNom = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_|_$/g, '');
 
   /* ---------------- exportations ---------------- */
-  function exporterEleves() {
-    const e = ecoleChoisie(); if (!e) return alert('Choisissez l’école.');
-    let total = 0;
-    const feuilles = FEUILLES_CLASSE.map(([nom, cours]) => {
-      const l = eleves(e.id, cours); total += l.length;
+  /** Classeur « modèle classe » d'EducMaster (importation) pour une liste d'apprenants : toutes les feuilles du modèle,
+      chaque élève sur la feuille de son cours (aussi utilisé par « Listes de classe »). */
+  function feuillesEleves(liste) {
+    return FEUILLES_CLASSE.map(([nom, cours]) => {
+      const l = liste.filter(a => a.cours === cours).sort((x, y) => nomC(x).localeCompare(nomC(y), 'fr'));
       return { nom, entete: 0, lignes: [ENTETES_CLASSE.map(v => ({ v, s: 'h' }))].concat(l.map(a => [a.nom || '', a.prenoms || '', sexeModele(a.sexe), isoVersFr(a.dateNaiss), a.lieuNaiss || '',
         { v: a.telParent || '', s: 'c', texte: true }, a.nationalite || NATIONALITE, { v: a.npi || '', s: 'c', texte: true }])) };
     });
+  }
+  function exporterEleves() {
+    const e = ecoleChoisie(); if (!e) return alert('Choisissez l’école.');
+    const tous = eleves(e.id), total = tous.length;
+    const feuilles = feuillesEleves(tous);
     if (!total) return alert('Aucun élève à exporter pour cette école.');
     A().telecharger('EducMaster_eleves_' + fichierNom(e.nom) + '_' + A().anneeActive() + '.xlsx', global.XlsxEcrire.classeur(feuilles), XLSX_MIME);
   }
@@ -216,5 +221,5 @@
   }
   global.Extra = global.Extra || { pages: {} };
   global.Extra.pages.educmaster = rendre;
-  global.EducMaster = { exporterEleves, exporterNotes, importerEleves, importerNotes, analyserEleves, appliquerEleves, analyserNotes, appliquerNotes, etat, rendre, FEUILLES_CLASSE, MATIERES_MODELE };
+  global.EducMaster = { feuillesEleves, ENTETES_CLASSE, FEUILLES_NOTES, exporterEleves, exporterNotes, importerEleves, importerNotes, analyserEleves, appliquerEleves, analyserNotes, appliquerNotes, etat, rendre, FEUILLES_CLASSE, MATIERES_MODELE };
 })(window);

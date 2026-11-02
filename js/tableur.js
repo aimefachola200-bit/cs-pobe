@@ -267,7 +267,8 @@
 
   function balises(xml, nom) {
     const sortie = [];
-    const regex = new RegExp('<' + nom + '(\\s[^>]*)?(/>|>([\\s\\S]*?)</' + nom + '>)', 'g');
+    // attributs non gourmands : une cellule vide auto-fermante (<c r="E1" s="7"/>, modèles officiels) ne doit pas avaler la suivante
+    const regex = new RegExp('<' + nom + '(\\s[^>]*?)?(/>|>([\\s\\S]*?)</' + nom + '>)', 'g');
     let m;
     while ((m = regex.exec(xml)) !== null) sortie.push({ attrs: m[1] || '', contenu: m[3] || '' });
     return sortie;
