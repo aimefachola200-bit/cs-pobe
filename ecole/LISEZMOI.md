@@ -1,6 +1,6 @@
 # Guide d’utilisation — Mon école (Pobè)
 
-_Version 3.5.0_
+_Version 3.5.1_
 
 Rôles : Directeur / directrice · Enseignant(e)
 
