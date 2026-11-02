@@ -51,7 +51,7 @@
       const v = {}, cle = String(e.id);
       const ef = (d.effectifs || []).filter(x => String(x.ecoleId) === cle && x.annee === annee).pop();
       if (ef) { v.effG = n0(ef.totalG); v.effF = n0(ef.totalF); if (ef.redoublants !== undefined && ef.redoublants !== '') v.redoublantsG = n0(ef.redoublants); }
-      if (e.classes_existantes) v.groupes = n0(e.classes_existantes);
+      { const cl = A().classesEcole ? A().classesEcole(e, annee) : { ouvertes: n0(e.classes_existantes) }; if (cl.ouvertes) v.groupes = cl.ouvertes; }
       const pers = (d.personnel || []).filter(p => String(p.ecoleId) === cle && !/retrait|décéd|decede|parti/i.test(p.situation || ''));
       if (pers.length) {
         v.enseignants = pers.length; v.enseignantsF = pers.filter(p => p.sexe === 'F').length;

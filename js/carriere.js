@@ -139,8 +139,9 @@
    * Le directeur est compté à part : il ne tient pas de classe dans une école
    * à six classes ou plus.
    */
-  function besoinEnseignants(ecole, agents) {
-    const classes = Number(ecole.classes_existantes) || 0;
+  function besoinEnseignants(ecole, agents, ouvertes) {
+    /* classes OUVERTES : une classe jumelée ou multigrade compte pour une classe (outils/lots/spec-classes.md) */
+    const classes = ouvertes !== undefined && ouvertes !== null ? Number(ouvertes) || 0 : Number(ecole.classes_existantes) || 0;
     /* Un agent muté, décédé ou retraité ne tient plus de classe : le compter
        masquerait un poste vacant. */
     const presents = agents.filter(estActif);
@@ -162,9 +163,9 @@
   }
 
   /** Écart entre classes autorisées et classes ouvertes. */
-  function ecartClasses(ecole) {
+  function ecartClasses(ecole, ouv) {
     const autorisees = Number(ecole.classes_autorisees) || 0;
-    const ouvertes = Number(ecole.classes_existantes) || 0;
+    const ouvertes = ouv !== undefined && ouv !== null ? Number(ouv) || 0 : Number(ecole.classes_existantes) || 0;
     return {
       autorisees, ouvertes, ecart: ouvertes - autorisees,
       etat: ouvertes > autorisees ? 'Dépassement'

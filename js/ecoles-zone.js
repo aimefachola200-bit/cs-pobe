@@ -58,9 +58,10 @@
   function ajouter(x, e, annee) {
     const d = App().data;
     x.ecoles++; x[estMat(e) ? 'em' : 'ep']++;
-    x.aut += n0(e.classes_autorisees); x.ex += n0(e.classes_existantes); x.salles += n0(e.salles_existantes);
-    if (n0(e.classes_existantes)) x._classes.push(n0(e.classes_existantes));
-    const st = structureEcole(e, annee); for (const k in st) x.struct[k] += st[k];
+    const cl = App().classesEcole ? App().classesEcole(e, annee) : { ouvertes: n0(e.classes_existantes), simples: n0(e.classes_existantes), jumelees: 0, multigrades: 0 };
+    x.aut += n0(e.classes_autorisees); x.ex += cl.ouvertes; x.salles += n0(e.salles_existantes);
+    if (cl.ouvertes) x._classes.push(cl.ouvertes);
+    x.struct.simple += cl.simples; x.struct.jumelee += cl.jumelees; x.struct.multi += cl.multigrades;
     const r = d.effectifs.find(y => String(y.ecoleId) === String(e.id) && (!y.annee || y.annee === annee));
     if (r) {
       const t = n0(r.total) || (n0(r.totalG) + n0(r.totalF)); if (t) x._eleves.push(t);

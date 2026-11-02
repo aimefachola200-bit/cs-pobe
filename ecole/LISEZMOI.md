@@ -1,6 +1,6 @@
 # Guide d’utilisation — Mon école (Pobè)
 
-_Version 3.3.0_
+_Version 3.4.0_
 
 Rôles : Directeur / directrice · Enseignant(e)
 
@@ -88,7 +88,20 @@ Le point des candidats par centre d’examen et des salles de composition en bon
 - Une observation saisie à la main remplace l’observation automatique.
 - La colonne « **Salles nécessaires** » n’entre dans les fichiers que si la case est cochée.
 
-## 9. Pédagogie : fiches, résumés, épreuves
+## 9. Classes ouvertes : simples, jumelées, multigrades
+
+Une classe, c’est une salle et un maître : une classe jumelée (2 cours, ex. CI-CP) ou multigrade (3 cours et plus, ex. CI-CE2-CM1) compte pour UNE classe. Classes ouvertes = simples + jumelées + multigrades.
+
+1. Fiche de l’école (« **Modifier** ») : rubrique « **Organisation des classes** », une ligne par classe : « **CI** » (simple), « **CI-CP** » (jumelée), « **CI-CE2-CM1** » (multigrade) ; sans détail, l’attribution des classes (un maître pour ses cours) sert de base.
+2. Les fiches (recensement, rentrée, fin d’année, fiche de l’école), les tableaux de bord, les synthèses et les exports (PDF, Excel) reprennent automatiquement les classes simples, jumelées, multigrades, le total des classes ouvertes et les classes autorisées.
+3. Les ratios (élèves par classe, besoin en enseignants, tables-bancs, salles) se calculent sur les classes ouvertes ; les effectifs restent par cours.
+
+**Bon à savoir**
+
+- Les classes autorisées peuvent être inférieures aux classes ouvertes : l’écart est affiché, la saisie n’est jamais bloquée.
+- Exemples : CI-CP, CE1-CE2, CM1-CM2 = 3 classes ouvertes ; CI + CE2 + CM1 en multigrade = 1 classe.
+
+## 10. Pédagogie : fiches, résumés, épreuves
 
 1. Ouvrez « **Pédagogie** », choisissez le cours (Maternelle, CI à CM2) puis l’onglet : Planification, Fiches de préparation, Résumés, Épreuves, Progressions, Programmes, Guides.
 2. Maternelle (une école maternelle ou une classe EM s’ouvre directement dessus) : choisissez la section (petits ou grands), puis le domaine (D1 à D5), le thème et le mois ou la semaine. Onglets : fiches d’activités, repères pour l’éducateur, grilles d’observation (à imprimer avec la liste des enfants), progressions, domaines et compétences ; la planification se lit par jour (emploi du temps de la section), semaine ou mois.
@@ -103,7 +116,7 @@ Le point des candidats par centre d’examen et des salles de composition en bon
 - Les contenus sont conçus selon l’APC et restent à valider par le conseiller pédagogique.
 - Le conseiller, le directeur et l’administration peuvent ajouter des notes visibles des enseignants.
 
-## 10. Logo et devise de l’école
+## 11. Logo et devise de l’école
 
 Chaque école peut avoir son logo, créé automatiquement à partir de son nom, et sa devise. Ils figurent en tête de ses documents.
 
@@ -112,7 +125,7 @@ Chaque école peut avoir son logo, créé automatiquement à partir de son nom, 
 3. Ou importez votre propre logo (photo ou image).
 4. Touchez « **Enregistrer** ». « **Télécharger SVG / PNG** » donne le logo en fichier ; « **Réinitialiser** » revient au logo automatique.
 
-## 11. Télécharger en PDF ou en Word, imprimer
+## 12. Télécharger en PDF ou en Word, imprimer
 
 1. Ouvrez le document (fiche, liste, attestation, épreuve…) puis touchez « **Imprimer** » (ou « **Imprimer / PDF** ») : trois choix s’affichent.
 2. « **Télécharger en PDF** » : un fichier PDF prêt à imprimer ou à envoyer (WhatsApp, e-mail). Sur téléphone et tablette, il est enregistré dans « **Téléchargements** », dans le dossier de l’application.
@@ -127,7 +140,7 @@ Chaque école peut avoir son logo, créé automatiquement à partir de son nom, 
 - Les fiches de préparation portent en filigrane oblique le nom du titulaire de la classe : saisissez-le une fois dans la fenêtre de la fiche (« **Titulaire** »).
 - Une épreuve courte s’imprime deux fois par feuille A4 (ligne de coupe) ; réglage « **1 par page** » dans l’onglet Épreuves.
 
-## 12. Code QR et vérification des documents
+## 13. Code QR et vérification des documents
 
 Les pièces officielles (attestations, PV, relevés, documents UASCEP, certificats…) portent un numéro, une empreinte et un code QR.
 
@@ -139,7 +152,7 @@ Les pièces officielles (attestations, PV, relevés, documents UASCEP, certifica
 
 - Une pièce dont le contenu a été changé après signature est signalée « **modifiée** » : rééditez-la et faites-la signer de nouveau.
 
-## 13. Sauvegarder, restaurer, transmettre
+## 14. Sauvegarder, restaurer, transmettre
 
 Faites une sauvegarde au moins une fois par semaine, et toujours avant de changer d’appareil ou de mettre à jour.
 
@@ -155,7 +168,7 @@ Faites une sauvegarde au moins une fois par semaine, et toujours avant de change
 - Copies automatiques : l’application garde aussi sur l’appareil les 10 dernières copies de vos données (une par jour d’utilisation). « **Copies automatiques et restauration** » permet de revenir à l’une d’elles ; une copie endommagée est refusée.
 - Un bandeau vous rappelle d’exporter une sauvegarde quand la dernière date de plus de 7 jours.
 
-## 14. Sécurité des comptes et de l’appareil
+## 15. Sécurité des comptes et de l’appareil
 
 Les données d’élèves et de personnel sont protégées : mots de passe personnels, blocage après des essais faux, déconnexion après 20 minutes sans action.
 
@@ -169,7 +182,7 @@ Les données d’élèves et de personnel sont protégées : mots de passe perso
 - Ne communiquez jamais votre mot de passe, même à un collègue.
 - Sur une application sans comptes (CS Pobè, Mon école), définissez un mot de passe d’accès dans « **Sécurité et sauvegardes** ».
 
-## 15. Synchronisation entre niveaux
+## 16. Synchronisation entre niveaux
 
 Les données remontent école → zone → circonscription → département sans ressaisie : bureaux et vie UASCEP, sport scolaire, examens, versions d’épreuves et de fiches. Les notes de service, échéances et l’agenda redescendent. Tout fonctionne hors ligne, par fichier ; par Internet quand un hub SCOLARIS est disponible.
 
@@ -186,7 +199,7 @@ Les données remontent école → zone → circonscription → département sans
 - Après un changement d’appareil, le niveau supérieur doit « **Accepter la nouvelle clé** ».
 - Les dossiers de santé, les besoins spécifiques, les signatures et les cachets ne quittent jamais l’appareil.
 
-## 16. Travailler sans connexion
+## 17. Travailler sans connexion
 
 L’application fonctionne sans internet une fois ouverte une première fois sur l’appareil. Les données sont enregistrées dans l’appareil lui-même.
 
@@ -200,7 +213,7 @@ L’application fonctionne sans internet une fois ouverte une première fois sur
 - Les données d’un appareil ne passent pas toutes seules sur un autre : utilisez la sauvegarde (ou l’envoi des fiches) pour les transmettre.
 - Si vous videz les données du navigateur, vous effacez aussi les données de l’application : faites d’abord une sauvegarde.
 
-## 17. Questions fréquentes et dépannage
+## 18. Questions fréquentes et dépannage
 
 **L’application affiche une ancienne version.**  
 Fermez-la complètement puis rouvrez-la avec une connexion ; dans le navigateur, rechargez la page. Sur un site en ligne, videz le cache du navigateur pour ce site si besoin (après une sauvegarde).

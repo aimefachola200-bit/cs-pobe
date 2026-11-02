@@ -369,6 +369,9 @@
   function preRemplir(contexte) {
     const e = contexte.ecole || {};
     const releve = contexte.releve || {};
+    /* classes ouvertes = simples + jumelées + multigrades (une classe jumelée ou multigrade compte pour une) */
+    const cl = global.AppBridge && global.AppBridge.classesEcole && e.id ? global.AppBridge.classesEcole(e, contexte.annee)
+      : { ouvertes: Number(e.classes_existantes) || 0, simples: Number(e.classes_existantes) || 0, jumelees: 0, multigrades: 0, source: 'saisie' };
     const agents = (contexte.agents || []).filter(contexte.estActif || (() => true));
     const enseignants = agents.filter(a => (a.categorie || 'Enseignant') === 'Enseignant');
 
@@ -394,7 +397,7 @@
       },
       classes: {
         autorisees: Number(e.classes_autorisees) || 0,
-        ouvertes: Number(e.classes_existantes) || 0,
+        ouvertes: cl.ouvertes, simples: cl.simples, jumelees: cl.jumelees, multigrades: cl.multigrades, source: cl.source,
         salles_existantes: Number(e.salles_existantes) || 0,
         salles_utilisees: Number(e.salles_utilisees) || 0
       },

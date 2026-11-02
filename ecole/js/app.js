@@ -110,6 +110,34 @@
   function anneeReference() {
     return parseInt(String(anneeActive()).slice(0, 4), 10) || new Date().getFullYear();
   }
+  /**
+   * Classes ouvertes d'une école pour une année (règle commune outils/lots/spec-classes.md) : une classe jumelée
+   * (2 cours) ou multigrade (3 cours et plus) compte pour UNE classe ; ouvertes = simples + jumelées + multigrades.
+   * Source : organisation déclarée dans la fiche de l'école, sinon attribution des classes (un maître = une classe),
+   * sinon le nombre « classes ouvertes » saisi sans détail (compté en classes simples).
+   */
+  function classesEcole(e, annee) {
+    const O = global.ClassesOrg; annee = annee || anneeActive();
+    if (!e || !O) return { simples: Number(e && e.classes_existantes) || 0, jumelees: 0, multigrades: 0, ouvertes: Number(e && e.classes_existantes) || 0, autorisees: null, ecart: null, etat: '', source: 'saisie', classes: [] };
+    const decl = ((e.organisationClasses || {})[annee] || []).filter(x => O.coursDe(x.cours).length);
+    let c, source, classes;
+    if (decl.length) { classes = decl; source = 'déclarée'; }
+    else {
+      const att = (data.attributions || []).filter(a => a.ecoleId == e.id && a.annee === annee && a.enseignantId);
+      if (att.length) { classes = O.depuisAttributions(att); source = 'attribution des classes'; }
+    }
+    if (classes) c = O.compter(classes);
+    else { c = Object.assign(O.total({ simples: e.classes_existantes }), { parCours: {} }); source = 'saisie'; classes = []; }
+    const aut = e.classes_autorisees === '' || e.classes_autorisees === undefined || e.classes_autorisees === null ? NaN : e.classes_autorisees;
+    const ec = O.ecart(aut, c.ouvertes);
+    return Object.assign(c, { autorisees: ec.autorisees, ecart: ec.ecart, etat: ec.etat, source, classes });
+  }
+  /** Texte court « 3 (2 jumelées, 1 multigrade) » */
+  function libClasses(c) {
+    const d = [c.simples ? c.simples + ' simple' + (c.simples > 1 ? 's' : '') : '', c.jumelees ? c.jumelees + ' jumelée' + (c.jumelees > 1 ? 's' : '') : '', c.multigrades ? c.multigrades + ' multigrade' + (c.multigrades > 1 ? 's' : '') : ''].filter(Boolean);
+    return c.ouvertes + (d.length && (c.jumelees || c.multigrades) ? ' (' + d.join(', ') + ')' : '');
+  }
+
   /** Millésime de référence des anciennetés : la seconde année du couple (« 2026-2027 » → arrêtées au 31/12/2027). */
   function anneeAnciennete() {
     return parseInt(String(anneeActive()).slice(-4), 10) || (anneeReference() + 1);
@@ -343,7 +371,7 @@
       + '<td>' + echapper(e.zone_ped || '—') + (e.zone_up && e.zone_up !== e.zone_ped
         ? '<div class="petit muet" style="font-size:11px">activités : ' + echapper(e.zone_up) + '</div>' : '') + '</td>'
       + '<td>' + echapper(e.unite_ped || '—') + '</td>'
-      + '<td>' + echapper(e.annee_creation) + '</td><td>' + (e.classes_existantes || 0) + '</td>'
+      + '<td>' + echapper(e.annee_creation) + '</td><td>' + echapper(libClasses(classesEcole(e))) + '</td>'
       + '<td class="actions">'
       + '<button class="btn btn-info btn-sm" onclick="viewEcole(\'' + e.id + '\')">\uE043</button>'
       + '<button class="btn btn-warning btn-sm" onclick="editEcole(\'' + e.id + '\')">\uE006</button>'
@@ -383,7 +411,7 @@
       ['telephone', 'Téléphone de l’école'],
       ['email', 'Adresse mail'],
       ['annee_creation', 'Année de création'],
-      ['classes_autorisees', 'Classes autorisées'], ['classes_existantes', 'Classes existantes']
+      ['classes_autorisees', 'Classes autorisées']
     ];
     const valeur = v => (v || v === 0) && v !== ''
       ? echapper(v) : '<span class="badge badge-warning">à compléter</span>';
@@ -396,6 +424,10 @@
     zone.innerHTML = '<div class="table-container mt-15"><div class="table-scroll"><table><tbody>'
       + champs.map(([cle, libelle]) => '<tr><td style="background:#f8fafc;width:45%;">'
         + libelle + '</td><td>' + valeur(ecole[cle]) + '</td></tr>').join('')
+      + (() => { const c = classesEcole(ecole); return '<tr><td style="background:#f8fafc;">Classes ouvertes (' + anneeActive() + ')</td><td data-classes="ouvertes"><b>' + c.ouvertes + '</b> : '
+        + c.simples + ' simple(s), ' + c.jumelees + ' jumelée(s), ' + c.multigrades + ' multigrade(s)'
+        + (c.classes.length ? '<div class="petit muet">' + echapper(c.classes.map(x => global.ClassesOrg.libelle(x)).join(' · ')) + '</div>' : '')
+        + '<div class="petit muet">Source : ' + echapper(c.source) + (c.ecart !== null && c.ecart !== 0 ? ' — écart avec les autorisées : ' + (c.ecart > 0 ? '+' : '') + c.ecart : '') + '</div></td></tr>'; })()
       + '</tbody></table></div></div>'
       + '<div class="text-center mt-15">'
       + '<button class="btn btn-primary" onclick="editEcole(\'' + ecole.id
@@ -511,10 +543,10 @@
       + '</div></div>'
       + '<div class="form-section"><h4>3. Classes</h4><div class="form-grid">'
       + champ("Classes autorisées", 'classes_autorisees', e.classes_autorisees || 0, 'number')
-      + champ("Classes existantes", 'classes_existantes', e.classes_existantes || 0, 'number')
+      + champ("Classes ouvertes (si l’organisation n’est pas détaillée)", 'classes_existantes', e.classes_existantes || 0, 'number')
       + champ("Salles existantes", 'salles_existantes', e.salles_existantes || 0, 'number')
       + champ("Salles utilisées", 'salles_utilisees', e.salles_utilisees || 0, 'number')
-      + '</div></div>'
+      + '</div>' + editeurOrgClasses(e) + '</div>'
       + '<div class="form-section"><h4>4. Direction</h4><div class="form-grid">'
       + champ("Directeur", 'directeur', e.directeur)
       + champ("Contact du directeur", 'contact_directeur', e.contact_directeur)
@@ -553,6 +585,41 @@
     if (apres) apres();
   }
 
+  /** Éditeur de l'organisation des classes (année active) : une ligne par classe physique, cours séparés par un tiret */
+  function editeurOrgClasses(e) {
+    const l = ((e.organisationClasses || {})[anneeActive()] || []).map(c => ({ id: c.id, cours: c.cours }));
+    const ligne = (c) => '<div class="org-cl" style="display:flex;gap:8px;align-items:center;margin:4px 0">'
+      + '<input class="org-cl-cours" value="' + echapper(global.ClassesOrg ? global.ClassesOrg.libelle(c) : '') + '" data-id="' + echapper(c.id || '') + '" placeholder="Ex. : CI-CP ou CE2" oninput="majOrgClasses(this.form)" style="max-width:220px">'
+      + '<span class="org-cl-type petit muet"></span><button type="button" class="btn btn-secondary btn-sm" title="Retirer cette classe" onclick="retirerClasseOrg(this)">\uE005</button></div>';
+    return '<div class="org-classes mt-15" data-org="classes"><h5 style="margin:6px 0">Organisation des classes (' + echapper(anneeActive()) + ')</h5>'
+      + '<p class="petit muet" style="margin:0 0 6px">Une ligne par classe (une salle, un maître) : « CI » pour une classe simple, « CI-CP » pour une classe jumelée, « CI-CE2-CM1 » pour une classe multigrade. '
+      + 'Une classe jumelée ou multigrade compte pour une seule classe ouverte.</p>'
+      + '<div class="org-cl-liste">' + l.map(ligne).join('') + '</div>'
+      + '<template class="org-cl-modele">' + ligne({}) + '</template>'
+      + '<button type="button" class="btn btn-info btn-sm" data-org="ajouter" onclick="ajouterClasseOrg(this)">\uE001 Ajouter une classe</button>'
+      + '<p class="org-cl-total petit" style="margin:6px 0 0"></p>'
+      + '<input type="hidden" name="organisation_classes" value="' + echapper(JSON.stringify(l)) + '"></div>';
+  }
+  function majOrgClasses(form) {
+    const O = global.ClassesOrg, box = form && form.querySelector('[data-org="classes"]'); if (!box || !O) return;
+    const l = [...box.querySelectorAll('.org-cl')].map(div => { const i = div.querySelector('.org-cl-cours'), cours = O.coursDe(i.value), t = O.typeDe(cours);
+      div.querySelector('.org-cl-type').textContent = i.value.trim() ? (t ? O.LIB_TYPE[t] + ' (' + cours.join('-') + ')' : 'cours non reconnu') : '';
+      return { id: i.getAttribute('data-id') || '', cours }; }).filter(c => c.cours.length);
+    box.querySelector('[name="organisation_classes"]').value = JSON.stringify(l);
+    const c = O.compter(l), d = O.doublons(l), aut = form.querySelector('[name="classes_autorisees"]');
+    const ec = O.ecart(aut && aut.value !== '' ? aut.value : NaN, c.ouvertes);
+    box.querySelector('.org-cl-total').innerHTML = l.length ? '<b data-org="total">' + c.ouvertes + ' classe(s) ouverte(s)</b> : ' + c.simples + ' simple(s), ' + c.jumelees + ' jumelée(s), ' + c.multigrades + ' multigrade(s)'
+      + (ec.ecart ? ' — écart avec les classes autorisées : ' + (ec.ecart > 0 ? '+' : '') + ec.ecart : '')
+      + (d.length ? '<br><span style="color:#B54708">Attention : ' + echapper(d.join(', ')) + ' figure(nt) dans plusieurs classes.</span>' : '') : '';
+    const ex = form.querySelector('[name="classes_existantes"]'); if (ex && l.length) { ex.value = c.ouvertes; ex.readOnly = true; } else if (ex) ex.readOnly = false;
+  }
+  function ajouterClasseOrg(btn) {
+    const box = btn.closest('[data-org="classes"]'), t = box.querySelector('.org-cl-modele');
+    box.querySelector('.org-cl-liste').insertAdjacentHTML('beforeend', t.innerHTML);
+    const i = box.querySelectorAll('.org-cl-cours'); i[i.length - 1].focus(); majOrgClasses(btn.form);
+  }
+  function retirerClasseOrg(btn) { const f = btn.form; btn.closest('.org-cl').remove(); majOrgClasses(f); }
+
   /** Logo et devise de l'école : fenêtre commune (js/logo-ecole.js), le résultat revient dans le formulaire */
   function reglerLogoEcole(form) {
     if (!global.LogoEcole || !form) return;
@@ -578,6 +645,15 @@
       const avant = id ? (data.ecoles.find(x => x.id == id) || {}).personnel_fichier || {} : {};
       if (pf.total === undefined) pf.total = ['fe', 'acdpe', 'ame', 'autres'].reduce((t, k) => t + (pf[k] || 0), 0);
       obj.personnel_fichier = Object.assign({}, avant, pf);
+    }
+    /* Organisation des classes de l'année active : une classe jumelée ou multigrade compte pour une classe */
+    if (obj.organisation_classes !== undefined) {
+      let l = []; try { l = JSON.parse(obj.organisation_classes || '[]'); } catch (x) { l = []; }
+      delete obj.organisation_classes;
+      l = l.map(c => ({ id: c.id || uid(), cours: global.ClassesOrg.coursDe(c.cours) })).filter(c => c.cours.length).map(c => Object.assign(c, { type: global.ClassesOrg.typeDe(c.cours) }));
+      const avantOrg = id ? (data.ecoles.find(x => x.id == id) || {}).organisationClasses || {} : {};
+      obj.organisationClasses = Object.assign({}, avantOrg, { [anneeActive()]: l });
+      if (l.length) obj.classes_existantes = global.ClassesOrg.compter(l).ouvertes;
     }
     /* Les salles utilisées ne peuvent pas dépasser les salles existantes. */
     if (Number(obj.salles_utilisees) > Number(obj.salles_existantes)
@@ -704,17 +780,22 @@
       arrondissement: 'Arrondissement', zone_ped: 'Zone pédagogique',
       unite_ped: 'Unité pédagogique', commune: 'Commune', departement: 'Département',
       village: 'Village ou quartier', annee_creation: 'Année de création',
-      classes_autorisees: 'Classes autorisées', classes_existantes: 'Classes existantes',
+      classes_autorisees: 'Classes autorisées',
       salles_existantes: 'Salles existantes', salles_utilisees: 'Salles utilisées',
       directeur: 'Directeur', contact_directeur: 'Contact du directeur',
       telephone: 'Téléphone', email: 'Adresse mail'
     };
     const agents = data.personnel.filter(p => p.ecoleId == id).length;
+    const cl = classesEcole(e);
     openModal('Fiche : ' + e.nom,
       '<table style="width:100%;">'
       + Object.keys(libelles).map(k => '<tr><td style="padding:8px;background:#f8fafc;'
         + 'font-weight:500;width:40%;">' + libelles[k] + '</td><td style="padding:8px;">'
         + echapper(e[k] || '—') + '</td></tr>').join('')
+      + '<tr><td style="padding:8px;background:#f8fafc;font-weight:500;">Classes ouvertes (' + echapper(anneeActive()) + ')</td><td style="padding:8px;" data-classes="ouvertes"><b>' + cl.ouvertes + '</b> : '
+        + cl.simples + ' simple(s), ' + cl.jumelees + ' jumelée(s), ' + cl.multigrades + ' multigrade(s)'
+        + (cl.classes.length ? '<br><span class="petit muet">' + echapper(cl.classes.map(x => global.ClassesOrg.libelle(x)).join(' · ')) + '</span>' : '')
+        + (cl.ecart ? '<br><span class="petit muet">Écart avec les classes autorisées : ' + (cl.ecart > 0 ? '+' : '') + cl.ecart + '</span>' : '') + '</td></tr>'
       + '<tr><td style="padding:8px;background:#f8fafc;font-weight:500;">Personnel enregistré</td>'
       + '<td style="padding:8px;">' + agents + ' agent(s)</td></tr></table>'
       + '<div class="text-center mt-15"><button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer</button></div>');
@@ -1733,7 +1814,7 @@
         + anneeActive() + '</td></tr>';
 
     /* 2. Classes autorisées et ouvertes */
-    const lignesClasses = data.ecoles.map(e => Object.assign({ ecole: e }, C.ecartClasses(e)))
+    const lignesClasses = data.ecoles.map(e => Object.assign({ ecole: e }, C.ecartClasses(e, classesEcole(e).ouvertes)))
       .filter(l => l.autorisees || l.ouvertes)
       .sort((a, b) => a.ecart - b.ecart);
     const depassements = lignesClasses.filter(l => l.ecart > 0).length;
@@ -1759,7 +1840,7 @@
       (parEcole[p.ecoleId] = parEcole[p.ecoleId] || []).push(p);
     });
     const lignesEns = data.ecoles
-      .map(e => Object.assign({ ecole: e }, C.besoinEnseignants(e, parEcole[e.id] || [])))
+      .map(e => Object.assign({ ecole: e }, C.besoinEnseignants(e, parEcole[e.id] || [], classesEcole(e).ouvertes)))
       .filter(l => l.classes || l.enseignants)
       .sort((a, b) => (b.renseignee ? 1 : 0) - (a.renseignee ? 1 : 0) || a.ecart - b.ecart);
     /* Les totaux ne portent que sur les écoles dont le personnel est saisi. */
@@ -1780,8 +1861,8 @@
 
     /* 4. Synthèse : primaire et maternelle, public et privé, séparément puis ensemble */
     const ventilation = C.ventiler(data.ecoles, e => {
-      const cl = C.ecartClasses(e);
-      const bes = C.besoinEnseignants(e, parEcole[e.id] || []);
+      const cl = C.ecartClasses(e, classesEcole(e).ouvertes);
+      const bes = C.besoinEnseignants(e, parEcole[e.id] || [], classesEcole(e).ouvertes);
       return {
         autorisees: cl.autorisees, ouvertes: cl.ouvertes,
         salles: Number(e.salles_utilisees) || 0,
@@ -5438,7 +5519,7 @@
 
     etat.innerHTML = '<div class="stats-grid">'
       + carte(donnees.classes.ouvertes + ' / ' + donnees.classes.autorisees,
-        'Classes ouvertes / autorisées')
+        'Classes ouvertes / autorisées' + (donnees.classes.jumelees || donnees.classes.multigrades ? ' (dont ' + donnees.classes.jumelees + ' jumelée(s), ' + donnees.classes.multigrades + ' multigrade(s))' : ''))
       + carte(U(donnees.eleves.total), 'Apprenants',
         donnees.eleves.total ? 'blue' : 'red')
       + carte(donnees.personnel.enseignants.total, 'Enseignants en poste',
@@ -5619,6 +5700,7 @@
       + '<table style="width:100%;font-size:12px;"><tbody>'
       + ligne('Classes autorisées / ouvertes', donnees.classes.autorisees + ' / '
         + donnees.classes.ouvertes)
+      + ligne('Classes simples / jumelées / multigrades', (donnees.classes.simples || 0) + ' / ' + (donnees.classes.jumelees || 0) + ' / ' + (donnees.classes.multigrades || 0))
       + ligne('Salles existantes / utilisées', donnees.classes.salles_existantes + ' / '
         + donnees.classes.salles_utilisees)
       + ligne('Cantine', echapper(comp.cantine || '—')
@@ -5718,6 +5800,9 @@
     pousser('Adresse mail', id.email);
     pousser('Directeur', id.directeur);
     pousser('Classes autorisées', donnees.classes.autorisees);
+    pousser('Classes simples', donnees.classes.simples || 0);
+    pousser('Classes jumelées', donnees.classes.jumelees || 0);
+    pousser('Classes multigrades', donnees.classes.multigrades || 0);
     pousser('Classes ouvertes', donnees.classes.ouvertes);
     pousser('Salles existantes', donnees.classes.salles_existantes);
     pousser('Salles utilisées', donnees.classes.salles_utilisees);
@@ -6482,7 +6567,8 @@
       ['arrondissement', 'Arrondissement'], ['zone_ped', 'Zone pédagogique'],
       ['unite_ped', 'Unité pédagogique'], ['village', 'Village ou quartier'],
       ['annee_creation', 'Année de création'],
-      ['classes_autorisees', 'Classes autorisées'], ['classes_existantes', 'Classes existantes'],
+      ['classes_autorisees', 'Classes autorisées'], ['_clSimples', 'Classes simples'], ['_clJumelees', 'Classes jumelées'],
+      ['_clMultigrades', 'Classes multigrades'], ['_clOuvertes', 'Total classes ouvertes'], ['_clEcart', 'Écart (ouvertes − autorisées)'], ['_clOrg', 'Organisation des classes'],
       ['salles_existantes', 'Salles existantes'], ['salles_utilisees', 'Salles utilisées'],
       ['directeur', 'Directeur'], ['contact_directeur', 'Contact du directeur'],
       ['telephone', 'Téléphone'], ['email', 'Adresse mail']] },
@@ -6541,6 +6627,9 @@
   function valeurExport(ligne, cle) {
     if (cle.charAt(0) !== '_') return ligne[cle];
     if (cle === '_rang') return ligne.__rang || '';
+    if (cle.indexOf('_cl') === 0) { const c = classesEcole(ligne);
+      return { _clSimples: c.simples, _clJumelees: c.jumelees, _clMultigrades: c.multigrades, _clOuvertes: c.ouvertes, _clEcart: c.ecart === null ? '' : c.ecart,
+        _clOrg: c.classes.map(x => global.ClassesOrg.libelle(x)).join(' ; ') }[cle]; }
     const anc = global.Carriere.anciennetes(ligne, anneeAnciennete());
     switch (cle) {
       case '_ecole': return nomEcole(ligne.ecoleId);
@@ -6824,8 +6913,8 @@
       const g = eff[e.id] ? eff[e.id].g : 0;
       const f = eff[e.id] ? eff[e.id].f : 0;
       const genre = C.ecartGenre(g, f);
-      const cl = C.ecartClasses(e);
-      const bes = C.besoinEnseignants(e, parEcole[e.id] || []);
+      const cl = C.ecartClasses(e, classesEcole(e).ouvertes);
+      const bes = C.besoinEnseignants(e, parEcole[e.id] || [], classesEcole(e).ouvertes);
       lignes.push([e.nom, e.arrondissement || '', e.zone_ped || '', e.unite_ped || '',
         genre.g, genre.f, genre.total, genre.ecart,
         genre.partFilles === null ? '' : genre.partFilles,
@@ -6836,8 +6925,8 @@
     /* La synthèse par cycle et par secteur ferme le fichier : c'est elle que
        la circonscription transmet, le détail par école reste au-dessus. */
     const ventilation = C.ventiler(data.ecoles, e => {
-      const cl = C.ecartClasses(e);
-      const bes = C.besoinEnseignants(e, parEcole[e.id] || []);
+      const cl = C.ecartClasses(e, classesEcole(e).ouvertes);
+      const bes = C.besoinEnseignants(e, parEcole[e.id] || [], classesEcole(e).ouvertes);
       return {
         autorisees: cl.autorisees, ouvertes: cl.ouvertes,
         salles: Number(e.salles_utilisees) || 0,
@@ -7252,13 +7341,13 @@
   global.AppBridge = {
     get data() { return data; }, saveData, echapper, openModal, closeModal, anneeActive, formatDate, uid,
     COLLECTIONS, exportData, showPage, nomEcole, ecoleDuPoste, porteurEcole, CLE_STOCKAGE,
-    enteteDocument, emblemes, attributionDe, nomComplet, feuilleDe, clePeriode, telecharger
+    enteteDocument, emblemes, attributionDe, nomComplet, feuilleDe, clePeriode, telecharger, classesEcole, libClasses
   };
 
   /* Ce que le HTML appelle directement. */
   Object.assign(global, {
     showPage, closeModal, calcTotalEff, fixerEcoleDuPoste,
-    openEcoleModal, saveEcole, viewEcole, deleteEcole, editerEcoleDuPoste,
+    openEcoleModal, saveEcole, viewEcole, deleteEcole, editerEcoleDuPoste, majOrgClasses, ajouterClasseOrg, retirerClasseOrg,
     changerNomEcoleDuPoste, saveNomEcoleDuPoste, choisirEcoleReferentiel,
     editEcole: openEcoleModal,
     openPersonnelModal, savePersonnel, deletePersonnel,

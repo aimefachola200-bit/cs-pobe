@@ -5,6 +5,8 @@
 (function (global) {
   'use strict';
   const App = () => global.AppBridge, esc = (v) => App().echapper(v);
+  /** Classes ouvertes d'une école (une classe jumelée ou multigrade compte pour une) */
+  const classes = (e, annee) => (App().classesEcole ? App().classesEcole(e, annee) : { ouvertes: n0(e.classes_existantes), simples: n0(e.classes_existantes), jumelees: 0, multigrades: 0 });
   const CREDIT = 'Conçu par Maître Aimé FACHOLA · Tél. +229 01 96 51 03 33';
   const CREDIT_DOC = 'Conception : Maître Aimé FACHOLA';
   const n0 = (x) => { const n = parseFloat(x); return Number.isFinite(n) && n > 0 ? n : 0; };
@@ -39,11 +41,12 @@
     const effs = d.effectifs.filter(r => ids.has(String(r.ecoleId)) && (r.annee || '') === annee);
     const ens = d.personnel.filter(p => ids.has(String(p.ecoleId)) && (p.categorie || 'Enseignant') === 'Enseignant');
     const somme = (f) => effs.reduce((a, r) => a + n0(r[f]), 0);
-    const F = somme('totalF'), G = somme('totalG'), nbCl = ecoles.reduce((a, e) => a + n0(e.classes_existantes), 0);
+    const F = somme('totalF'), G = somme('totalG'), nbCl = ecoles.reduce((a, e) => a + classes(e, annee).ouvertes, 0);
     const nbEns = ens.length, nbEnsF = ens.filter(p => p.sexe === 'F').length;
     return {
       ecoles: ecoles.length, up: new Set(ecoles.map(e => e.unite_ped).filter(Boolean)).size,
       clAut: ecoles.reduce((a, e) => a + n0(e.classes_autorisees), 0), clExi: nbCl,
+      clSim: ecoles.reduce((a, e) => a + classes(e, annee).simples, 0), clJum: ecoles.reduce((a, e) => a + classes(e, annee).jumelees, 0), clMul: ecoles.reduce((a, e) => a + classes(e, annee).multigrades, 0),
       salExi: ecoles.reduce((a, e) => a + n0(e.salles_existantes), 0), salUti: ecoles.reduce((a, e) => a + n0(e.salles_utilisees), 0),
       ens: nbEns, ensF: nbEnsF, ensM: nbEns - nbEnsF, F, G, T: F + G, pF: F + G ? Math.round(F / (F + G) * 1000) / 10 : null,
       eh: somme('handicapes'), red: somme('redoublants'), sa: somme('sansActe'),
@@ -51,7 +54,7 @@
     };
   }
   const LIGNES = [
-    ['ecoles', 'Écoles en activité'], ['up', 'Unités pédagogiques représentées'], ['clAut', 'Classes / sections autorisées'], ['clExi', 'Classes / sections existantes'],
+    ['ecoles', 'Écoles en activité'], ['up', 'Unités pédagogiques représentées'], ['clAut', 'Classes / sections autorisées'], ['clSim', 'Classes simples'], ['clJum', 'Classes jumelées'], ['clMul', 'Classes multigrades'], ['clExi', 'Classes / sections ouvertes (simples + jumelées + multigrades)'],
     ['salExi', 'Salles de classe existantes'], ['salUti', 'Salles de classe utilisées'], ['ens', 'Enseignants'], ['ensF', '  dont femmes'], ['ensM', '  dont hommes'],
     ['F', 'Élèves filles'], ['G', 'Élèves garçons'], ['T', 'ÉLÈVES TOTAL'], ['pF', 'Part des filles (%)'], ['eh', '  dont enfants handicapés'], ['red', '  dont redoublants'], ['sa', '  dont sans acte de naissance'],
     ['parClasse', 'Élèves par classe'], ['parEns', 'Élèves par enseignant']];
