@@ -4678,6 +4678,9 @@
   }
 
   /* ---------------- Présence du personnel ---------------- */
+  /* v3.6.1 : sept positions comme le registre commun (présent, absent, retard, congé, mission, formation, maladie) :
+     « Retard » se déduit de l'heure d'arrivée ; une case « Absent » cochée ouvre le choix de la position. */
+  const POSITIONS_ABSENCE = ['Absent', 'Congé', 'Mission', 'Formation', 'Maladie'];
 
   function presencePersonnelDe(ecoleId, date, creer) {
     let r = data.presencesPersonnel.filter(x => x.ecoleId == ecoleId && x.date === date)[0];
@@ -4740,8 +4743,10 @@
             ? '<span class="badge badge-warning">' + global.Presences.minutesRetard(info.heureArrivee)
               + ' min</span>' : '<span class="badge badge-success">à l’heure</span>')
           : '—') + '</td>'
-        + '<td><input type="text" class="champ-motif" value="' + echapper(info.motif || '')
-        + '" placeholder="maladie, mission…" ' + (info.absent ? '' : 'disabled') + '></td></tr>';
+        + '<td><select class="champ-position" aria-label="Position" ' + (info.absent ? '' : 'disabled') + '>'
+        + POSITIONS_ABSENCE.map(x => '<option' + ((info.position || 'Absent') === x ? ' selected' : '') + '>' + x + '</option>').join('')
+        + '</select> <input type="text" class="champ-motif" value="' + echapper(info.motif || '')
+        + '" placeholder="justificatif, précision…" ' + (info.absent ? '' : 'disabled') + '></td></tr>';
     }).join('');
 
     actions.innerHTML = '<button class="btn btn-primary" onclick="enregistrerPresencePersonnel(\''
@@ -4760,6 +4765,8 @@
     champHeure.disabled = caseAbsent.checked;
     if (caseAbsent.checked) champHeure.value = '';
     champMotif.disabled = !caseAbsent.checked;
+    const champPos = ligne.querySelector('.champ-position');
+    if (champPos) champPos.disabled = !caseAbsent.checked;
   }
 
   function enregistrerPresencePersonnel(ecoleId, date) {
@@ -4769,7 +4776,7 @@
       const id = ligne.dataset.agent;
       const absent = ligne.querySelector('.champ-absent').checked;
       rec.agents[id] = absent
-        ? { absent: true, motif: ligne.querySelector('.champ-motif').value || '' }
+        ? { absent: true, position: (ligne.querySelector('.champ-position') || {}).value || 'Absent', motif: ligne.querySelector('.champ-motif').value || '' }
         : { absent: false, heureArrivee: ligne.querySelector('.champ-heure').value || '' };
     });
     rec.annee = anneeActive();
@@ -4799,12 +4806,22 @@
       + (bilan.joursEnregistres
         ? '<div class="table-container"><div class="table-scroll"><table>'
           + '<thead><tr><th>Nom et prénoms</th><th>Jours saisis</th><th>Présences</th>'
-          + '<th>Absences</th><th>Retards</th><th>Total minutes de retard</th></tr></thead><tbody>'
-          + bilan.detail.map(d => '<tr><td>' + echapper(d.agent.nom || '—') + '</td><td>'
+          + '<th>Absences</th><th>dont congé</th><th>dont mission</th><th>dont formation</th><th>dont maladie</th>'
+          + '<th>Retards</th><th>Total minutes de retard</th></tr></thead><tbody>'
+          + bilan.detail.map(d => { const pos = positionsAgent(records, d.agent.id);
+            return '<tr><td>' + echapper(d.agent.nom || '—') + '</td><td>'
             + d.joursSaisis + '</td><td>' + d.presences + '</td><td>' + d.absences + '</td><td>'
-            + d.retards + '</td><td>' + d.minutesRetardTotal + '</td></tr>').join('')
+            + pos['Congé'] + '</td><td>' + pos.Mission + '</td><td>' + pos.Formation + '</td><td>' + pos.Maladie + '</td><td>'
+            + d.retards + '</td><td>' + d.minutesRetardTotal + '</td></tr>'; }).join('')
           + '</tbody></table></div></div>'
         : '<div class="alert alert-info">Aucun jour enregistré pour ce mois.</div>');
+  }
+
+  /** Nombre de jours du mois par position d'absence (congé, mission, formation, maladie) pour un agent. */
+  function positionsAgent(records, agentId) {
+    const n = { 'Congé': 0, Mission: 0, Formation: 0, Maladie: 0 };
+    records.forEach(r => { const i = (r.agents || {})[agentId]; if (i && i.absent && n[i.position] !== undefined) n[i.position]++; });
+    return n;
   }
 
   /** Registre imprimable d'une journée, à l'appui de l'heure d'arrivée — pièce
@@ -4835,7 +4852,7 @@
           + '<td>' + (!saisi ? '—' : (info.absent ? '—' : echapper(info.heureArrivee || '—'))) + '</td>'
           + '<td>' + (!saisi ? 'non renseigné'
             : (info.absent ? '—' : (retard ? retard + ' min' : 'à l’heure'))) + '</td>'
-          + '<td>' + (saisi && info.absent ? echapper(info.motif || 'non précisé') : '—') + '</td>'
+          + '<td>' + (saisi && info.absent ? echapper([info.position && info.position !== 'Absent' ? info.position : '', info.motif].filter(Boolean).join(' — ') || 'non précisé') : '—') + '</td>'
           + '<td class="emargement"></td></tr>';
       }).join('')
       + '</tbody></table>'

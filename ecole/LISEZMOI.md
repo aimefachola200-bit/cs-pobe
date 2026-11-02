@@ -1,6 +1,6 @@
 # Guide d’utilisation — Mon école (Pobè)
 
-_Version 3.6.0_
+_Version 3.6.1_
 
 Rôles : Directeur / directrice · Enseignant(e)
 
@@ -37,8 +37,9 @@ _Pour : Directeur / directrice_
 
 1. « **Apprenants** » : saisie ou import (modèle Excel, fichier EducMaster).
 2. « **Présence des apprenants** » : cochez les absents par demi-journée ; le registre d’appel se remplit tout seul.
-3. « **Notes** » et « **Évaluations** » : saisissez les notes, imprimez les relevés et bulletins ; exports Excel importables dans EducMaster.
-4. « **Registres** » : appel, affichage, statistiques, évaluations, synthèse, signés avec code QR.
+3. « **Présence du personnel** » : cochez « **Absent** », puis choisissez la position (absent, congé, mission, formation, maladie) et le motif ; le bilan du mois compte les jours de chaque position.
+4. « **Notes** » et « **Évaluations** » : saisissez les notes, imprimez les relevés et bulletins ; exports Excel importables dans EducMaster.
+5. « **Registres** » : appel, affichage, statistiques, évaluations, synthèse, signés avec code QR.
 
 ## 5. CEP et examen blanc
 
