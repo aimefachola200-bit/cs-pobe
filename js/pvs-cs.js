@@ -10,7 +10,7 @@
   const U = () => global.UascepCS && global.UascepCS.adaptateur;
   const ecoleMode = () => !!(global.Config && global.Config.estEcole && global.Config.estEcole());
   const I = (n) => (global.Icones ? global.Icones.code(n) + ' ' : '');
-  const PAGES = { pvsSport: 'sport', pvsPilotage: 'pilotage', pvsCommunication: 'communication', pvsSante: 'sante', pvsInspection: 'inspection', pvsPatrimoine: 'patrimoine', pvsExamens: 'examens' };
+  const PAGES = { pvsSport: 'sport', pvsPilotage: 'pilotage', pvsCommunication: 'communication', pvsSante: 'sante', pvsInspection: 'inspection', pvsPatrimoine: 'patrimoine', pvsExamens: 'examens', pvsTerritoire: 'territoire' };
 
   function charger() { return Promise.resolve(((D().reglages || []).find(x => x.id === 'pvs') || {}).valeur || null); }
   function enregistrer(etat) {
@@ -101,17 +101,31 @@
   function cepCandidats() {
     return Promise.resolve((D().cep || []).map(c => ({ ecole: String(c.ecoleId), nom: c.nom, prenoms: c.prenoms, sexe: /^f/i.test(c.sexe || '') ? 'F' : 'M', dateNaissance: c.dateNaiss || '', lieuNaissance: c.lieuNaiss || '' })));
   }
+  /** Candidats inscrits au CEP par centre de composition (tableau « CEP 2027 — Centres et salles ») */
+  function cepParCentre(session) {
+    const an = (String(session || '').match(/\d{4}/) || [''])[0];
+    return Promise.resolve((D().cep || []).filter(c => c.centre && (!an || !c.session || String(c.session).includes(an)))
+      .map(c => ({ centre: c.centre, sexe: /^f/i.test(c.sexe || '') ? 'F' : 'M', libre: /libre/i.test(c.statut || c.categorie || c.type || ''), handicape: /^o/i.test(c.handicap || c.ph || '') })));
+  }
+  /** Centre de composition de l'école du poste (Mon école) : celui de la majorité de ses candidats */
+  function centreEcole() {
+    const p = ecoleMode() && A().ecoleDuPoste ? A().ecoleDuPoste() : null; if (!p) return '';
+    const n = {}; (D().cep || []).filter(c => String(c.ecoleId) === String(p.id) && c.centre).forEach(c => { n[c.centre] = (n[c.centre] || 0) + 1; });
+    return Object.keys(n).sort((a, b) => n[b] - n[a])[0] || '';
+  }
   function adaptateur() {
     const u = U() || {};
     return {
-      app: ecoleMode() ? 'Mon école' : 'CS Pobè', charger, enregistrer, signer, indicateurs, eleves, absences, cepCandidats,
-      exclure: ['patrimoine.batiments', 'patrimoine.tables'],
+      app: ecoleMode() ? 'Mon école' : 'CS Pobè', charger, enregistrer, signer, indicateurs, eleves, absences, cepCandidats, cepParCentre, centreEcole,
+      csNom: () => 'Circonscription scolaire de Pobè',
+      exclure: ['patrimoine.batiments', 'patrimoine.tables', 'territoire.presences'],   // présence du personnel : registre de l'application
       utilisateur: () => { const p = ecoleMode() && A().ecoleDuPoste ? A().ecoleDuPoste() : null; return p ? (p.directeur || p.nom) : 'Circonscription scolaire de Pobè'; },
       contexte: u.contexte, cachet: u.cachet, visa: u.visa, imprimer: u.imprimer, toast: u.toast, xlsxEcrire: u.xlsxEcrire, xlsxLire: u.xlsxLire, telecharger: u.telecharger,
       memo: { get: (k) => { try { return localStorage.getItem('pvs.' + k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem('pvs.' + k, v); } catch (e) { /* stockage indisponible */ } } },
       uascep: () => ({ charger: u.charger, enregistrer: u.enregistrer }),
       ouvrir: (route) => global.showPage && global.showPage(route),
       liens: { sport: [{ l: '\uE047 Bureaux UASCEP', route: 'uascep' }], communication: [{ l: I('alerte') + 'Alertes de l’application', route: 'alertes' }, { l: I('message') + 'Groupe WhatsApp des directeurs', route: 'whatsapp' }, { l: I('courrier') + 'Archive courriers', route: 'courriers' }],
+        territoire: [{ l: I('calendrier') + 'Présence du personnel', route: 'presencePersonnel' }, { l: I('courrier') + 'Archive du courrier', route: 'courriers' }],
         sante: [{ l: I('calendrier') + 'Présence des apprenants', route: 'presenceApprenants' }, { l: I('eleve') + 'Listes des apprenants', route: 'apprenants' }],
         inspection: [{ l: I('inspection') + 'Visites et inspections (CS)', route: 'visites' }],
         patrimoine: [{ l: I('chantier') + 'Infrastructures', route: 'infrastructures' }, { l: I('chaise') + 'Mobilier et matériel', route: 'mobilier' }, { l: I('chantier') + 'Infrastructures et mobilier (consolidé)', route: 'infraZone' }],
