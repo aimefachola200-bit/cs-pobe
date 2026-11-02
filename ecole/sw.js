@@ -3,7 +3,7 @@
 // Préfixe propre à chaque application (même domaine github.io pour la circonscription, l'école et les autres applications)
 const PREFIX = 'pobe-' + new URL(self.registration.scope).pathname.replace(/[^a-z0-9]+/gi, '-') + '-';
 // Empreinte de la publication (écrite par tools/gen-assets.mjs) : sw.js change à chaque mise à jour, les appareils la reçoivent.
-const BUILD = 'af0930c62679';
+const BUILD = '33e9c7b99e64';
 const CACHE = PREFIX + BUILD;   // une seule version servie à la fois : jamais de mélange ancien / nouveau
 
 self.addEventListener('install', (event) => {

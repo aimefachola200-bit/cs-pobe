@@ -655,6 +655,17 @@
       obj.organisationClasses = Object.assign({}, avantOrg, { [anneeActive()]: l });
       if (l.length) obj.classes_existantes = global.ClassesOrg.compter(l).ouvertes;
     }
+    /* Corrections traçables : une fiche remontée par l'école (paquet d'échanges) puis modifiée à la circonscription garde
+       l'ancienne et la nouvelle valeur, la date et le niveau qui a corrigé. */
+    const ancienne = id ? data.ecoles.find(x => x.id == id) : null;
+    if (ancienne && ancienne._derniereSync && global.Config.MODE !== 'ECOLE') {
+      const lib = (o) => libClasses(classesEcole(o));
+      const suivis = [['classes_existantes', 'Classes ouvertes'], ['classes_autorisees', 'Classes autorisées'], ['salles_existantes', 'Salles existantes'], ['salles_utilisees', 'Salles utilisées']];
+      const corr = [];
+      suivis.forEach(([k, l]) => { if (obj[k] !== undefined && String(obj[k] ?? '') !== String(ancienne[k] ?? '')) corr.push({ champ: l, avant: String(ancienne[k] ?? ''), apres: String(obj[k] ?? '') }); });
+      if (obj.organisationClasses) { const a = lib(ancienne), b = lib(Object.assign({}, ancienne, { organisationClasses: obj.organisationClasses, classes_existantes: obj.classes_existantes })); if (a !== b) corr.push({ champ: 'Organisation des classes', avant: a, apres: b }); }
+      if (corr.length) obj.corrections = (ancienne.corrections || []).concat(corr.map(c => Object.assign(c, { le: new Date().toISOString(), par: 'Circonscription', source: 'école (paquet du ' + String(ancienne._derniereSync).slice(0, 10) + ')' }))).slice(-200);
+    }
     /* Les salles utilisées ne peuvent pas dépasser les salles existantes. */
     if (Number(obj.salles_utilisees) > Number(obj.salles_existantes)
         && Number(obj.salles_existantes) > 0) {
@@ -796,9 +807,12 @@
         + cl.simples + ' simple(s), ' + cl.jumelees + ' jumelée(s), ' + cl.multigrades + ' multigrade(s)'
         + (cl.classes.length ? '<br><span class="petit muet">' + echapper(cl.classes.map(x => global.ClassesOrg.libelle(x)).join(' · ')) + '</span>' : '')
         + (cl.ecart ? '<br><span class="petit muet">Écart avec les classes autorisées : ' + (cl.ecart > 0 ? '+' : '') + cl.ecart + '</span>' : '') + '</td></tr>'
+      + (e._derniereSync || (e.corrections || []).length ? '<tr><td style="padding:8px;background:#f8fafc;font-weight:500;">Source et corrections</td><td style="padding:8px;" data-source="ecole">'
+        + (e._derniereSync ? 'Données remontées par l’école (paquet du ' + echapper(new Date(e._derniereSync).toLocaleDateString('fr-FR')) + ')' : 'Saisie à la circonscription')
+        + ((e.corrections || []).length ? '<br><span class="petit muet">' + e.corrections.slice(-5).reverse().map(c => echapper(new Date(c.le).toLocaleDateString('fr-FR') + ' — ' + c.champ + ' : ' + (c.avant || '—') + ' → ' + (c.apres || '—') + ' (' + c.par + ')')).join('<br>') + '</span>' : '') + '</td></tr>' : '')
       + '<tr><td style="padding:8px;background:#f8fafc;font-weight:500;">Personnel enregistré</td>'
       + '<td style="padding:8px;">' + agents + ' agent(s)</td></tr></table>'
-      + '<div class="text-center mt-15"><button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer</button></div>');
+      + '<div class="text-center mt-15">' + boutonsFicheRemplie('cs-pobe-fiche-ecole-' + String(e.code || e.nom).replace(/[^A-Za-z0-9]+/g, '-'), 'exporterFicheEcole(\'' + e.id + '\')') + '</div>');
   }
 
   function deleteEcole(id) {
@@ -2519,7 +2533,7 @@
           + 'identifié.</div>')
       + '</div>'
       + '<div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer ou enregistrer en PDF</button></div>');
+      + boutonsFicheRemplie('cs-pobe-rapport-visite-' + id, '') + '</div>');
   }
 
   /** Les pièces examinées et leur état, telles que constatées. */
@@ -2785,7 +2799,7 @@
       + piedDocument(null, 'CARRIERE', p.id,
         'Le Chef de la Division de l’Organisation Scolaire et de la Prévision', 'DOSP')
       + '</div><div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer</button></div>');
+      + boutonsFicheRemplie('cs-pobe-fiche-carriere-' + id, '') + '</div>');
   }
 
   /* ---------------- Retraite ---------------- */
@@ -5698,7 +5712,7 @@
 
       + '<h4 style="margin-top:12px;color:#006633;">2. Renseignements généraux</h4>'
       + '<table style="width:100%;font-size:12px;"><tbody>'
-      + ligne('Classes autorisées / ouvertes', donnees.classes.autorisees + ' / '
+      + ligne('Classes autorisées / ouvertes (jumelées et multigrades comptées une fois)', donnees.classes.autorisees + ' / '
         + donnees.classes.ouvertes)
       + ligne('Classes simples / jumelées / multigrades', (donnees.classes.simples || 0) + ' / ' + (donnees.classes.jumelees || 0) + ' / ' + (donnees.classes.multigrades || 0))
       + ligne('Salles existantes / utilisées', donnees.classes.salles_existantes + ' / '
@@ -5740,9 +5754,31 @@
       + piedDocument(ecole, 'FICHE-' + type, ecole.id + '-' + anneeActive(), 'Le Directeur')
       + '</div>'
       + '<div class="text-center mt-15">'
-      + '<button class="btn btn-primary" onclick="window.print()">\uE008 Imprimer ou enregistrer en PDF</button> '
-      + '<button class="btn btn-warning" onclick="exporterModule(\'fiches\')">\uE00C Excel</button>'
+      + boutonsFicheRemplie('cs-pobe-fiche-' + type.toLowerCase() + '-' + String(ecole.code || ecole.nom).replace(/[^A-Za-z0-9]+/g, '-'), 'exporterModule(\'fiches\')')
       + '</div>');
+  }
+  /** Boutons communs « Télécharger la fiche remplie » (PDF, Excel) et « Imprimer » des fiches et documents */
+  function boutonsFicheRemplie(nom, excel) {
+    return '<button class="btn btn-primary" data-fiche="pdf" onclick="telechargerFicheRemplie(\'' + echapper(nom) + '\')">\uE00D Télécharger la fiche remplie (PDF)</button> '
+      + (excel ? '<button class="btn btn-warning" data-fiche="excel" onclick="' + excel + '">\uE00C Télécharger la fiche remplie (Excel)</button> ' : '')
+      + '<button class="btn btn-secondary" onclick="window.print()">\uE008 Imprimer</button>';
+  }
+  function telechargerFicheRemplie(nom) {
+    if (global.DocExport && global.DocExport.prochain) global.DocExport.prochain('pdf', nom);
+    window.print();
+  }
+  /** Fiche de l'école au format tableur (identification, classes ouvertes et leur organisation, salles, personnel) */
+  function exporterFicheEcole(id) {
+    const e = data.ecoles.find(x => x.id == id); if (!e) return;
+    const c = classesEcole(e), O = global.ClassesOrg;
+    const lignes = [['Rubrique', 'Valeur'], ['FICHE DE L’ÉCOLE — ' + anneeActive(), '']];
+    [['Code', e.code], ['Nom', e.nom], ['Type', e.type], ['Statut', e.statut], ['Arrondissement', e.arrondissement], ['Zone pédagogique', e.zone_ped], ['Unité pédagogique', e.unite_ped],
+      ['Village ou quartier', e.village], ['Année de création', e.annee_creation], ['Classes autorisées', e.classes_autorisees]].forEach(x => lignes.push([x[0], x[1] === undefined || x[1] === null ? '' : x[1]]));
+    O.ENTETES.forEach((t, i) => { if (t !== 'Classes autorisées') lignes.push([t, O.ligne(c, e.classes_autorisees)[i]]); });
+    lignes.push(['Organisation des classes (jumelées et multigrades comptées une fois)', c.classes.map(x => O.libelle(x)).join(' ; ')], ['Source des classes', c.source],
+      ['Salles existantes', e.salles_existantes || ''], ['Salles utilisées', e.salles_utilisees || ''], ['Directeur', e.directeur || ''], ['Contact du directeur', e.contact_directeur || ''],
+      ['Personnel enregistré', data.personnel.filter(p => p.ecoleId == e.id).length]);
+    telecharger('cs-pobe-fiche-ecole-' + String(e.code || e.nom).replace(/[^A-Za-z0-9]+/g, '-') + '.csv', lignes.map(l => l.map(champCSV).join(';')).join('\r\n'));
   }
 
   /**
@@ -5803,7 +5839,7 @@
     pousser('Classes simples', donnees.classes.simples || 0);
     pousser('Classes jumelées', donnees.classes.jumelees || 0);
     pousser('Classes multigrades', donnees.classes.multigrades || 0);
-    pousser('Classes ouvertes', donnees.classes.ouvertes);
+    pousser('Classes ouvertes (jumelées et multigrades comptées une fois)', donnees.classes.ouvertes);
     pousser('Salles existantes', donnees.classes.salles_existantes);
     pousser('Salles utilisées', donnees.classes.salles_utilisees);
 
@@ -7347,7 +7383,7 @@
   /* Ce que le HTML appelle directement. */
   Object.assign(global, {
     showPage, closeModal, calcTotalEff, fixerEcoleDuPoste,
-    openEcoleModal, saveEcole, viewEcole, deleteEcole, editerEcoleDuPoste, majOrgClasses, ajouterClasseOrg, retirerClasseOrg,
+    openEcoleModal, saveEcole, viewEcole, deleteEcole, editerEcoleDuPoste, majOrgClasses, ajouterClasseOrg, retirerClasseOrg, telechargerFicheRemplie, exporterFicheEcole,
     changerNomEcoleDuPoste, saveNomEcoleDuPoste, choisirEcoleReferentiel,
     editEcole: openEcoleModal,
     openPersonnelModal, savePersonnel, deletePersonnel,
