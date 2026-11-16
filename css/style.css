@@ -559,3 +559,22 @@ table.ef thead th { background-clip: padding-box; }
 .entete-service .le-ent b { font-size: 12pt; }
 .bh-logo-ecole { display: inline-flex; vertical-align: middle; width: 26px; height: 26px; border-radius: 50%; overflow: hidden; background: #fff; margin-right: 2px; }
 .bh-logo-ecole svg, .bh-logo-ecole img { width: 26px; height: 26px; display: block; }
+
+/* ===== v3.7 — Thème sombre (Clair / Sombre / Auto selon l'heure) et boutons d'affichage ===== */
+.outils-affichage{display:flex;flex-wrap:wrap;gap:6px;padding:8px 14px}
+.btn-theme{background:transparent;border:1px solid rgba(255,255,255,.3);color:#DCE6F2;border-radius:7px;padding:4px 9px;cursor:pointer;font:inherit;font-size:12.5px}
+html.sans-cachet .cachet,html.sans-cachet [data-cachet],html.sans-cachet img[alt="Cachet"]{display:none!important}
+html[data-theme="dark"]{color-scheme:dark;--fond:#0f1720;--bord:#2b3947;--txt:#e6edf3;--gris:#9aa7b4;--lat:#0a1118}
+html[data-theme="dark"] body{background:var(--fond);color:var(--txt)}
+html[data-theme="dark"] .stat-card,html[data-theme="dark"] .table-container,html[data-theme="dark"] .form-container,html[data-theme="dark"] .modal-content,html[data-theme="dark"] .search-bar,html[data-theme="dark"] .xcard,html[data-theme="dark"] .xres,html[data-theme="dark"] .xreg,html[data-theme="dark"] .cam-box,html[data-theme="dark"] .header.barre-haut,html[data-theme="dark"] .carte,html[data-theme="dark"] .kpi,html[data-theme="dark"] table.t,html[data-theme="dark"] .doc-carte,html[data-theme="dark"] .cal-l,html[data-theme="dark"] table.edt,html[data-theme="dark"] .reg-art,html[data-theme="dark"] .btn-secondary,html[data-theme="dark"] .main-content .menu-carte,html[data-theme="dark"] .rappel-sauvegarde{background:#17212b!important;color:var(--txt)!important;border-color:var(--bord)}
+html[data-theme="dark"] .page-a4{background:#fff;color:#000}
+html[data-theme="dark"] .kpi *,html[data-theme="dark"] .carte h3,html[data-theme="dark"] .doc-carte b{color:var(--txt)}
+html[data-theme="dark"] .card,html[data-theme="dark"] .carte,html[data-theme="dark"] .modal,html[data-theme="dark"] .modal-content,html[data-theme="dark"] .panel,html[data-theme="dark"] .topbar,html[data-theme="dark"] .box{background:#17212b;color:var(--txt);border-color:var(--bord)}
+html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea{background:#0f1720;color:var(--txt);border-color:var(--bord)}
+html[data-theme="dark"] table,html[data-theme="dark"] td,html[data-theme="dark"] th{border-color:var(--bord)}
+html[data-theme="dark"] td{background:transparent}
+html[data-theme="dark"] a{color:#7fb2e5}
+@media print{.outils-affichage{display:none!important}html[data-theme="dark"]{--fond:#fff;--txt:#000;--gris:#444;--bord:#ccc;color-scheme:light}html[data-theme="dark"] body{background:#fff;color:#000}}
+html[data-theme="dark"] .raccourcis a{background:#17212b;color:var(--txt);border-color:var(--bord)}
+html[data-theme="dark"] .raccourcis a b,html[data-theme="dark"] .raccourcis a strong{color:#cfe3f7}
+@media print{html[data-theme="dark"] .raccourcis a{background:#fff;color:#000}}

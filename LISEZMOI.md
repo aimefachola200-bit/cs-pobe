@@ -1,6 +1,6 @@
 # Guide d’utilisation — CS Pobè — Circonscription scolaire de Pobè
 
-_Version 3.6.1_
+_Version 3.7.0_
 
 Rôles : Chef de circonscription et secrétariat · Conseiller pédagogique (espace CP) · Directeur (données des écoles)
 
