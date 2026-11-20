@@ -3794,6 +3794,87 @@
     if (!confirm('Remettre l’unité pédagogique « ' + nom + ' » telle que dans le document de la CS (zone, RUP, co-RUP, écoles) ?')) return;
     UPO.reinitUP(nom); renderRepertoires(); renderEcoles();
   }
+
+  /* --- Responsables d'UP : RUP et co-RUP en activité / anciens (plus en activité) --- */
+  function respActifs() {
+    const l = [];
+    data.unites.forEach(u => {
+      if (u.rup) l.push({ up: u.nom, cycle: u.cycle || '', zone: u.zone || '', role: 'RUP', nom: u.rup, contact: u.contact_rup || '' });
+      if (u.corup) l.push({ up: u.nom, cycle: u.cycle || '', zone: u.zone || '', role: 'co-RUP', nom: u.corup, contact: u.contact_corup || '' });
+    });
+    return l.sort((a, b) => (a.zone || 'Z').localeCompare(b.zone || 'Z') || a.up.localeCompare(b.up, 'fr') || a.role.localeCompare(b.role));
+  }
+  function responsablesUP(onglet) {
+    onglet = onglet || 'actifs';
+    data.historiqueRUP = data.historiqueRUP || [];
+    const act = respActifs(), anc = data.historiqueRUP.slice().sort((a, b) => String(b.fin || '').localeCompare(String(a.fin || '')));
+    const onglets = '<div style="display:flex;gap:6px;margin-bottom:10px">'
+      + '<button class="btn ' + (onglet === 'actifs' ? 'btn-primary' : 'btn-info') + '" onclick="responsablesUP(\'actifs\')">En activité (' + act.length + ')</button>'
+      + '<button class="btn ' + (onglet === 'anciens' ? 'btn-primary' : 'btn-info') + '" onclick="responsablesUP(\'anciens\')">Plus en activité (' + anc.length + ')</button>'
+      + '<button class="btn btn-success" style="margin-left:auto" onclick="nouveauResponsableUP()">+ Nouveau RUP / co-RUP</button></div>';
+    let corps;
+    if (onglet === 'actifs') {
+      corps = '<div class="table-wrap"><table><thead><tr><th>Zone</th><th>UP</th><th>Rôle</th><th>Nom et prénoms</th><th>Contact</th><th></th></tr></thead><tbody>'
+        + (act.map(r => '<tr><td>' + echapper(r.zone || '—') + '</td><td>' + echapper(r.up) + (r.cycle === 'Maternelle' ? ' (mat.)' : '') + '</td><td>' + r.role + '</td><td><b>' + echapper(r.nom) + '</b></td><td>' + echapper(r.contact || '—') + '</td>'
+          + '<td class="actions"><button class="btn btn-danger btn-sm" title="N’est plus en activité" onclick="finFonctionResponsable(' + jsNom(r.up) + ',\'' + r.role + '\')">Fin de fonction</button></td></tr>').join('')
+          || '<tr><td colspan="6" class="text-center">Aucun responsable renseigné</td></tr>') + '</tbody></table></div>';
+    } else {
+      corps = '<div class="table-wrap"><table><thead><tr><th>UP</th><th>Rôle</th><th>Nom et prénoms</th><th>Contact</th><th>Fin</th><th>Motif</th><th></th></tr></thead><tbody>'
+        + (anc.map(r => '<tr><td>' + echapper(r.up) + '</td><td>' + r.role + '</td><td>' + echapper(r.nom) + '</td><td>' + echapper(r.contact || '—') + '</td><td>' + echapper(r.fin || '—') + '</td><td>' + echapper(r.motif || '—') + '</td>'
+          + '<td class="actions"><button class="btn btn-danger btn-sm" title="Retirer de l’historique" onclick="supprimerAncienResponsable(\'' + r.id + '\')">\uE005</button></td></tr>').join('')
+          || '<tr><td colspan="7" class="text-center">Aucun ancien responsable</td></tr>') + '</tbody></table></div>';
+    }
+    openModal('Responsables d’unités pédagogiques (RUP et co-RUP)', onglets + corps);
+  }
+  function nouveauResponsableUP() {
+    const ups = data.unites.slice().sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+    openModal('Nouveau RUP / co-RUP',
+      '<form onsubmit="saveNouveauResponsable(event)"><div class="form-grid">'
+      + '<div class="form-group"><label>Unité pédagogique *</label><select name="up" required>' + ups.map(u => '<option value="' + echapper(u.nom) + '">' + echapper(u.nom) + (u.cycle === 'Maternelle' ? ' (maternelle)' : '') + '</option>').join('') + '</select></div>'
+      + selecteur('Fonction', 'role', ['RUP', 'co-RUP'], 'RUP', true)
+      + champ('Nom et prénoms', 'nom', '')
+      + champ('Contact', 'contact', '')
+      + '</div><p class="petit">Si l’unité a déjà un responsable pour cette fonction, il passe dans « Plus en activité » (motif : remplacé).</p>'
+      + '<div class="text-center mt-15"><button type="submit" class="btn btn-primary">\uE007 Enregistrer</button> '
+      + '<button type="button" class="btn btn-danger" onclick="responsablesUP()">Annuler</button></div></form>');
+  }
+  function archiverResponsable(u, role, motif, date) {
+    const k = role === 'RUP' ? ['rup', 'contact_rup'] : ['corup', 'contact_corup'];
+    if (!u[k[0]]) return;
+    data.historiqueRUP = data.historiqueRUP || [];
+    data.historiqueRUP.push({ id: uid(), up: u.nom, cycle: u.cycle || '', role: role, nom: u[k[0]], contact: u[k[1]] || '', fin: date || new Date().toISOString().slice(0, 10), motif: motif || '' });
+    u[k[0]] = ''; u[k[1]] = '';
+  }
+  function saveNouveauResponsable(ev) {
+    ev.preventDefault();
+    const o = Object.fromEntries(new FormData(ev.target)), nom = (o.nom || '').trim();
+    if (!nom) return;
+    const u = ficheUP(o.up, true), k = o.role === 'RUP' ? ['rup', 'contact_rup'] : ['corup', 'contact_corup'];
+    if (u[k[0]] && u[k[0]] !== nom) archiverResponsable(u, o.role, 'Remplacé');
+    u[k[0]] = nom; u[k[1]] = (o.contact || '').trim();
+    saveData(); renderRepertoires(); responsablesUP('actifs');
+  }
+  function finFonctionResponsable(nomUP, role) {
+    const u = ficheUP(nomUP); if (!u) return;
+    openModal('Fin de fonction — ' + role + ' ' + nomUP,
+      '<form onsubmit="saveFinFonction(event, ' + jsNom(nomUP) + ', \'' + role + '\')"><div class="form-grid">'
+      + champ('Date de fin', 'fin', new Date().toISOString().slice(0, 10), 'date')
+      + selecteur('Motif', 'motif', ['Retraite', 'Mutation', 'Nouvelle affectation', 'Démission', 'Autre'], 'Mutation')
+      + '</div><div class="text-center mt-15"><button type="submit" class="btn btn-primary">\uE007 Confirmer</button> '
+      + '<button type="button" class="btn btn-danger" onclick="responsablesUP()">Annuler</button></div></form>');
+  }
+  function saveFinFonction(ev, nomUP, role) {
+    ev.preventDefault();
+    const o = Object.fromEntries(new FormData(ev.target));
+    archiverResponsable(ficheUP(nomUP), role, o.motif, o.fin);
+    saveData(); renderRepertoires(); responsablesUP('anciens');
+  }
+  function supprimerAncienResponsable(id) {
+    if (!confirm('Retirer cette personne de l’historique ?')) return;
+    data.historiqueRUP = (data.historiqueRUP || []).filter(r => r.id !== id);
+    saveData(); responsablesUP('anciens');
+  }
+
   function reinitialiserToutesUP() {
     if (!UPO) return;
     if (!confirm('Remettre TOUTES les unités pédagogiques et les zones des écoles telles que dans le document de la CS ?\n'
@@ -7421,7 +7502,7 @@
     saveMembre, supprimerMembre, renderMaFiche,
     renderUASCEP, openMembreUASCEPModal, saveMembreUASCEP, supprimerMembreUASCEP, exporterUASCEP,
     renderRepertoires, modifierDirecteur, saveDirecteur, modifierCP, saveCP,
-    modifierUP, saveUP, supprimerUP, renderUP, renderRubriquesEcoles, ecoleNeFonctionnePlus, remettreEnActivite, reinitialiserUP, reinitialiserToutesUP, rattacherEcoleUP, saveRattachement,
+    modifierUP, saveUP, supprimerUP, responsablesUP, nouveauResponsableUP, saveNouveauResponsable, finFonctionResponsable, saveFinFonction, supprimerAncienResponsable, renderUP, renderRubriquesEcoles, ecoleNeFonctionnePlus, remettreEnActivite, reinitialiserUP, reinitialiserToutesUP, rattacherEcoleUP, saveRattachement,
     reinitialiserEffectifs, reinitialiserTousEffectifs, reinitialiserEcole, modifierComite, saveComite, supprimerComite,
     ajouterAuRepertoire,
     renderApprenants, openApprenantModal, saveApprenant, supprimerApprenant,

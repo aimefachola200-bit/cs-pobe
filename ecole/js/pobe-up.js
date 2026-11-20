@@ -189,6 +189,8 @@
         r.totalG = r.s_eff_sp_G + r.s_eff_sg_G; r.totalF = r.s_eff_sp_F + r.s_eff_sg_F; r.total = r.totalG + r.totalF;
         rapport.effectifs++;
       });
+      // anciennes UP officielles disparues de la liste (ex. Onigbolo-Usine devenue Onigbolo) : retirées si plus aucune école n'y est rangée
+      data.unites = (data.unites || []).filter(f => !(f.officielle && !P().ups.some(x => x.nom === f.nom) && !data.ecoles.some(e => e.unite_ped === f.nom)));
       reglage('pobeUP', version);
       reglage('pobeUPRapport', Object.assign({ date: new Date().toISOString() }, rapport));
       saveData();
