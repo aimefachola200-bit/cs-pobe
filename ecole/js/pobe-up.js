@@ -92,7 +92,7 @@
       // zone d'appartenance (feuille du classeur) ; l'ancien référentiel en posait une d'office pour les maternelles
       if (poser(e, 'zone_ped', o.zone ? 'Zone ' + String(o.zone).replace(/\D/g, '') : o.zone, forcer, v => D.zoneReferentiel && v === D.zoneReferentiel(e.nom))) n++;
       // zone de l'UP (zone des activités pédagogiques) : une école peut suivre les activités d'une UP d'une autre zone
-      if (poser(e, 'zone_up', o.zone_up, forcer)) n++;
+      if (e.zone_up) { e.zone_up = ''; n++; } // l'UP n'a pas de zone propre
       if (poser(e, 'unite_ped', o.up, forcer, v => (D.UNITES_PROVISOIRES || []).indexOf(v) >= 0)) n++;
       // l'école n'est plus dans l'UP officielle d'avant (ex. EPP AGBAROU sortie d'Ossomou 2) : retirée si l'UP n'a pas été changée à la main
       if (!o.up && e._officiel && e._officiel.unite_ped && e.unite_ped === e._officiel.unite_ped) {
@@ -101,7 +101,7 @@
       // école sans UP dans le document mais rangée dans une unité provisoire « UP X » devenue officielle (ex. UP Agbarou -> Agbarou)
       if (!o.up && (D.UNITES_PROVISOIRES || []).indexOf(e.unite_ped) >= 0) {
         const u = P().ups.find(x => norm('UP ' + x.nomOfficiel) === norm(e.unite_ped));
-        if (u) { e.unite_ped = u.nom; e.zone_up = u.zone; if (vide(e.zone_ped)) e.zone_ped = u.zone; n++; }
+        if (u) { e.unite_ped = u.nom; e.zone_up = ''; n++; }
       }
       if (poser(e, 'annee_creation', o.annee_creation, forcer)) n++;
       if (poser(e, 'classes_autorisees', o.classes_autorisees, forcer)) n++;
@@ -139,7 +139,7 @@
       data.unites = data.unites || [];
       let f = data.unites.find(x => x.nom === u.nom);
       if (!f) { f = { id: uid(), nom: u.nom }; data.unites.push(f); }
-      ['zone', 'cycle', 'numero', 'arrondissement', 'rup', 'corup'].forEach(k => { poser(f, k, u[k], forcer); });
+      ['cycle', 'numero', 'arrondissement', 'rup', 'corup'].forEach(k => { poser(f, k, u[k], forcer); });
       f.officielle = true;
       return f;
     }
@@ -203,7 +203,7 @@
       appliquerUP(u, true);
       // une UP ajoutée sans liste d'écoles (Agbarou) garde les écoles que la CS y a rattachées
       if (!u.ajoutee && u.ecoles.length) data.ecoles.forEach(e => { if (e.unite_ped === nom && u.ecoles.every(n => norm(n) !== norm(e.nom))) { e.unite_ped = ''; } });
-      u.ecoles.forEach(n => { const e = ecoleDe(n); if (e) { poser(e, 'unite_ped', u.nom, true); poser(e, 'zone_up', u.zone, true); } });
+      u.ecoles.forEach(n => { const e = ecoleDe(n); if (e) { poser(e, 'unite_ped', u.nom, true); e.zone_up = ''; } });
       saveData(); return true;
     }
     function reinitToutesUP() {
@@ -212,7 +212,7 @@
       data.ecoles.forEach(e => {
         const o = officielEcole(e.nom);
         if (o) {
-          if (o.up) { poser(e, 'unite_ped', o.up, true); poser(e, 'zone_up', o.zone_up, true); }
+          if (o.up) { poser(e, 'unite_ped', o.up, true); e.zone_up = ''; }
           else if (officielles.has(e.unite_ped)) { e.unite_ped = ''; e.zone_up = ''; }
           if (o.zone) poser(e, 'zone_ped', o.zone, true);
         }

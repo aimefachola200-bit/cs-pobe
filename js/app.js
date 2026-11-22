@@ -368,8 +368,7 @@
       '<tr><td><b>' + echapper(e.code) + '</b></td><td>' + echapper(e.nom) + '</td>'
       + '<td><span class="badge badge-info">' + echapper(e.type) + '</span></td>'
       + '<td>' + echapper(e.statut) + '</td><td>' + echapper(e.arrondissement) + '</td>'
-      + '<td>' + echapper(e.zone_ped || '—') + (e.zone_up && e.zone_up !== e.zone_ped
-        ? '<div class="petit muet" style="font-size:11px">activités : ' + echapper(e.zone_up) + '</div>' : '') + '</td>'
+      + '<td>' + echapper(e.zone_ped || '—') + '' + '</td>'
       + '<td>' + echapper(e.unite_ped || '—') + '</td>'
       + '<td>' + echapper(e.annee_creation) + '</td><td>' + echapper(libClasses(classesEcole(e))) + '</td>'
       + '<td class="actions">'
@@ -533,7 +532,6 @@
         ['POBE', 'AHOYEYE', 'IGANNA', 'ISSABA', 'TOWE'], e.arrondissement, true)
       + champ("Village ou quartier", 'village', e.village)
       + selecteur("Zone pédagogique (appartenance)", 'zone_ped', [''].concat(global.Donnees.ZONES), e.zone_ped)
-      + selecteur("Zone des activités (zone de l’UP)", 'zone_up', [''].concat(global.Donnees.ZONES), e.zone_up)
       + '<div class="form-group"><label>Unité pédagogique</label>'
       + '<input name="unite_ped" list="listeUP" value="' + echapper(e.unite_ped || '') + '">'
       + '<datalist id="listeUP">' + unitesConnues().map(u => '<option value="'
@@ -635,9 +633,7 @@
   function saveEcole(ev, id) {
     ev.preventDefault();
     const obj = Object.fromEntries(new FormData(ev.target));
-    /* l'UP choisie donne la zone des activités quand elle n'est pas indiquée */
-    if (obj.unite_ped && !obj.zone_up) { const f = (data.unites || []).find(u => u.nom === obj.unite_ped); if (f && f.zone) obj.zone_up = f.zone; }
-    if (!obj.unite_ped) obj.zone_up = obj.zone_up || '';
+    obj.zone_up = ''; // l'UP n'a pas de zone : l'école garde sa propre zone
     /* effectif du personnel par statut (champs pf_*) */
     const pf = {};
     Object.keys(obj).filter(k => k.indexOf('pf_') === 0).forEach(k => { if (obj[k] !== '') pf[k.slice(3)] = parseInt(obj[k], 10) || 0; delete obj[k]; });
@@ -3695,22 +3691,18 @@
     const zoneF = (document.getElementById('filterZoneUP') || {}).value || '';
     const cycleF = (document.getElementById('filterCycleUP') || {}).value || '';
     const liste = unitesPedagogiques().filter(u => u.ecoles || u.fiche.rup || u.fiche.officielle || u.fiche.id)
-      .map(u => Object.assign(u, { zone: u.fiche.zone || (data.ecoles.find(e => e.unite_ped === u.nom) || {}).zone_ped || '',
+      .map(u => Object.assign(u, { zones: [...new Set(data.ecoles.filter(e => e.unite_ped === u.nom && e.zone_ped).map(e => e.zone_ped))].sort(),
         cycle: u.fiche.cycle || '' }))
-      .filter(u => (!zoneF || u.zone === zoneF) && (!cycleF || u.cycle === cycleF))
-      .sort((a, b) => (a.zone || 'Z').localeCompare(b.zone || 'Z') || (a.cycle === 'Maternelle' ? -1 : b.cycle === 'Maternelle' ? 1 : 0)
+      .filter(u => (!zoneF || u.zones.indexOf(zoneF) >= 0) && (!cycleF || u.cycle === cycleF))
+      .sort((a, b) => (a.cycle === 'Maternelle' ? -1 : b.cycle === 'Maternelle' ? 1 : 0)
         || ((a.fiche.numero || 99) - (b.fiche.numero || 99)) || a.nom.localeCompare(b.nom, 'fr'));
-    let zonePrec = null;
     tb.innerHTML = liste.map(u => {
       const membres = data.ecoles.filter(e => e.unite_ped === u.nom).sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
-      const ecoles = membres.map(e => echapper(e.nom) + (u.zone && e.zone_ped && e.zone_ped !== u.zone
-        ? ' <span class="badge badge-warning" title="Zone d’appartenance : ' + echapper(e.zone_ped) + ' — suit les activités de cette UP">' + echapper(e.zone_ped) + '</span>' : ''));
-      const ligneZone = u.zone !== zonePrec ? '<tr class="ligne-zone"><td colspan="10"><b>' + echapper(u.zone || 'Zone non renseignée')
-        + '</b> — ' + liste.filter(x => x.zone === u.zone).length + ' unité(s) ; '
-        + data.ecoles.filter(e => (e.zone_ped || '') === (u.zone || '')).length + ' école(s) de la zone (appartenance)</td></tr>' : '';
-      zonePrec = u.zone;
+      const ecoles = membres.map(e => echapper(e.nom) + (u.zones.length > 1 && e.zone_ped
+        ? ' <span class="badge badge-warning" title="Zone pédagogique de l’école">' + echapper(e.zone_ped.replace('Zone ', 'Z')) + '</span>' : ''));
+      const ligneZone = '';
       const officielle = UPO && UPO.officielUP(u.nom);
-      return ligneZone + '<tr><td>' + echapper(u.zone || '—') + '</td><td>' + echapper(u.cycle || '—') + '</td>'
+      return ligneZone + '<tr><td>' + echapper(u.zones.map(z => z.replace('Zone ', '')).join(', ') || '—') + '</td><td>' + echapper(u.cycle || '—') + '</td>'
         + '<td><b>' + echapper(u.nom) + '</b>' + (officielle ? ' <span class="badge badge-info" title="Document de la CS">officielle</span>' : '') + '</td>'
         + '<td>' + echapper(u.arrondissement) + '</td>'
         + '<td><b>' + ecoles.length + '</b><div class="petit" style="font-size:11.5px;color:#475467;max-width:360px">' + ecoles.join(', ') + '</div></td>'
@@ -3784,9 +3776,8 @@
     const e = data.ecoles.find(x => x.id == id); if (!e) return;
     const o = Object.fromEntries(new FormData(ev.target));
     e.unite_ped = o.unite_ped || '';
-    const f = data.unites.find(u => u.nom === e.unite_ped);
-    e.zone_up = (f && f.zone) || '';
-    e.zone_ped = o.zone_ped || e.zone_ped || (f && f.zone) || '';
+    e.zone_up = '';
+    e.zone_ped = o.zone_ped || e.zone_ped || '';
     saveData(); closeModal(); renderRepertoires(); renderEcoles();
   }
   function reinitialiserUP(nom) {
@@ -3799,8 +3790,9 @@
   function respActifs() {
     const l = [];
     data.unites.forEach(u => {
-      if (u.rup) l.push({ up: u.nom, cycle: u.cycle || '', zone: u.zone || '', role: 'RUP', nom: u.rup, contact: u.contact_rup || '' });
-      if (u.corup) l.push({ up: u.nom, cycle: u.cycle || '', zone: u.zone || '', role: 'co-RUP', nom: u.corup, contact: u.contact_corup || '' });
+      const zs = [...new Set(data.ecoles.filter(e => e.unite_ped === u.nom && e.zone_ped).map(e => e.zone_ped.replace('Zone ', '')))].sort().join(', ');
+      if (u.rup) l.push({ up: u.nom, cycle: u.cycle || '', zone: zs, role: 'RUP', nom: u.rup, contact: u.contact_rup || '' });
+      if (u.corup) l.push({ up: u.nom, cycle: u.cycle || '', zone: zs, role: 'co-RUP', nom: u.corup, contact: u.contact_corup || '' });
     });
     return l.sort((a, b) => (a.zone || 'Z').localeCompare(b.zone || 'Z') || a.up.localeCompare(b.up, 'fr') || a.role.localeCompare(b.role));
   }
@@ -3899,7 +3891,6 @@
       + echapper(u.nom || '') + '" required></div>'
       + selecteur('Arrondissement', 'arrondissement',
         [''].concat(['POBE', 'AHOYEYE', 'IGANNA', 'ISSABA', 'TOWE']), u.arrondissement)
-      + selecteur('Zone pédagogique', 'zone', [''].concat(global.Donnees.ZONES), u.zone)
       + selecteur('Cycle', 'cycle', ['', 'Maternelle', 'Primaire'], u.cycle)
       + champ('Responsable (RUP)', 'rup', u.rup)
       + champ('Contact du RUP', 'contact_rup', u.contact_rup)
@@ -3927,7 +3918,6 @@
       data.ecoles.forEach(e => { if (e.unite_ped === ancien) e.unite_ped = nom; });
     }
     /* la zone de l'UP est la zone des activités de ses écoles */
-    if (u.zone) data.ecoles.forEach(e => { if (e.unite_ped === nom) e.zone_up = u.zone; });
     saveData();
     closeModal();
     renderRepertoires();
