@@ -19,6 +19,7 @@
     'courriers',         // l'archive du courrier de la circonscription
     'repertoires', 'bilans',       // les répertoires de la circonscription
     'whatsapp',          // le groupe WhatsApp des directeurs, administré par la circonscription
+    'personnelZones',    // le personnel par zone et section : vue de la circonscription (zone « à attribuer » comprise)
     'maFiche'            // le choix de son école parmi toutes celles de la circonscription ;
                           // en mode ÉCOLE, le bouton du bandeau suffit, l'école étant déjà unique
   ];
@@ -45,5 +46,5 @@
 
   /* Version de l'application (affichée dans le menu ; lue aussi pour l'APK et l'installateur Windows). */
   global.Config = { MODE, estEcole, pageVisible, PAGES_CIRCONSCRIPTION, TITRES,
-    version: '3.6.2' };
+    version: '3.6.3' };
 })(window);

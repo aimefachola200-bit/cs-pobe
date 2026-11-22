@@ -1,5 +1,5 @@
 {
- "version": "f884f9415ff7",
+ "version": "e1272e37e545",
  "files": [
   "./",
   "LISEZ-MOI.pdf",
@@ -11,6 +11,7 @@
   "data/directeurs-pobe.js",
   "data/documents-officiels.js",
   "data/officiel.js",
+  "data/pobe-stats.js",
   "data/pobe-up.js",
   "data/ref.js",
   "data/referentiel_villages.json",
@@ -102,6 +103,7 @@
   "js/sauvegarde-auto.js",
   "js/securite-cs.js",
   "js/securite.js",
+  "js/stat-cs.js",
   "js/stockage.js",
   "js/sync-client.js",
   "js/sync-commun.js",
