@@ -99,6 +99,40 @@
       }
     },
     {
+      cle: 'PRESENCE_POSTE_PRIVE', titre: 'CERTIFICAT DE PRÉSENCE AU POSTE (ÉCOLE PRIVÉE)',
+      signataire: 'ECOLE', verbe: 'atteste',
+      reference: 'SO N° {numero}/{ecole}/CS-POBE/DDEMP-P/SP',
+      champs: ['reference_acte', 'date_acte', 'depuis', 'jusqua'],
+      corps: function (a, c) {
+        return ['Je soussigné ' + a.directeur + ', Directeur de l’École Privée ' + a.ecole + ',',
+          'Atteste que ' + a.civilite + ' ' + a.nom + ',',
+          'Né(e) le ' + a.naissance + ' à ' + a.lieuNaiss + ',',
+          'Titulaire du diplôme : ' + a.diplomePro + ',',
+          'Numéro NIP : ' + a.nip + ',',
+          'Recruté(e) par l’école suivant le contrat n° ' + (c.reference_acte || '…') + ' du ' + (c.date_acte || '…') + ',',
+          'Est en service à ' + a.ecole + ',',
+          'En qualité de (fonction) ' + a.fonction + ',',
+          'Depuis le ' + (c.depuis || a.priseServiceEcole) + ' jusqu’à ce jour '
+            + (c.jusqua || a.aujourdhui) + '.'];
+      }
+    },
+    {
+      cle: 'PRISE_SERVICE_PRIVE', titre: 'CERTIFICAT DE PRISE DE SERVICE (ÉCOLE PRIVÉE)',
+      signataire: 'ECOLE', verbe: 'certifie',
+      reference: 'SO N° {numero}/{ecole}/CS-POBE/DDEMP-P/SP',
+      champs: ['reference_acte', 'date_acte', 'nb_classes', 'date_prise'],
+      corps: function (a, c) {
+        return ['Je soussigné ' + a.directeur + ', Directeur de l’École Privée ' + a.ecole + ',',
+          'Certifie que ' + a.civilite + ' ' + a.nom + ',',
+          'Titulaire du diplôme : ' + a.diplomePro + ' — NIP : ' + a.nip + ',',
+          'Recruté(e) par l’école suivant le contrat n° ' + (c.reference_acte || '…') + ' du ' + (c.date_acte || '…') + ',',
+          'Affecté(e) à l’école ' + a.ecole + ',',
+          'En qualité de ' + a.fonction
+            + (c.nb_classes ? ' de ' + c.nb_classes + ' classe(s)' : '') + ',',
+          'A effectivement pris service le ' + (c.date_prise || a.priseServiceEcole) + '.'];
+      }
+    },
+    {
       cle: 'DIRECTION', titre: 'ATTESTATION DE DIRECTION',
       signataire: 'CS', verbe: 'atteste',
       reference: 'SO N° {numero}/CS-POBE/DDEMP-P/SP',

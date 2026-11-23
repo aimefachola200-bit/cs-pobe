@@ -1,5 +1,5 @@
 {
- "version": "fbe0e7935e31",
+ "version": "2017437b7d3d",
  "files": [
   "./",
   "LISEZ-MOI.pdf",
@@ -118,6 +118,7 @@
   "js/uascep.js",
   "js/whatsapp.js",
   "js/zones-cp.js",
+  "maj-cspobe-prive.js",
   "manifest.webmanifest",
   "sw.js",
   "telecharger-qr.png",
