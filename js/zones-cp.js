@@ -202,6 +202,6 @@
     .zcp-doc table.zcp-t th{background:#1F4E79;color:#fff}` }));
   global.Extra = global.Extra || { pages: {} };
   global.Extra.pages.personnelZones = page;
-  global.ZonesCP = { blocEcoles, blocPersonnel, imprimerEcoles, excelEcoles, excelPersonnel, attribuerZone, zoneAgent, repartition, RUBRIQUES, SANS_ZONE,
+  global.ZonesCP = { directeurDe, blocEcoles, blocPersonnel, imprimerEcoles, excelEcoles, excelPersonnel, attribuerZone, zoneAgent, repartition, RUBRIQUES, SANS_ZONE,
     onglet: (z) => { onglet = z; page(); } };
 })(window);

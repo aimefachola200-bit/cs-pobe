@@ -1,5 +1,5 @@
 {
- "version": "40d07916744f",
+ "version": "b09fe7746648",
  "files": [
   "./",
   "LISEZ-MOI.pdf",
@@ -7,6 +7,7 @@
   "assets/educmaster/educmaster_modele_agents.xlsx",
   "assets/educmaster/educmaster_modele_classe.xlsx",
   "assets/educmaster/educmaster_modele_notes_primaire.xlsx",
+  "cd",
   "css/style.css",
   "data/directeurs-pobe.js",
   "data/documents-officiels.js",
@@ -108,6 +109,7 @@
   "js/securite.js",
   "js/stat-cs.js",
   "js/stockage.js",
+  "js/suivi-zones.js",
   "js/sync-client.js",
   "js/sync-commun.js",
   "js/sync-cs.js",
